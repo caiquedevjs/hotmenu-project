@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+#category_conteniner{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+#category_label_title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.category_title{
+    font-family: "Roboto", sans-serif;
+    background-color: #fa6b18;
+    width: 83%;
+    border-radius: 8px;
+    margin-top: 50px;
+}
+#card_conteiner{
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 10px;
+    align-items: center;
+    box-shadow: 10px 10px 5px rgba(51, 50, 50, 0.5);
+    
+}
+#card_conteiner img{
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+#text_category{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#text_category p{
+ margin-left: 30px;
+}
+#text_category h3{
+    margin-left: 20px;
+    margin-top: 40px;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+}
+#product_modal_questions_amount_title h6{
+    margin-left: 33px;
+}
+
+@media only screen and (max-width: 768px) {
+    #category_title{
+        font-family: "Roboto", sans-serif;
+        background-color: #fa6b18;
+        width: 70%;
+        border-radius: 8px;
+        margin-top: 50px;
+    }
+    #category_label_title{
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-left: 30px;
+    }
+    #card_conteiner{
+        background-color: white;
+        width: 65%;
+        margin-left: 50px;
+    }
+    #card_conteiner img{
+        width: 80px;
+        height: 80px;
+    }
+   
+    #text_category h3{
+        margin-left: 20px;
+        margin-top: 40px;
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;
+        font-size: 13px;
+    }
+  
+
+  }
+  

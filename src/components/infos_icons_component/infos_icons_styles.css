@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+.infos_icons_conteiner_class{
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+   
+}
+#pay_text{
+    font-family: "Roboto", sans-serif;
+    font-weight: normal;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+}
+#hour_text{
+    font-family: "Roboto", sans-serif;   
+}
+
+/* Estilização do modal de infomrações */
+.modal-content{
+    background-color: #D9D9D9;
+    border-bottom: none;
+}
+.modal-header{
+  background-color: #ffffff(0, 0%, 100%);
+  border-bottom: none;
+ 
+  
+}
+.modal-body{
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+   
+}
+
+
+.info_text{
+    
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    
+}
+#info_img_conteiner{
+    border: none;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    gap: 10px;
+}
+#logo_info{
+    width: 150px;
+    height: 150px;
+    border: none ;
+    border-radius: 10px;
+    
+}
+#info_endreco{
+   
+    font-family: "Roboto", sans-serif;
+    font-weight: normal;
+    font-style: normal;
+}
+#info_social_icons{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    background-color: transparent;
+    justify-content: left;
+    
+}
+#logo_social_icons_png{
+    width: 40px;
+    height: 40px;
+}
+#img-thumbnail{
+    background-color: transparent;
+}
+#info_text_conteiner{
+   margin-left: 80px;
+}
+
+h3{
+    text-align: center;
+}
+
+@media only screen and (max-width: 768px) {
+   
+    .infos_icons_conteiner_class{
+        width: 100%;
+        gap: 80px;
+       
+    }
+ 
+    
+  }
+  

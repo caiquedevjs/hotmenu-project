@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+#product_modal_questions_header_text_conteiner img{
+    width: 200px;
+    height: 200px;
+    
+}
+#product_modal_description{
+    text-align: left;
+}
+#product_modal_questions_amount_conteiner{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+   background-color: #fa6b18 ;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 3px;
+}
+
+#product_modal_questions_amount{
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    height: 50%;
+    margin-top: 10px;
+    gap: 7px;
+    font-family: "Roboto", sans-serif;
+}
+#value{
+   
+    border-radius: 10px;
+    font-family: "Roboto", sans-serif;
+    
+}
+#obrigatorio{
+  
+    border-radius: 10px;
+    font-family: "Roboto", sans-serif;
+}
+#product_modal_options_conteiner{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+   
+}
+#product_modal_options_icons{
+    
+    display: flex;
+    margin-top: 5px;
+    gap: 10px;
+    
+    
+}
+#product_modal_options_icons button{
+    border-radius: 5px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    color: white;
+    background-color: black;
+    font-family: "Roboto", sans-serif;
+}
+#product_modal_options_icons h5:hover{
+  color: rgb(221, 18, 18);
+}
+#product_modal_questions_amount_title h6{
+    color: white;
+}
+#product_modal_questions_amount_title h4{
+    color: white;  
+}
