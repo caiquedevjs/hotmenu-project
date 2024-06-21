@@ -7,5 +7,6 @@ export const Product_state = {
     { title: 'Pizza', price: 'R$ 30,00', img: 'pizza-1.png', category: 'pizza'  },
     { title: 'Pastel', price: 'R$ 30,00', img: 'pasteis.png' , category: 'pastel' },
     { title: 'Pastel', price: 'R$ 30,00', img: 'pasteis.png' , category: 'pastel' },
+    { title: 'Pastel', price: 'R$ 30,00', img: 'pasteis.png' , category: 'pastel' },
   ]
 };
