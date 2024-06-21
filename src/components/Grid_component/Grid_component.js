@@ -30,7 +30,7 @@ const Grid_component = ({ category }) => {
               </div>
             </div>
           ))}
-          
+
         </div>
       ))}
     </div>
