@@ -10,12 +10,27 @@
     background-color: white;
     border-radius: 10px;
 }
+#product-title{
+    cursor: pointer;
+}
+#product-title:hover{
+    color: red;
+}
 /* Media query para dispositivos móveis */
 @media (max-width: 768px) {
    
    #card_container{
         width: 90%;
     }
+    .product-img{
+    width: 60px;
+    height: 60px;
+}
+#product-title:hover{
+    color: red;
+}
+
+
+    }
     
    
-}

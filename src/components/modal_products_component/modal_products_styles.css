@@ -65,3 +65,20 @@
     margin-top: 20px;
    
 }
+@media only screen and (max-width: 768px) {
+
+
+.opitions-icons-plus-dash{
+    justify-content: space-around;
+    gap: 10px;
+}
+.opitions-description-conteiner{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    gap: 110px;
+    align-items: center;
+    
+}
+
+}

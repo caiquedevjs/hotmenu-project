@@ -49,9 +49,6 @@
     font-weight: bold;
     font-size: 20px;
 }
-#product_modal_questions_amount_title h6{
-    margin-left: 33px;
-}
 
 @media only screen and (max-width: 768px) {
     #category_title{
