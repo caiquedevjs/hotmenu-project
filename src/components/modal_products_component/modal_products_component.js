@@ -1,60 +1,52 @@
-import React from "react";
+import React from 'react';
+import '../modal_products_component/modal_products_styles.css'
 
-const Modal_product_component = () =>{
-    return (
-      <div class="modal fade" id="product-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-          <div class="modal-header">
-            <div id='product_title'><h4>
-              Double big Melt
-              </h4>
-              </div>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+const Modal_product_component = ({ id, product, onClose }) => {
+  return (
+    <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="exampleModalLabel">{product.title}</h5>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
           </div>
-          <div class="modal-body">
-            <div id='product_modal_conteiner'>
-              <div id='product_modal_img_conteiner'>
+          <div className="modal-body">
+            <div className='product-img-options'>
+            <img src={product.img} alt={product.title} className="img-fluid mb-3" />
+            </div>
+            
+            <p><strong>Preço:</strong> {product.price}</p>
+            {/* Outros detalhes do produto, se necessário */}
+            <div className='options-conteiner'>
+            <div className='options-conteiner-head'>
+                <h5>Adicionais</h5>
+               </div>
+              <h6>0/10</h6>
+            </div>
+            <div className='opitions-description-conteiner'>
+              <div className='options-adtions'>
+                <p>adicional - <span id='adtional-value'>R$2,50</span></p>
               </div>
-              <div id='product_modal_questions'>
-                <div id='product_modal_questions_header'>
-                  <idv id="product_modal_questions_header_text_conteiner">
-                     <img src="hambuger-1.png" class="img-thumbnail" alt="..."/>
-                  </idv>
-                  <div id='product_modal_description'>
-                    150g de blend de carne, queijo, pão australiano, molho melt, cebola caramelizada
-                  </div>
-                  <div id='product_modal_questions_amount_conteiner'>
-                    <div id='product_modal_questions_amount_title'>
-                      <h4>Adicionais:</h4>
-                      <h6>Escolha até 3 opções</h6>
-                    </div>
-                    <div id='product_modal_questions_amount'>
-                      <p id='value'>0/3</p>
-                      <div id='obrigatorio'><p>Obrigatorio</p></div>
-                      
-                    </div>
-                  </div>
-                  <div id='product_modal_options_conteiner'>
-                  <div id='product_modal_options'>
-                    <p>Tomate (R$2,50)<br></br>Max: 2un</p>
-                  </div>
-                  <div id='product_modal_options_icons'>
-                  <button className='plus_buttom_options_product'><h5>+</h5></button>
-                  <h5>0</h5>
-                  <button><h5>-</h5></button>
-                  </div>
-                  </div>
-                  <div id='product_modal_complemention_con'></div>
-                </div>
+              <div className='opitions-icons-plus-dash'>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus'>
+                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16" id='btn-dash'>
+                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+              </svg>
               </div>
             </div>
-          <div id='info_img_conteiner'>
-              </div>
+            <div className='options-sugestion'>
+              <h5>Alguma sugestão?</h5>
+            <textarea className='sugestion-input' placeholder='alguma sugestão?'></textarea>
+            </div>
+            <button className='options-btn-add'> adicionar ao carrinho</button>
           </div>
-          </div>
+          
+        </div>
       </div>
-      </div>
-    )
+    </div>
+  );
 };
+
 export default Modal_product_component;

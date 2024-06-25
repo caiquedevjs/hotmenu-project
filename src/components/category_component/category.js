@@ -1,13 +1,14 @@
 import React from 'react';
 import '../category_component/category_styles.css';
 import '../category_component/modal_product_styles.css';
-import Modal_product_component from '../modal_products_component/modal_products_component';
+
 import Grid_component from '../Grid_component/Grid_component';
 
 const Category_component = () => {
   return (
     <div className='category_component'>
-      <Modal_product_component />
+      
+      
       <div id='category_conteniner'>
         {/* Categoria Hamburger */}
         <div id='category_label_title'>

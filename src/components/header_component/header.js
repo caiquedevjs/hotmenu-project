@@ -4,6 +4,8 @@ import '../header_component/header_styles.css';
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
 
 
+
+
 // componente header
 const Header_component = () =>{
     // logica de mudança de estado hover dos icones do header
@@ -47,19 +49,25 @@ const Header_component = () =>{
                     <div class="row">
                         <div class="col">
                             <div id='img_category_conteiner'>
-                                <img src='hambuger-1.png' id='img_category'/>
+                              <a href='#hamburger'>
+                              <img src='hambuger-1.png' id='img_category' data-bs-dismiss="modal"/>
+                              </a>
                                 <p id='text_category_id'>hambuger</p>
                             </div>
                         </div>
                         <div class="col">
                                 <div id='img_category_conteiner'>
-                                    <img src='pizza-1.png' id='img_category'/>
+                                  <a href='#pizza'>
+                                  <img src='pizza-1.png' id='img_category'data-bs-dismiss="modal"/>
+                                  </a>
                                     <p id='text_category_id'>Pizza</p>
                                 </div>
                         </div>
                         <div class="col">
                             <div id='img_category_conteiner'>
-                                <img src='pasteis.png' id='img_category'/>
+                              <a href='#pastel'>
+                              <img src='pasteis.png' id='img_category' data-bs-dismiss="modal"/>
+                              </a>
                                 <p id='text_category_id'>Pastel</p>
                             </div>
                         </div>
@@ -83,15 +91,26 @@ const Header_component = () =>{
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Carrinho de compra</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ...
+                <div className='itens-shopping-conteiner'>
+                  <div className='itens-img-conteiner'>
+                  <img src='hambuger-1.png' className='iten-img'/>
+                  <div className='itens-description-conteiner'>
+                    <p> Double big melt</p>
+                  </div>
+                  </div>
+                  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16" id='dash-iten'>
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+                </svg>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
+                
+                <button type="button" class="btn btn-primary">Finalizar compra</button>
             </div>
             </div>
         </div>

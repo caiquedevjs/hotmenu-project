@@ -1,0 +1,67 @@
+.modal-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.product-img-options{
+    background-color: #fa6b18;
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+}
+.img-fluid{
+   width: 200px; 
+   height: 200px;
+}
+.options-conteiner{
+    background-color: #fa6b18;
+    width: 100%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    
+}
+.opitions-description-conteiner{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    gap: 250px;
+    align-items: center;
+    
+}
+.options-adtions{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+   margin-top: 10px;
+    align-items: center;
+}
+.opitions-icons-plus-dash{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+}
+.options-sugestion{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.sugestion-input{
+    width: 100%;
+  
+    margin-right: 60px;
+}
+
+.options-btn-add{
+    background-color: #fa6b18;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 20px;
+   
+}

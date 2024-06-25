@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import './App.css';
@@ -9,8 +10,8 @@ import Selector_category_component from './components/selector_category_componen
 import Category_component from './components/category_component/category';
 
 
+
 function App() {
- 
 
   return (
     <div className="App">
@@ -20,7 +21,7 @@ function App() {
       <Infos_icons_component />
       <Selector_category_component/>
       <Category_component/>
-      
+     
       
     </div>
   );

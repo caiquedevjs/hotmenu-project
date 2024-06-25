@@ -1,0 +1,21 @@
+.product-img{
+    width: 100px;
+    height: 100px;
+}
+.product-conteiner{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+}
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+   
+   #card_container{
+        width: 90%;
+    }
+    
+   
+}
