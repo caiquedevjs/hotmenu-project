@@ -1,84 +1,147 @@
-.modal-body{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.product-img-options{
-    background-color: #fa6b18;
-    width: 300px;
-    height: 300px;
-    border-radius: 10px;
-}
-.img-fluid{
-   width: 200px; 
-   height: 200px;
-}
-.options-conteiner{
-    background-color: #fa6b18;
+/* modal_products_styles.css */
+
+/* Estilos gerais do modal */
+.modal {
+    display: none; /* O modal é ocultado por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
     width: 100%;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    
-}
-.opitions-description-conteiner{
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    gap: 250px;
-    align-items: center;
-    
-}
-.options-adtions{
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-   margin-top: 10px;
-    align-items: center;
-}
-.opitions-icons-plus-dash{
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: row;
-    align-items: center;
-    gap: 30px;
-}
-.options-sugestion{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-.sugestion-input{
-    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+  }
   
-    margin-right: 60px;
-}
-
-.options-btn-add{
-    background-color: #fa6b18;
-    border: none;
-    border-radius: 5px;
-    padding: 5px;
-    margin-top: 20px;
-   
-}
-@media only screen and (max-width: 768px) {
-
-
-.opitions-icons-plus-dash{
-    justify-content: space-around;
-    gap: 10px;
-}
-.opitions-description-conteiner{
+  .modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+  }
+  
+  .modal.show .modal-dialog {
+    transform: translate(0, 0);
+  }
+  
+  .modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 10px;
+  }
+  
+  .modal-content {
+    position: relative;
     display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    gap: 110px;
+    flex-direction: column;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    outline: 0;
+  }
+  
+  .modal-header {
+    display: flex;
     align-items: center;
-    
-}
-
-}
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: calc(0.3rem - 1px);
+    border-top-right-radius: calc(0.3rem - 1px);
+  }
+  
+  .modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+  }
+  
+  .modal-title {
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+  
+  .btn-close {
+    padding: 0.5rem 0.75rem;
+    margin: -0.5rem -0.75rem -0.5rem auto;
+    background-color: transparent;
+    border: 0;
+  }
+  
+  /* Estilos específicos para o conteúdo do modal */
+  
+  .product-img-options img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .options-container {
+    margin-top: 1rem;
+    background-color: whitesmoke;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .options-container-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .options-description-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .options-icons-plus-dash {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  #btn-plus{
+    cursor: pointer;
+  }
+  #btn-plus:hover{
+    transform: scale(1.2);
+    transition: 1s;
+  }
+  #btn-dash{
+    cursor: pointer;
+  }
+  #btn-dash:hover{
+    transform: scale(1.2);
+    transition: 1s;
+  }
+  
+  .options-suggestion {
+    margin-top: 1rem;
+  }
+  
+  .suggestion-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+  }
+  
+  .options-btn-add {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    background-color: #fa6b18;
+    border: 1px solid #fa6b18;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .options-btn-add:hover {
+    background-color: #000000;
+    border: 1px solid #000000;
+  }
