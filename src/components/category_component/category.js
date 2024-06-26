@@ -28,6 +28,12 @@ const Category_component = () => {
           <h4 className='category_title' id='pastel'>Pastel</h4>
         </div>
         <Grid_component category='pastel' />
+
+         {/* Categoria Bebida */}
+         <div id='category_label_title'>
+          <h4 className='category_title' id='bebida'>Bebidas</h4>
+        </div>
+        <Grid_component category='bebida' />
       </div>
     </div>
   );
