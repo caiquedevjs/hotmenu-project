@@ -13,6 +13,7 @@ import Category_component from './components/category_component/category';
 
 function App() {
 
+
   return (
     <div className="App">
       <Header_component />
@@ -21,6 +22,12 @@ function App() {
       <Infos_icons_component />
       <Selector_category_component/>
       <Category_component/>
+     <footer>
+     <div className='conteiner_hotmenu_logo'>
+            <img src="logo-removebg-preview.png" alt="..."></img>
+            </div>
+      <label>© Copyright 2024 Hotmenu. Todos os direitos reservados.</label>
+     </footer>
      
       
     </div>

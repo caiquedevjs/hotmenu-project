@@ -88,6 +88,16 @@
 #info_text_conteiner{
    margin-left: 80px;
 }
+#payal_card{
+width: 48px;
+height: 48px;
+border-radius: 5px;
+}
+#master_card{
+    width: 48px;
+    height: 48px;
+    border-radius: 5px;
+}
 
 h3{
     text-align: center;

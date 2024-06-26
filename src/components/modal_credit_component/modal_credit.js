@@ -15,11 +15,15 @@ const Modal_credit_component = () =>{
                             <h3 id='pay_text'>Credito:</h3>
                         <img src="icons8-cartão-de-crédito-mastercard-48.png"/>
                         <img src="icons8-visa-48.png"/>
+                        <img src="master_card_credit.svg" id="master_card"/>
                         <img src="icons8-amex-48.png"/>
+                        <img src="paypal_card.svg" id="payal_card"/>
                         <h3 id='pay_text'>Debito:</h3>
                         <img src="icons8-cartão-de-crédito-mastercard-48.png"/>
                         <img src="icons8-visa-48.png"/>
+                        <img src="paypal_card.svg" id="payal_card"/>
                         <img src="icons8-amex-48.png"/>
+                        <img src="master_card_credit.svg" id="master_card"/>
                         <h3 id='pay_text'>Dinheiro e Pix:</h3>
                         <img src="pix-icon.png"/>
                         </div>

@@ -34,6 +34,7 @@ const Header_component = () =>{
 
 
         {/* estrutura do modal de bsuca*/}
+        
         <div class="modal fade" id="modal_search_id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -156,6 +157,7 @@ const Header_component = () =>{
                 <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
                 </div>
                 <h1 id='title_logo'>Pizzaria dos Amigos</h1>
+                
 
 
                 

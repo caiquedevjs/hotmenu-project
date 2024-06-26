@@ -11,7 +11,7 @@ const Modal_infos_component = () =>{
                     </div>
                     <div class="modal-body">
                     <div id='info_img_conteiner'>
-                        <img src="hamburguer_Logo.jpg" id='logo_info' class="img-thumbnail" alt="info logo"/>
+                        <img src="attachment_71444173.png" id='logo_info' class="img-thumbnail" alt="info logo"/>
                         <p id='info_endreco'>Avenida Caminho de Areia- Roma, cep : 0000000</p>
                         <div id='info_social_icons'>
                         <img src="instagram-icone-icon.png" id='logo_social_icons_png'/>

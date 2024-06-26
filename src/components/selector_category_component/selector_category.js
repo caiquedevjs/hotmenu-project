@@ -24,7 +24,6 @@ const SelectorCategoryComponent = () => {
             <div className='flexbox_conteiner_class'>
                 <h3 id='select_title'>Categorias</h3>
                 <select className="form-select" aria-label="Default select example" style={selectStyle} onChange={handleSelectChange}>
-                    <option selected id='selected_id'>Categorias</option>
                     <option value="promoções">Promoções</option>
                     <option value="hamburger">Hamburger</option>
                     <option value="pizza">Pizza</option>
