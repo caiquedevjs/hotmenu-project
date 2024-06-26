@@ -74,7 +74,9 @@ const Header_component = () =>{
                         </div>
                         <div class="col">
                             <div id='img_category_conteiner'>
-                                <img src='fanta-laranja.png' id='img_category'/>
+                              <a href='#bebida'>
+                              <img src='fanta-laranja.png' id='img_category' data-bs-dismiss="modal" />
+                              </a>
                                 <p id='text_category_id'>Bebidas</p>
                             </div>
                         </div>    

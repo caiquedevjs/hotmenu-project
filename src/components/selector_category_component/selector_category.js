@@ -28,7 +28,7 @@ const SelectorCategoryComponent = () => {
                     <option value="hamburger">Hamburger</option>
                     <option value="pizza">Pizza</option>
                     <option value="pastel">Pastel</option>
-                    <option value="3">Bebidas</option>
+                    <option value="bebida">Bebidas</option>
                 </select>
             </div>
             </div>
