@@ -62,7 +62,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
             {additionalStates.map(additional => (
               <div key={additional.id} className='options-description-container'>
                 <div className='options-additions'>
-                  <p>{additional.description} - <span id='additional-value'>{additional.price}</span></p>
+                  <p>{additional.description} - R$ <span id='additional-value'>{additional.price}</span></p>
                 </div>
                 <div className='options-icons-plus-dash'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus' onClick={() => handleIncrement(additional.id)}>
