@@ -60,7 +60,12 @@
     margin-bottom: 0;
     line-height: 1.5;
   }
-  
+  #product-img-modal:hover{
+    transform: scale(1.2);
+    transition: 1s;
+    cursor: pointer; 
+
+  }
   .btn-close {
     padding: 0.5rem 0.75rem;
     margin: -0.5rem -0.75rem -0.5rem auto;

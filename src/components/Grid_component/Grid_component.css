@@ -12,25 +12,31 @@
 }
 #product-title{
     cursor: pointer;
+    
 }
 #product-title:hover{
-    color: red;
+    color: rgba(255, 94, 0, 0.801);
+}
+#card_container{
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.308); /* Sombra com desfoque de 10px, cor preta com 10% de opacidade */
 }
 /* Media query para dispositivos móveis */
 @media (max-width: 768px) {
    
    #card_container{
-        width: 90%;
+        width: 100%;
+
     }
     .product-img{
     width: 60px;
     height: 60px;
 }
 #product-title:hover{
-    color: red;
-}
+    color: rgba(255, 94, 0, 0.801);
 
 
     }
+}
     
    

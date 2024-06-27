@@ -5,41 +5,43 @@ const useAdditionalState = (category) => {
 
   const additionalOptions = {
     hamburger: [
-      { id: 1, count: 0, description: 'Queijo', price: 'R$ 2,50' },
-      { id: 2, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      { id: 3, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      { id: 4, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      // Adicione mais opções específicas para hambúrguer aqui
+      { id: 1, count: 0, description: 'Queijo', price: 2.50 },
+      { id: 2, count: 0, description: 'ovos', price: 2.50 },
+      { id: 3, count: 0, description: 'presunto', price: 2.50 },
+      { id: 4, count: 0, description: 'cebola', price: 2.50 },
+      // Mais opções de hambúrguer
     ],
     pizza: [
-      { id: 1, count: 0, description: 'Pequena', price: 'R$ 3,00' },
-      { id: 2, count: 0, description: 'Media', price: 'R$ 3,00' },
-      { id: 3, count: 0, description: 'Grande', price: 'R$ 3,00' },
-      { id: 4, count: 0, description: 'Grande', price: 'R$ 3,00' },
-      // Adicione mais opções específicas para pizza aqui
+      { id: 1, count: 0, description: 'Pequena', price: 25.00 },
+      { id: 2, count: 0, description: 'Média', price: 35.00 },
+      { id: 3, count: 0, description: 'Grande', price: 45.00 },
+      { id: 4, count: 0, description: 'Familia', price: 60.00 },
+      // Mais opções de pizza
     ],
-    pastel:  [
-      { id: 1, count: 0, description: 'Queijo', price: 'R$ 2,50' },
-      { id: 2, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      { id: 3, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      { id: 4, count: 0, description: 'Bacon', price: 'R$ 2,50' },
-      // Adicione mais opções específicas para hambúrguer aqui
+    pastel: [
+      { id: 1, count: 0, description: 'Queijo', price: 2.50 },
+      { id: 2, count: 0, description: 'Frango', price: 3.00 },
+      // Mais opções de pastel
     ],
-    // Adicione mais categorias e opções aqui se necessário
   };
 
   const [additionalStates, setAdditionalStates] = useState(additionalOptions[category] || []);
+
+  // Definir limite de adicionais conforme a categoria
+  const additionalLimit = category === 'pizza' ? 1 : 3;
 
   const handleIncrement = (id) => {
     const index = additionalStates.findIndex(state => state.id === id);
     if (index !== -1) {
       const updatedStates = [...additionalStates];
-      const additionalLimit = category === 'pizza' ? 1 : 3;
 
-      if (updatedStates[index].count < additionalLimit && totalAdditional < 10) {
-        updatedStates[index] = { ...updatedStates[index], count: updatedStates[index].count + 1 };
-        setAdditionalStates(updatedStates);
-        setTotalAdditional(totalAdditional + 1);
+      // Verificar se já atingiu o limite máximo para adicionar mais
+      if (updatedStates[index].count < additionalLimit) {
+        if ((category !== 'pizza' &&  totalAdditional < 10) || (category === 'pizza' && totalAdditional < 1)) {
+          updatedStates[index] = { ...updatedStates[index], count: updatedStates[index].count + 1 };
+          setAdditionalStates(updatedStates);
+          setTotalAdditional(totalAdditional + 1);
+        }
       }
     }
   };

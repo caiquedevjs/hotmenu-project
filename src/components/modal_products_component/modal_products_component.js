@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { Product_state } from '../grid_products_component/grid_products_component';
@@ -12,14 +12,29 @@ const Modal_product_component = ({ id, product, onClose }) => {
 
   // Função para formatar o preço no formato 'R$ 30,00' -> 30.00
   const formatPrice = (price) => {
-    return parseFloat(price.replace('R$ ', '').replace(',', '.'));
+    if (typeof price !== 'string') {
+      return 0; // Retornar 0 ou outro valor padrão se o preço não for uma string
+    }
+    // Remover o 'R$ ' e substituir ',' por '.' para garantir que seja um número válido
+    return parseFloat(price.replace('R$ ', '').replace(',', '.')) || 0;
   };
 
   // Calcular o preço total do produto com base nos adicionais selecionados
   const calculateTotalPrice = () => {
     const productPrice = formatPrice(selectedProduct.price); // Converter o preço para número
-    const additionalCost = totalAdditional * 2.50; // Custo adicional é multiplicado pelo total de adicionais
-    return (productPrice + additionalCost).toFixed(2); // Somar e formatar o resultado para duas casas decimais
+
+    // Verificar se productPrice é um número válido
+    if (isNaN(productPrice)) {
+      return "0.00"; // Retorna um valor padrão caso não seja possível calcular
+    }
+
+    let additionalCost = 0;
+    additionalStates.forEach(additional => {
+      additionalCost += additional.count * parseFloat(additional.price); // Converter o preço do adicional para número
+    });
+
+    const totalPrice = productPrice + additionalCost;
+    return totalPrice.toFixed(2); // Formatar para duas casas decimais
   };
 
   return (
@@ -32,7 +47,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
           </div>
           <div className="modal-body">
             <div className='product-img-options'>
-              <img src={product.img} alt={product.title} className="img-fluid mb-3" />
+              <img src={product.img} alt={product.title} className="img-fluid mb-3" id='product-img-modal' />
             </div>
             <p>{product.description}</p>
             <h5><strong>Preço:</strong> R$ {calculateTotalPrice()}</h5>
@@ -62,11 +77,11 @@ const Modal_product_component = ({ id, product, onClose }) => {
             ))}
           </div>
           <div className='options-suggestion'>
-              <h5>Alguma sugestão?</h5>
-              <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
-            </div>
+            <h5>Alguma sugestão?</h5>
+            <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
+          </div>
 
-            <button className='options-btn-add'>Adicionar ao carrinho</button>
+          <button className='options-btn-add'>Adicionar ao carrinho</button>
         </div>
       </div>
     </div>

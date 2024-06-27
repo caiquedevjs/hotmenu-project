@@ -81,7 +81,7 @@
 #img_category:hover{
     transform: scale(1.2);
     transition: 1s;
-    cursor: pointer;
+    cursor: pointer; 
 
 }
 #text_category_id{
