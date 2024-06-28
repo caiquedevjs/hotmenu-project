@@ -158,6 +158,11 @@
         width: 40px;
         
       }
+      .conteiner_hotmenu_logo img{
+        width: 102px;
+        
+       
+      }
       
       .icons_header_conteiner_class.fixed {
         top: auto;

@@ -55,7 +55,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
             <div className='options-container'>
               <div className='options-container-head'>
                 <h5>{product.category === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
-                <h6><span id='add'>{totalAdditional}</span>/{product.category === 'pizza' ? '1' : '10'}</h6>
+                <h6><span id='add'>{totalAdditional}</span>/{product.category === 'pizza' ? '1 - obrigatorio' : '10 opcional'}</h6>
               </div>
             </div>
 

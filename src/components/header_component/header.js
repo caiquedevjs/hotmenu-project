@@ -119,7 +119,7 @@ const Header_component = () =>{
         </div>
         </div>
             <div className='conteiner_hotmenu_logo'>
-            <img src="logo-removebg-preview.png" alt="..."></img>
+            <img src="logo-removebg-preview.png" alt="..." id='logo-removebg-preview.png-header'></img>
             </div>
             <header className='header_class'>
                   {/* estrutura dos icons do header*/}
