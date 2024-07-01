@@ -15,7 +15,7 @@
 #product-title{
     cursor: pointer;
     font-family: "Roboto", sans-serif;
-    font-size: 20px;
+    font-size: 16px;
 }
 #product-title:hover{
     color: rgba(255, 94, 0, 0.801);
@@ -25,7 +25,7 @@
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.308); /* Sombra com desfoque de 10px, cor preta com 10% de opacidade */
 }
 .product-description-title{
-    max-width: 260px;
+    max-width: 160px;
     margin-left: 10px;
     font-size: 12px;
     font-family: "Roboto", sans-serif;
@@ -40,7 +40,7 @@
     
    
    #card_container{
-        width: 80%;
+        width: 90%;
 
     }
     .product-img{
@@ -52,6 +52,9 @@
     color: rgba(255, 94, 0, 0.801);
 
 
+    }
+    .col-sm{
+        width: 50%;
     }
 }
     

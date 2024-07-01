@@ -38,7 +38,7 @@ const Grid_component = ({ category }) => {
                     {/* Adicionando evento para abrir o modal com o produto clicado */}
                     <div className='product-conteiner'>
                       <div className='product-description'>
-                      <h3 data-bs-toggle="modal" data-bs-target={`#product-modal-${product.id}`} onClick={() => openModal(product)} id='product-title'>{product.title}</h3>
+                      <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.id}`} onClick={() => openModal(product)} id='product-title'>{product.title}</p>
                       <p className='product-description-title'>{product.description}</p>
                       <strong><p>{product.priceDemo}</p></strong> 
                       </div>

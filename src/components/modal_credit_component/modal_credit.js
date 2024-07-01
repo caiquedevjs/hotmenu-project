@@ -26,6 +26,8 @@ const Modal_credit_component = () =>{
                         <img src="master_card_credit.svg" id="master_card"/>
                         <h3 id='pay_text'>Dinheiro e Pix:</h3>
                         <img src="pix-icon.png"/>
+                        <img src="money-icon(1).png"/>
+
                         </div>
                     </div>
                     </div>

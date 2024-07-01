@@ -20,20 +20,20 @@ const Infos_icons_component = () => {
 
             <div className='infos_icons_conteiner_class'>
                 <FaCreditCard 
-                    style={{ width: iconSize, height: iconSize, color: isCreditCardHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
+                    style={{ width: iconSize, height: iconSize, color: isCreditCardHovered ? '#332D2D' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
                     onMouseEnter={() => setIsCreditCardHovered(true)} 
                     onMouseLeave={() => setIsCreditCardHovered(false)} 
                     data-bs-toggle="modal" data-bs-target="#credit-modal"
                 />
                 <FaClock 
-                    style={{ width: iconSize, height: iconSize, color: isClockHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
+                    style={{ width: iconSize, height: iconSize, color: isClockHovered ? '#332D2D' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
                     onMouseEnter={() => setIsClockHovered(true)} 
                     onMouseLeave={() => setIsClockHovered(false)} 
                     data-bs-toggle="modal" data-bs-target="#funcionamento-modal"
                 />
                 <FaInfoCircle
                     id='info_icon_id'
-                    style={{ width: iconSize, height: iconSize, color: isInfoHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
+                    style={{ width: iconSize, height: iconSize, color: isInfoHovered ? '#332D2D' : '#fa6b18', marginTop: '10px', cursor: 'pointer', transition: 'color 0.5s ease' }} 
                     onMouseEnter={() => setIsInfoHovered(true)} 
                     onMouseLeave={() => setIsInfoHovered(false)} 
                     data-bs-toggle="modal" data-bs-target="#info-modal"
