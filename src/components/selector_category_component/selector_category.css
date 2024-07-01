@@ -1,36 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-.flex_box{
-    display: flex;
-    justify-content: center;
-}
-.flexbox_conteiner_class{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 30px;
-    background-color:white;
-    width: 40%;
-    padding: 3px;
-    border-radius: 10px;
-   
-}
-option{
+.btn.dropdown-toggle {
+    margin-top: 40px;
+    width: 500px; /* Largura do botão dropdown */
+    /* Outros estilos conforme necessário */
     font-family: "Roboto", sans-serif;
-    font-size: 16px;
-}
-#selected_id{
-    font-weight: bold;
+    background-color:  rgb(255, 94, 0);
+    border: none;
 }
 
-/* estilização para despositivos moveis */
-@media only screen and (max-width: 768px) {
-    .flexbox_conteiner_class{
-        width: 60%
-    }
-    #select_title{
-        font-size: 16px;
+.dropdown-menu {
+    width: 500px; /* Largura do menu suspenso */
+    /* Outros estilos conforme necessário */
+    font-family: "Roboto", sans-serif;
+}
 
+.dropdown-item {
+    width: 100%; /* Largura dos itens da lista */
+    /* Outros estilos conforme necessário */
+}
+@media (max-width: 768px) {
+
+    .btn.dropdown-toggle {
+        width: 400px; /* Largura do botão dropdown */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
     }
     
-  }
+    .dropdown-menu {
+        width: 400px; /* Largura do menu suspenso */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+    }
+    
+    .dropdown-item {
+        width: 100%; /* Largura dos itens da lista */
+        /* Outros estilos conforme necessário */
+    }
+}

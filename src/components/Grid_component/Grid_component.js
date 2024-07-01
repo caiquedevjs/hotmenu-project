@@ -39,7 +39,8 @@ const Grid_component = ({ category }) => {
                     <div className='product-conteiner'>
                       <div className='product-description'>
                       <h3 data-bs-toggle="modal" data-bs-target={`#product-modal-${product.id}`} onClick={() => openModal(product)} id='product-title'>{product.title}</h3>
-                      <p>{product.priceDemo}</p>
+                      <p className='product-description-title'>{product.description}</p>
+                      <strong><p>{product.priceDemo}</p></strong> 
                       </div>
                     
                     <img src={product.img} alt={product.title} className='product-img' />

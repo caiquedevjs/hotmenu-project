@@ -15,8 +15,9 @@
     font-family: "Roboto", sans-serif;
     background-color: #fa6b18;
     width: 83%;
-    border-radius: 8px;
+    border-radius: 5px;
     margin-top: 50px;
+    color: white;
 }
 #card_conteiner{
     background-color: white;
@@ -55,11 +56,11 @@
         font-family: "Roboto", sans-serif;
         background-color: #fa6b18;
         width: 100%;
-        border-radius: 8px;
+        border-radius: 5px;
         margin-top: 50px;
     }
     #category_label_title{
-        width: 80%;
+        width: 86%;
         display: flex;
         justify-content: center;
         align-items: center;

@@ -1,18 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 .product-img{
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
 }
 .product-conteiner{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     background-color: white;
     border-radius: 10px;
 }
 #product-title{
     cursor: pointer;
-    
+    font-family: "Roboto", sans-serif;
+    font-size: 20px;
 }
 #product-title:hover{
     color: rgba(255, 94, 0, 0.801);
@@ -21,17 +24,30 @@
     border-radius: 10px;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.308); /* Sombra com desfoque de 10px, cor preta com 10% de opacidade */
 }
+.product-description-title{
+    max-width: 260px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-family: "Roboto", sans-serif;
+}
 /* Media query para dispositivos móveis */
 @media (max-width: 768px) {
+ 
+    .container-sm{
+        display: flex;
+        justify-content: center;
+    }
+    
    
    #card_container{
-        width: 100%;
+        width: 80%;
 
     }
     .product-img{
     width: 60px;
     height: 60px;
 }
+
 #product-title:hover{
     color: rgba(255, 94, 0, 0.801);
 

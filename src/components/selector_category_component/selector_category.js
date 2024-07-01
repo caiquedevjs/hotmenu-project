@@ -1,37 +1,24 @@
 import React from 'react';
 import '../selector_category_component/selector_category.css';
 
-const handleSelectChange = (event) => {
-    const selectedSection = event.target.value;
-    if (selectedSection) {
-      // Scroll suave até a seção selecionada
-      document.getElementById(selectedSection).scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-  
+
 // componente de seleção de categorias
 const SelectorCategoryComponent = () => {
-    const selectStyle = {
-        width: '5%', 
-        border : 'none',
-       backgroundColor : 'white'
-       
-    };
+   
    
     return (
         <div className='selector_category_component'>
-            <div className='flex_box'>
-            <div className='flexbox_conteiner_class'>
-                <h3 id='select_title'>Categorias</h3>
-                <select className="form-select" aria-label="Default select example" style={selectStyle} onChange={handleSelectChange}>
-                    <option value="promoções">Promoções</option>
-                    <option value="hamburger">Hamburger</option>
-                    <option value="pizza">Pizza</option>
-                    <option value="pastel">Pastel</option>
-                    <option value="bebida">Bebidas</option>
-                </select>
-            </div>
-            </div>
+            <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> Categorias
+    
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#hamburger">hamburger</a></li>
+    <li><a class="dropdown-item" href="#pizza">pizza</a></li>
+    <li><a class="dropdown-item" href="#pastel">pastel</a></li>
+    <li><a class="dropdown-item" href="#bebida">bebida</a></li>
+  </ul>
+</div>
         </div>
     )
 }

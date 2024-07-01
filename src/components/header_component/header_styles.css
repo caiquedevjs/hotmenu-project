@@ -109,8 +109,8 @@
   }
   .carousel-fade{
    
-    width: 90vw;
-    margin-left: 3%;
+    width: 100vw;
+    
     border-radius: 10px;
   }
   #title_logo{
@@ -198,8 +198,8 @@
       }
       .carousel-fade{
    
-        width: 70vw;
-        margin-left: 15%;
+        width: 100vw;
+        
         border-radius: 10px;
       }
 
