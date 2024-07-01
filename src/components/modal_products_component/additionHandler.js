@@ -3,6 +3,7 @@ import { useState } from 'react';
 const useAdditionalState = (category) => {
   const [totalAdditional, setTotalAdditional] = useState(0);
 
+  // Estado de dados dos adicionais como base na especificação do produto.
   const additionalOptions = {
     hamburger: [
       { id: 1, count: 0, description: 'Queijo', price: 2.50 },
