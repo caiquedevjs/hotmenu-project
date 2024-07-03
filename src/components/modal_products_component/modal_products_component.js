@@ -4,17 +4,13 @@ import useAdditionalState from './additionHandler';
 import { Product_state } from '../grid_products_component/grid_products_component';
 
 const Modal_product_component = ({ id, product, onClose, addToCart }) => {
-
-  // <-------- Variavel de verificação de busca pelo id, para acionar modais dinâmicos -------->
+  // Encontra o produto correspondente em Product_state.products
   const selectedProduct = Product_state.products.find(p => p.id === product.id);
 
-
-   // <------ estados do banco de adicionais ------>
+  // Estados do banco de adicionais
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(product.category);
 
-
-
-// <--------  Função para formatar o o texto do preço do produto em valor nuerico -------->
+  // Função para formatar o texto do preço do produto em valor numérico
   const formatPrice = (price) => {
     if (typeof price !== 'string') {
       return 0;
@@ -22,10 +18,12 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
     return parseFloat(price.replace('R$ ', '').replace(',', '.')) || 0;
   };
 
-
-
-// <-------- Função para calcular o valor total do produto com adicionais -------->
+  // Função para calcular o valor total do produto com adicionais
   const calculateTotalPrice = () => {
+    if (!selectedProduct) {
+      return "0.00"; // Retorna um valor padrão caso selectedProduct não esteja definido
+    }
+
     const productPrice = formatPrice(selectedProduct.price);
 
     if (isNaN(productPrice)) {
@@ -41,21 +39,24 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
     return totalPrice.toFixed(2);
   };
 
+  // Função para adicionar ao carrinho
   const handleAddToCart = () => {
+    if (!selectedProduct) {
+      return; // Não faz nada se selectedProduct não estiver definido
+    }
+
     const newItem = {
       id: selectedProduct.id,
       title: selectedProduct.title,
       price: calculateTotalPrice(),
       img: selectedProduct.img,
       description: selectedProduct.description,
-      quantity: 1 // <--------- você pode ajustar conforme necessário
+      quantity: 1 // Quantidade padrão, pode ser ajustada conforme necessário
     };
 
     addToCart(newItem);
-    onClose(); // <---------- fechar modal após adicionar ao carrinho
+    onClose(); // Fecha o modal após adicionar ao carrinho
   };
-
-  
 
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -75,7 +76,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
             <div className='options-container'>
               <div className='options-container-head'>
                 <h5>{product.category === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
-                <h6><span id='add'>{totalAdditional}</span>/{product.category === 'pizza' ? '1 - obrigatorio' : '10 opcional'}</h6>
+                <h6><span id='add'>{totalAdditional}</span>/{product.category === 'pizza' ? '1 - obrigatório' : '10 opcional'}</h6>
               </div>
             </div>
 

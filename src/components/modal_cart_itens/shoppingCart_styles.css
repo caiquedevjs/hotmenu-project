@@ -5,6 +5,22 @@
 .itens-shopping-conteiner{
     display: flex;
     flex-direction: column;
-   justify-content: right;
+   justify-content: center;
    align-items: center;
+}
+.itens-img-conteiner{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10%;
+    
+}
+.btn-dash-product-cart{
+    width: 25px;
+    height: 25px;
+    border: none;
+    background-color: transparent;
+    margin-top: 20%;
+   
 }
