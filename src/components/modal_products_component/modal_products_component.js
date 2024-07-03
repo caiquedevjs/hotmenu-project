@@ -3,39 +3,59 @@ import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { Product_state } from '../grid_products_component/grid_products_component';
 
-const Modal_product_component = ({ id, product, onClose }) => {
-  // Encontrar o produto correto com base no ID recebido
+const Modal_product_component = ({ id, product, onClose, addToCart }) => {
+
+  // <-------- Variavel de verificação de busca pelo id, para acionar modais dinâmicos -------->
   const selectedProduct = Product_state.products.find(p => p.id === product.id);
 
-  // Utilizar o hook useAdditionalState passando a categoria do produto
+
+   // <------ estados do banco de adicionais ------>
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(product.category);
 
-  // Função para formatar o preço no formato 'R$ 30,00' -> 30.00
+
+
+// <--------  Função para formatar o o texto do preço do produto em valor nuerico -------->
   const formatPrice = (price) => {
     if (typeof price !== 'string') {
-      return 0; // Retornar 0 ou outro valor padrão se o preço não for uma string
+      return 0;
     }
-    // Remover o 'R$ ' e substituir ',' por '.' para garantir que seja um número válido
     return parseFloat(price.replace('R$ ', '').replace(',', '.')) || 0;
   };
 
-  // Calcular o preço total do produto com base nos adicionais selecionados
-  const calculateTotalPrice = () => {
-    const productPrice = formatPrice(selectedProduct.price); // Converter o preço para número
 
-    // Verificar se productPrice é um número válido
+
+// <-------- Função para calcular o valor total do produto com adicionais -------->
+  const calculateTotalPrice = () => {
+    const productPrice = formatPrice(selectedProduct.price);
+
     if (isNaN(productPrice)) {
-      return "0.00"; // Retorna um valor padrão caso não seja possível calcular
+      return "0.00";
     }
 
     let additionalCost = 0;
     additionalStates.forEach(additional => {
-      additionalCost += additional.count * parseFloat(additional.price); // Converter o preço do adicional para número
+      additionalCost += additional.count * parseFloat(additional.price);
     });
 
     const totalPrice = productPrice + additionalCost;
-    return totalPrice.toFixed(2); // Formatar para duas casas decimais
+    return totalPrice.toFixed(2);
   };
+
+  const handleAddToCart = () => {
+    const newItem = {
+      id: selectedProduct.id,
+      title: selectedProduct.title,
+      price: calculateTotalPrice(),
+      img: selectedProduct.img,
+      description: selectedProduct.description,
+      quantity: 1 // <--------- você pode ajustar conforme necessário
+    };
+
+    addToCart(newItem);
+    onClose(); // <---------- fechar modal após adicionar ao carrinho
+  };
+
+  
 
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -51,7 +71,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
             </div>
             <p>{product.description}</p>
             <h5><strong>Preço:</strong> R$ {calculateTotalPrice()}</h5>
-            
+
             <div className='options-container'>
               <div className='options-container-head'>
                 <h5>{product.category === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
@@ -81,7 +101,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
 
-          <button className='options-btn-add'>Adicionar ao carrinho</button>
+          <button className='options-btn-add' onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>
     </div>

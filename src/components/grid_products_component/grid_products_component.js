@@ -3,7 +3,7 @@ import React from "react";
 
 export const Product_state = {
   products: [
-    { title: 'Double Big Bacon BBQ', priceDemo : 'R$ 30,00', price: 'R$ 30,00', img: 'hambuger-1.png', category: 'hamburger' , description: 'double big melt, com 150g de blend de carne', id : 1},
+    { title: 'Double Big Bacon BBQ', priceDemo : 'R$ 30,00', price: 'R$ 30,00', img: 'hambuger-1.png', category: 'hamburger' , description: 'double big melt, com 150g de blend de carne', id : 0},
     { title: 'Double Big Bacon BBQ', priceDemo : 'R$ 30,00', price: 'R$ 30,00', img: 'hambuger-1.png', category: 'hamburger' , description: 'double big melt, com 150g de blend de carne', id : 1},
     { title: 'Pizza de Calabresa', priceDemo : 'Apartir de R$ 25,00', price: 'R$ 00,00', img: 'pizza-1.png', category: 'pizza', description: 'pizza de calabresa', id : 2 },
     { title: 'Pastel de Carne seca ', priceDemo : 'R$ 15,00', price: 'R$ 15,00', img: 'pasteis.png' , category: 'pastel', description: 'pastel de carne seca desfiada', id : 3 },

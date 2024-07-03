@@ -33,29 +33,6 @@ function App() {
     });
   };
 
-  // Adicionar um listener de scroll para atualizar a visibilidade do botão
-  useEffect(() => {
-    const handleScroll = () => {
-      // Calcula a altura do viewport
-      const windowHeight = window.innerHeight;
-
-      // Verifica a posição do scroll atual
-      if (window.pageYOffset > windowHeight / 2) {
-        setShowScrollButton(true);
-      } else {
-        setShowScrollButton(false);
-      }
-    };
-
-    // Adiciona o listener de scroll ao carregar o componente
-    window.addEventListener('scroll', handleScroll);
-
-    // Remove o listener de scroll ao desmontar o componente
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   return (
     <div className="App">
       <Header_component />
@@ -64,6 +41,8 @@ function App() {
       <Infos_icons_component />
       <Selector_category_component />
       <Category_component />
+
+    
 
       {/* Botão de rolagem para o topo */}
       <button className={`scroll-to-top ${showScrollButton ? 'show' : ''}`} onClick={scrollToTop}>

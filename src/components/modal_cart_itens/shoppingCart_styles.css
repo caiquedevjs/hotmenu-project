@@ -1,0 +1,10 @@
+.img-product-cart{
+    width: 100px;
+    height: 100px;
+}
+.itens-shopping-conteiner{
+    display: flex;
+    flex-direction: column;
+   justify-content: right;
+   align-items: center;
+}
