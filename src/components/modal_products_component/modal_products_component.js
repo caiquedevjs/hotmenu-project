@@ -68,10 +68,10 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
           </div>
           <div className="modal-body">
             <div className='product-img-options'>
-              <img src={product.img} alt={product.title} className="img-fluid mb-3" id='product-img-modal' />
+              <img src={product.Foto} alt={product.Nome} className="img-fluid mb-3" id='product-img-modal' />
             </div>
-            <p>{product.description}</p>
-            <h5><strong>Preço:</strong> R$ {calculateTotalPrice()}</h5>
+            <p>{product.Descricao}</p>
+            <h5><strong>Preço:</strong> R$ {product.PrecoDeVenda}</h5>
 
             <div className='options-container'>
               <div className='options-container-head'>

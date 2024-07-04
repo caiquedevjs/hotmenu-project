@@ -9,6 +9,7 @@ const Grid_component = ({ categoryId }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -36,31 +37,53 @@ const Grid_component = ({ categoryId }) => {
     setSelectedProduct(product);
   };
 
+  // Função para dividir o array de produtos em subarrays de 2 produtos
+  const chunkArray = (arr, chunkSize) => {
+    let index = 0;
+    const arrayLength = arr.length;
+    let tempArray = [];
+    
+    for (index = 0; index < arrayLength; index += chunkSize) {
+      const chunk = arr.slice(index, index + chunkSize);
+      tempArray.push(chunk);
+    }
+    
+    return tempArray;
+  };
+
+  // Divide os produtos em linhas de 2 colunas
+  const productsChunks = chunkArray(products, 2);
+
+  
+
   return (
     <div className="container text-center">
       <ModalCartItems cartItems={cartItems} onClose={handleCloseCart} />
 
-      {products.map((product, index) => (
-        <div key={index} className="row g-2 mb-2">
-          <div className="col-sm-12 col-md-6">
-            <div className="container-sm">
-              <div id='card_container'>
-                <div id='text_category'>
-                  <div className='product-conteiner'>
-                    <div className='product-description'>
-                      <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
-                      <p className='product-description-title'>{product.Descricao}</p>
-                      <strong><p>{product.PrecoDeVenda}</p></strong> 
+      {productsChunks.map((row, rowIndex) => (
+        <div key={rowIndex} className="row g-2 mb-2">
+          {row.map((product, index) => (
+            <div key={index} className="col-sm-12 col-md-6">
+              <div className="container-sm">
+                <div id='card_container'>
+                  <div id='text_category'>
+                    <div className='product-conteiner'>
+                      <div className='product-description'>
+                        <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
+                        <p className='product-description-title'>{product.Descricao}</p>
+                        <strong><p> R${product.PrecoDeVenda}</p></strong> 
+                      </div>
+                      <img src={`https://hotmenu.com.br/${product.Foto}`}className='product-img' />
                     </div>
-                    <img src={`https://hotmenu.com.br/${product.Foto}`} alt={product.Nome} className='product-img' />
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       ))}
 
+      {/* Renderização dos modais */}
       {products.map((product, index) => (
         <Modal_product_component
           key={`modal-${index}`}
