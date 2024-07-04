@@ -1,14 +1,10 @@
 import React from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
-import { Product_state } from '../grid_products_component/grid_products_component';
 
-const Modal_product_component = ({ id, product, onClose, addToCart }) => {
-  // Encontra o produto correspondente em Product_state.products
-  const selectedProduct = Product_state.products.find(p => p.id === product.id);
-
+const Modal_product_component = ({ id, product, onClose, addToCart, categoryName }) => {
   // Estados do banco de adicionais
-  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(product.category);
+  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
 
   // Função para formatar o texto do preço do produto em valor numérico
   const formatPrice = (price) => {
@@ -20,11 +16,11 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
 
   // Função para calcular o valor total do produto com adicionais
   const calculateTotalPrice = () => {
-    if (!selectedProduct) {
-      return "0.00"; // Retorna um valor padrão caso selectedProduct não esteja definido
+    if (!product) {
+      return "0.00"; // Retorna um valor padrão caso o produto não esteja definido
     }
 
-    const productPrice = formatPrice(selectedProduct.price);
+    const productPrice = formatPrice(product.PrecoDeVenda);
 
     if (isNaN(productPrice)) {
       return "0.00";
@@ -41,16 +37,16 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
 
   // Função para adicionar ao carrinho
   const handleAddToCart = () => {
-    if (!selectedProduct) {
-      return; // Não faz nada se selectedProduct não estiver definido
+    if (!product) {
+      return; // Não faz nada se o produto não estiver definido
     }
 
     const newItem = {
-      id: selectedProduct.id,
-      title: selectedProduct.title,
+      id: product.Id,
+      title: product.Nome,
       price: calculateTotalPrice(),
-      img: selectedProduct.img,
-      description: selectedProduct.description,
+      img: `https://hotmenu.com.br/arquivos/${product.Foto}`,
+      description: product.Descricao,
       quantity: 1 // Quantidade padrão, pode ser ajustada conforme necessário
     };
 
@@ -63,7 +59,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="exampleModalLabel">{product.title}</h5>
+            <h5 className="modal-title" id="exampleModalLabel">{product.Nome}</h5>
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
@@ -75,21 +71,20 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
 
             <div className='options-container'>
               <div className='options-container-head'>
-                <h5>{product.category === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
-                <h6><span id='add'>{totalAdditional}</span>/{product.category === 'pizza' ? '1 - obrigatório' : '10 opcional'}</h6>
+                <h5>{categoryName === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
               </div>
             </div>
 
             {additionalStates.map(additional => (
               <div key={additional.id} className='options-description-container'>
                 <div className='options-additions'>
-                  <p>{additional.description} - R$ <span id='additional-value'>{additional.price}</span></p>
+                  <p>{additional.description} - R$ {additional.price}</p>
                 </div>
                 <div className='options-icons-plus-dash'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus' onClick={() => handleIncrement(additional.id)}>
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
                   </svg>
-                  <span id='additional-value-increment'>{additional.count}</span>
+                  <span>{additional.count}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-square-fill" viewBox="0 0 16 16" id='btn-dash' onClick={() => handleDecrement(additional.id)}>
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
                   </svg>

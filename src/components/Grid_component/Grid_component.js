@@ -1,10 +1,11 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../service/productService';
 import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import ModalCartItems from '../modal_cart_itens/modal_cart_itens';
 
-const Grid_component = ({ categoryId }) => {
+const Grid_component = ({ categoryId,categoryName}) => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -101,6 +102,7 @@ const Grid_component = ({ categoryId }) => {
           product={product}
           addToCart={addToCart}
           onClose={() => setSelectedProduct(null)}
+          categoryName={categoryName}
         />
       ))}
     </div>

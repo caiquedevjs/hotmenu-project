@@ -1,67 +1,89 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const useAdditionalState = (category) => {
-  const [totalAdditional, setTotalAdditional] = useState(0);
+const useAdditionalState = (categoryName) => {
+  const [additionalStates, setAdditionalStates] = useState([]);
 
-  // Estado de dados dos adicionais como base na especificação do produto.
-  const additionalOptions = {
-    hamburger: [
-      { id: 1, count: 0, description: 'Queijo', price: 2.50 },
-      { id: 2, count: 0, description: 'ovos', price: 2.50 },
-      { id: 3, count: 0, description: 'presunto', price: 2.50 },
-      { id: 4, count: 0, description: 'cebola', price: 2.50 },
-      // Mais opções de hambúrguer
-    ],
-    pizza: [
-      { id: 1, count: 0, description: 'Pequena', price: 25.00 },
-      { id: 2, count: 0, description: 'Média', price: 35.00 },
-      { id: 3, count: 0, description: 'Grande', price: 45.00 },
-      { id: 4, count: 0, description: 'Familia', price: 60.00 },
-      // Mais opções de pizza
-    ],
-    pastel: [
-      { id: 1, count: 0, description: 'Queijo', price: 2.50 },
-      { id: 2, count: 0, description: 'Frango', price: 3.00 },
-      // Mais opções de pastel
-    ],
-  };
-
-  const [additionalStates, setAdditionalStates] = useState(additionalOptions[category] || []);
-
-  // Definir limite de adicionais conforme a categoria
-  const additionalLimit = category === 'pizza' ? 1 : 3;
+  useEffect(() => {
+    if (categoryName === 'PIZZA ') {
+      setAdditionalStates([
+        { id: 1, description: 'Pequena', price: 25.00, count: 0 },
+        { id: 2, description: 'Média', price: 35.00, count: 0 },
+        { id: 3, description: 'Grande', price: 45.00, count: 0 },
+        { id: 4, description: 'Família', price: 60.00, count: 0 }
+      ]);
+    } else if (categoryName === 'BURGUERS') {
+      setAdditionalStates([
+        { id: 1, description: 'Queijo', price: 2.50, count: 0 },
+        { id: 2, description: 'Ovos', price: 2.50, count: 0 },
+        { id: 3, description: 'Presunto', price: 2.50, count: 0 },
+        { id: 4, description: 'Cebola', price: 2.50, count: 0 }
+      ]);
+    } else if (categoryName === 'MARMITARIA') {
+      setAdditionalStates([
+        { id: 1, description: 'Marmita Pequena', price: 15.00, count: 0 },
+        { id: 2, description: 'Marmita Média', price: 20.00, count: 0 },
+        { id: 3, description: 'Marmita Grande', price: 25.00, count: 0 }
+      ]);
+    } else if (categoryName === 'AÇAI ') {
+      setAdditionalStates([
+        { id: 1, description: '500ml', price: 10.00, count: 0 },
+        { id: 2, description: '700ml', price: 15.00, count: 0 },
+        { id: 3, description: '1 litro', price: 20.00, count: 0 }
+      ]);
+    } else if (categoryName === 'PORÇÕES') {
+      setAdditionalStates([
+        { id: 1, description: 'Fritas', price: 12.00, count: 0 },
+        { id: 2, description: 'Onion Rings', price: 10.00, count: 0 },
+        { id: 3, description: 'Frango à Passarinho', price: 15.00, count: 0 }
+      ]);
+    } else if (categoryName === 'SALGADOS ') {
+      setAdditionalStates([
+        { id: 1, description: 'Coxinha', price: 3.00, count: 0 },
+        { id: 2, description: 'Pastel', price: 2.50, count: 0 },
+        { id: 3, description: 'Empada', price: 3.50, count: 0 }
+      ]);
+    } else if (categoryName === 'SUSHI') {
+      setAdditionalStates([
+        { id: 1, description: 'Sushi de Salmão', price: 3.00, count: 0 },
+        { id: 2, description: 'Sushi de Atum', price: 3.50, count: 0 },
+        { id: 3, description: 'Sashimi de Peixe Branco', price: 4.00, count: 0 }
+      ]);
+    } else if (categoryName === 'BEBIDAS') {
+      setAdditionalStates([
+        { id: 1, description: 'Refrigerante Lata', price: 5.00, count: 0 },
+        { id: 2, description: 'Suco Natural', price: 6.00, count: 0 },
+        { id: 3, description: 'Água Mineral', price: 3.00, count: 0 }
+      ]);
+    }
+    // Adicione mais lógica para outras categorias conforme necessário
+  }, [categoryName]);
 
   const handleIncrement = (id) => {
-    const index = additionalStates.findIndex(state => state.id === id);
-    if (index !== -1) {
-      const updatedStates = [...additionalStates];
-
-      // Verificar se já atingiu o limite máximo para adicionar mais
-      if (updatedStates[index].count < additionalLimit) {
-        if ((category !== 'pizza' &&  totalAdditional < 10) || (category === 'pizza' && totalAdditional < 1)) {
-          updatedStates[index] = { ...updatedStates[index], count: updatedStates[index].count + 1 };
-          setAdditionalStates(updatedStates);
-          setTotalAdditional(totalAdditional + 1);
+    setAdditionalStates(prevState => {
+      return prevState.map(additional => {
+        if (additional.id === id) {
+          return { ...additional, count: additional.count + 1 };
         }
-      }
-    }
+        return additional;
+      });
+    });
   };
 
   const handleDecrement = (id) => {
-    const index = additionalStates.findIndex(state => state.id === id);
-    if (index !== -1 && additionalStates[index].count > 0) {
-      const updatedStates = [...additionalStates];
-      updatedStates[index] = { ...updatedStates[index], count: updatedStates[index].count - 1 };
-      setAdditionalStates(updatedStates);
-      setTotalAdditional(totalAdditional - 1);
-    }
+    setAdditionalStates(prevState => {
+      return prevState.map(additional => {
+        if (additional.id === id && additional.count > 0) {
+          return { ...additional, count: additional.count - 1 };
+        }
+        return additional;
+      });
+    });
   };
 
   return {
-    totalAdditional,
     additionalStates,
     handleIncrement,
-    handleDecrement,
+    handleDecrement
   };
 };
 

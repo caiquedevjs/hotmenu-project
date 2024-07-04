@@ -36,7 +36,7 @@ const Category_component = () => {
             <div id='category_label_title'>
               <h4 className='category_title' id={`category-${category.Id}`}>{category.Nome}</h4>
             </div>
-            <Grid_component categoryId={category.Id} />
+            <Grid_component categoryId={category.Id} categoryName={category.Nome} />
           </div>
         ))}
       </div>
