@@ -36,58 +36,7 @@ const Header_component = () =>{
 
         {/* estrutura do modal de bsuca*/}
         
-        <div class="modal fade" id="modal_search_id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id='body_search_conteiner_id'>
-                    <input type='text' placeholder='O que deseja procurar?' id='input_search_id'></input>
-                    <FaSearch  id='modal_search_icon_id' style={{ width: '20px', height: '20px', color: '#fa6b18', marginTop : '10px', cursor : 'pointer' }}/>
-                </div>
-                <div class="container text-center" id='grid_category_id'>
-                    <div class="row">
-                        <div class="col">
-                            <div id='img_category_conteiner'>
-                              <a href='#hamburger'>
-                              <img src='hambuger-1.png' id='img_category' data-bs-dismiss="modal"/>
-                              </a>
-                                <p id='text_category_id'>hambuger</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                                <div id='img_category_conteiner'>
-                                  <a href='#pizza'>
-                                  <img src='pizza-1.png' id='img_category'data-bs-dismiss="modal"/>
-                                  </a>
-                                    <p id='text_category_id'>Pizza</p>
-                                </div>
-                        </div>
-                        <div class="col">
-                            <div id='img_category_conteiner'>
-                              <a href='#pastel'>
-                              <img src='pasteis.png' id='img_category' data-bs-dismiss="modal"/>
-                              </a>
-                                <p id='text_category_id'>Pastel</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div id='img_category_conteiner'>
-                              <a href='#bebida'>
-                              <img src='fanta-laranja.png' id='img_category' data-bs-dismiss="modal" />
-                              </a>
-                                <p id='text_category_id'>Bebidas</p>
-                            </div>
-                        </div>    
-                 </div>
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-
+        
 
   <header className='header_class'>
    {/* estrutura dos icons do header*/}

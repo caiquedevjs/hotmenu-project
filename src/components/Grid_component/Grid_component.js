@@ -55,6 +55,16 @@ const Grid_component = ({ categoryId }) => {
   const productsChunks = chunkArray(products, 2);
 
   
+   // Defina o número máximo de caracteres desejado
+   const maxLength = 65;
+
+   // Função para truncar o texto
+   const truncateText = (text) => {
+     if (text.length <= maxLength) {
+       return text;
+     }
+     return `${text.substring(0, maxLength)}...`;
+   };
 
   return (
     <div className="container text-center">
@@ -70,10 +80,10 @@ const Grid_component = ({ categoryId }) => {
                     <div className='product-conteiner'>
                       <div className='product-description'>
                         <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
-                        <p className='product-description-title'>{product.Descricao}</p>
+                        <p className='product-description-title'>{truncateText(product.Descricao)}</p>
                         <strong><p> R${product.PrecoDeVenda}</p></strong> 
                       </div>
-                      <img src={`https://hotmenu.com.br/${product.Foto}`}className='product-img' />
+                      <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`}className='product-img' />
                     </div>
                   </div>
                 </div>

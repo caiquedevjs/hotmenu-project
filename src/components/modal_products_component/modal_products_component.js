@@ -68,7 +68,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart }) => {
           </div>
           <div className="modal-body">
             <div className='product-img-options'>
-              <img src={product.Foto} alt={product.Nome} className="img-fluid mb-3" id='product-img-modal' />
+              <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`} alt={product.Nome} className="img-fluid mb-3" id='product-img-modal' />
             </div>
             <p>{product.Descricao}</p>
             <h5><strong>Preço:</strong> R$ {product.PrecoDeVenda}</h5>

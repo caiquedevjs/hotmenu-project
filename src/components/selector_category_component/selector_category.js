@@ -1,26 +1,25 @@
 import React from 'react';
-import '../selector_category_component/selector_category.css';
+import './selector_category.css';
 
+const SelectorCategoryComponent = ({ categories }) => {
+  if (!categories || categories.length === 0) {
+    return null; // Retorna null ou algum componente de carregamento se não houver categorias ainda
+  }
 
-// componente de seleção de categorias
-const SelectorCategoryComponent = () => {
-   
-   
-    return (
-        <div className='selector_category_component'>
-            <div class="dropdown">
-  <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> Categorias
-    
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#hamburger">hamburger</a></li>
-    <li><a class="dropdown-item" href="#pizza">pizza</a></li>
-    <li><a class="dropdown-item" href="#pastel">pastel</a></li>
-    <li><a class="dropdown-item" href="#bebida">bebida</a></li>
-  </ul>
-</div>
-        </div>
-    )
-}
+  return (
+    <div className='selector_category_component'>
+      <div className="dropdown">
+        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Categorias
+        </button>
+        <ul className="dropdown-menu">
+          {categories.map((category, index) => (
+            <li key={index}><a className="dropdown-item" href={`#category-${category.Id}`}>{category.Nome}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export default SelectorCategoryComponent;
