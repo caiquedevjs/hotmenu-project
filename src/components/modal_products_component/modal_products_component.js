@@ -3,10 +3,8 @@ import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 
 const Modal_product_component = ({ id, product, onClose, addToCart, categoryName }) => {
-  // Estados do banco de adicionais
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
 
-  // Função para formatar o texto do preço do produto em valor numérico
   const formatPrice = (price) => {
     if (typeof price !== 'string') {
       return 0;
@@ -14,10 +12,9 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
     return parseFloat(price.replace('R$ ', '').replace(',', '.')) || 0;
   };
 
-  // Função para calcular o valor total do produto com adicionais
   const calculateTotalPrice = () => {
     if (!product) {
-      return "0.00"; // Retorna um valor padrão caso o produto não esteja definido
+      return "0.00";
     }
 
     const productPrice = formatPrice(product.PrecoDeVenda);
@@ -35,10 +32,9 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
     return totalPrice.toFixed(2);
   };
 
-  // Função para adicionar ao carrinho
   const handleAddToCart = () => {
     if (!product) {
-      return; // Não faz nada se o produto não estiver definido
+      return;
     }
 
     const newItem = {
@@ -47,11 +43,11 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
       price: calculateTotalPrice(),
       img: `https://hotmenu.com.br/arquivos/${product.Foto}`,
       description: product.Descricao,
-      quantity: 1 // Quantidade padrão, pode ser ajustada conforme necessário
+      quantity: 1
     };
 
     addToCart(newItem);
-    onClose(); // Fecha o modal após adicionar ao carrinho
+    onClose();
   };
 
   return (
@@ -71,7 +67,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
 
             <div className='options-container'>
               <div className='options-container-head'>
-                <h5>{categoryName === 'pizza' ? 'Tamanho da pizza' : 'Adicionais'}</h5>
+                <h5>Adicionais ({totalAdditional()}/10)</h5>
               </div>
             </div>
 
@@ -81,11 +77,11 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
                   <p>{additional.description} - R$ {additional.price}</p>
                 </div>
                 <div className='options-icons-plus-dash'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus' onClick={() => handleIncrement(additional.id)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus' onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
                   </svg>
                   <span>{additional.count}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-square-fill" viewBox="0 0 16 16" id='btn-dash' onClick={() => handleDecrement(additional.id)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-square-fill" viewBox="0 0 16 16" id='btn-dash' onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
                   </svg>
                 </div>

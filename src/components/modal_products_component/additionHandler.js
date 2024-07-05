@@ -59,32 +59,47 @@ const useAdditionalState = (categoryName) => {
   }, [categoryName]);
 
   const handleIncrement = (id) => {
-    setAdditionalStates(prevState => {
-      return prevState.map(additional => {
+    setAdditionalStates((prevState) => {
+      const newState = prevState.map((additional) => {
         if (additional.id === id) {
-          return { ...additional, count: additional.count + 1 };
+          if (additional.count < 3 && totalAdditional() < 10) { // Verifica limites
+            return { ...additional, count: additional.count + 1 };
+          }
         }
         return additional;
       });
+      return newState;
     });
   };
 
   const handleDecrement = (id) => {
-    setAdditionalStates(prevState => {
-      return prevState.map(additional => {
+    setAdditionalStates((prevState) => {
+      const newState = prevState.map((additional) => {
         if (additional.id === id && additional.count > 0) {
           return { ...additional, count: additional.count - 1 };
         }
         return additional;
       });
+      return newState;
     });
   };
 
+  // Função para calcular o total de adicionais selecionados
+  const totalAdditional = () => {
+    let total = 0;
+    additionalStates.forEach((additional) => {
+      total += additional.count;
+    });
+    return total;
+  };
+
   return {
+    totalAdditional,
     additionalStates,
     handleIncrement,
     handleDecrement
   };
+
 };
 
 export default useAdditionalState;
