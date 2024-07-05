@@ -85,7 +85,7 @@ const Grid_component = ({ categoryId,categoryName}) => {
                       <div className='product-description'>
                         <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
                         <p className='product-description-title'>{truncateText(product.Descricao)}</p>
-                        <strong><p> R${product.PrecoDeVenda}</p></strong> 
+                        <strong><p className='product-description-price'> R${product.PrecoDeVenda}</p></strong> 
                       </div>
                       <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`}className='product-img' />
                     </div>
