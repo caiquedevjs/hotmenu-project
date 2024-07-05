@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 
+
+// <------- estado estatico de produtos usados para teste de renderização ------->
 export const Product_state = {
   products: [
     { title: 'Double Big Bacon BBQ', priceDemo : 'R$ 30,00', price: 'R$ 30,00', img: 'hambuger-1.png', category: 'hamburger' , description: 'double big melt, com 150g de blend de carne', id : 0},

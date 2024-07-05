@@ -1,8 +1,5 @@
-// productService.js
 
-
-
-// Função para buscar todos os produtos
+// <------- Função para buscar todos os produtos ------->
 export const fetchProducts = async () => {
   try {
     const response = await fetch('https://hotmenu.com.br/webhook/Produtos/hotmenu');
@@ -18,7 +15,7 @@ export const fetchProducts = async () => {
   }
 };
 
-// Função para buscar todas as categorias
+// <------- Função para buscar todas as categorias ------->
 export const fetchCategories = async () => {
   try {
     const response = await fetch('https://hotmenu.com.br/webhook/Categorias/hotmenu');

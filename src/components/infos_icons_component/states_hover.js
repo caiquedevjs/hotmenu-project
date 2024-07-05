@@ -1,6 +1,6 @@
 import { useState} from 'react';
 
-// logica de mudança de estado hover
+// <------- logica de mudança de estado hover ------->
 export  const States_hover = () =>{
 const [isCreditCardHovered, setIsCreditCardHovered] = useState(false);
 const [isClockHovered, setIsClockHovered] = useState(false);

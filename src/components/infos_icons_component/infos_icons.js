@@ -5,15 +5,18 @@ import '../infos_icons_component/infos_icons_styles.css';
 import Modal_credit_component from '../modal_credit_component/modal_credit';
 import Modal_hours_component from '../modal_hours_component/modal_hours_component';
 import Modal_infos_component from '../modal_infos_component/modal_info_component';
-import { States_hover } from './states_hover'; // Importe corrigido
-import { Size_device } from './size_device'; // Importe corrigido
+import { States_hover } from './states_hover'; 
+import { Size_device } from './size_device'; 
 
 const Infos_icons_component = () => {
+    
+    // <------- estados do efeito hover e tamanho dos icons para dispostivos moveis ------->
     const { isCreditCardHovered, setIsCreditCardHovered, isClockHovered, setIsClockHovered, isInfoHovered, setIsInfoHovered } = States_hover();
     const { windowWidth, iconSize } = Size_device();
   
     return (
         <div className='infos_icons_component'>
+            {/* <-------Renderiza os modais de pagamentos, horario e informações-------> */}
             <Modal_credit_component/>
             <Modal_hours_component/>
             <Modal_infos_component/>

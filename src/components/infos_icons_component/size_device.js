@@ -1,9 +1,12 @@
-// SizeDevice.js (por exemplo)
+
 import  { useEffect, useState } from "react";
 
 export const Size_device = () => {
+    // <------- estado no tamanho do dispostivo ------->
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+    
+    // <------- logica de alterar o tamanho do icon em dispostivo moveis ------->
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);

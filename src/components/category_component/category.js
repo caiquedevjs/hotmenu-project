@@ -5,9 +5,13 @@ import { fetchCategories } from '../service/productService';
 import SelectorCategoryComponent from '../selector_category_component/selector_category';
 import ModalBusca from '../modal_search_component/modal_search_component';
 const Category_component = () => {
+
+
+  // <------- Estados das categorias ------->
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // <------- Logica da busca por catgeorias na API ------->
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
@@ -36,11 +40,13 @@ const Category_component = () => {
             <div id='category_label_title'>
               <h4 className='category_title' id={`category-${category.Id}`}>{category.Nome}</h4>
             </div>
+            {/* <-------Renderiza o grid de categorias e passa as categoria.Id e categoria.Nome como propriedade-------> */}
             <Grid_component categoryId={category.Id} categoryName={category.Nome} />
           </div>
         ))}
       </div>
-      <ModalBusca categories={categories} /> {/* Renderiza o ModalBusca e passa as categorias como propriedade */}
+      {/* <-------Renderiza o ModalBusca e passa as categorias como propriedade-------> */}
+      <ModalBusca categories={categories} /> 
     </div>
   );
 };

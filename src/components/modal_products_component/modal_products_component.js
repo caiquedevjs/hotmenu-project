@@ -1,46 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 
 const Modal_product_component = ({ id, product, onClose, addToCart, categoryName }) => {
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
 
-  const formatPrice = (price) => {
-    if (typeof price !== 'string') {
-      return 0;
-    }
-    return parseFloat(price.replace('R$ ', '').replace(',', '.')) || 0;
-  };
+  // <-------Estado local para armazenar o preço total------->
+  const [totalPrice, setTotalPrice] = useState(0);
 
+  // <-------Efeito para inicializar o preço total quando o produto mudar------->
+  useEffect(() => {
+    if (product && product.PrecoDeVenda) {
+      setTotalPrice(parseFloat(product.PrecoDeVenda));
+    }
+  }, [product]);
+
+  // <-------Função para calcular o preço total do produto com base nos adicionais------->
   const calculateTotalPrice = () => {
-    if (!product) {
+    if (!product || !product.PrecoDeVenda) {
       return "0.00";
     }
 
-    const productPrice = formatPrice(product.PrecoDeVenda);
+    let totalPrice = parseFloat(product.PrecoDeVenda);
 
-    if (isNaN(productPrice)) {
-      return "0.00";
-    }
-
-    let additionalCost = 0;
     additionalStates.forEach(additional => {
-      additionalCost += additional.count * parseFloat(additional.price);
+      totalPrice += additional.count * parseFloat(additional.price);
     });
 
-    const totalPrice = productPrice + additionalCost;
     return totalPrice.toFixed(2);
   };
 
+  // <-------Função para lidar com a adição do produto ao carrinho------->
   const handleAddToCart = () => {
-    if (!product) {
+    if (!product || !product.PrecoDeVenda) {
       return;
     }
 
     const newItem = {
       id: product.Id,
       title: product.Nome,
-      price: calculateTotalPrice(),
+      price: totalPrice, // Usa o preço atualizado
       img: `https://hotmenu.com.br/arquivos/${product.Foto}`,
       description: product.Descricao,
       quantity: 1
@@ -67,10 +66,12 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
 
             <div className='options-container'>
               <div className='options-container-head'>
-                <h5>Adicionais ({totalAdditional()}/10)</h5>
+                <h5>Adicionais</h5>
+                <h5>{totalAdditional()}/10</h5>
               </div>
             </div>
 
+            {/*<------- renderização dos adicionais-------> */}
             {additionalStates.map(additional => (
               <div key={additional.id} className='options-description-container'>
                 <div className='options-additions'>
@@ -92,7 +93,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
             <h5>Alguma sugestão?</h5>
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
-
+          <h5><strong>Preço Total:</strong> R$ {calculateTotalPrice()}</h5>
           <button className='options-btn-add' onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>

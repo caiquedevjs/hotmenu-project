@@ -7,13 +7,14 @@ import { FaSearch,FaShoppingCart } from "react-icons/fa";
 
 
 
-// componente header
 const Header_component = () =>{
-    // logica de mudança de estado hover dos icones do header
+
+    // <-------logica de mudança de estado hover dos icones do header------->
  const [isCartfoHovered, setIsCartHovered] = useState(false);
  const [isSearchfoHovered, setISearchHovered] = useState(false);
 
 
+// <-------logica para botão de scroll para o topo da pagina------->
  const [isIconsFixed, setIsIconsFixed] = useState(false);
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -29,17 +30,10 @@ const Header_component = () =>{
     }
   };
 
-
     return (
  <div className='Header-component'>
-
-
-        {/* estrutura do modal de bsuca*/}
-        
-        
-
   <header className='header_class'>
-   {/* estrutura dos icons do header*/}
+   {/* <-------estrutura dos icons do carrossel de banners-------> */}
   <div id="carouselExampleFade" class="carousel slide carousel-fade" >
   <div class="carousel-inner">
     <div class="carousel-item active">
@@ -61,27 +55,27 @@ const Header_component = () =>{
     <span class="visually-hidden">Next</span>
   </button>
 </div>
-                  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
-                <FaSearch style={{ width: '18px', height: '18px',  color: isSearchfoHovered ? 'black' : '#fa6b18', marginTop : '10px', cursor : 'pointer', transition: 'color 0.5s ease' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"
-                 onMouseEnter={() => setISearchHovered(true)} 
-                 onMouseLeave={() => setISearchHovered(false)}/>
+ {/* <-------estrutura dos icons do header-------> */}
+ <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
+  <FaSearch style={{ width: '18px', height: '18px',  color: isSearchfoHovered ? 'black' : '#fa6b18', marginTop : '10px', cursor : 'pointer', transition: 'color 0.5s ease' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"
+  onMouseEnter={() => setISearchHovered(true)} 
+  onMouseLeave={() => setISearchHovered(false)}/>
           
-                 <FaShoppingCart  style={{ width: '18px', height: '18px', color: isCartfoHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease' }} 
-                    onMouseEnter={() => setIsCartHovered(true)} 
-                    onMouseLeave={() => setIsCartHovered(false)}   data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
-                    <label id='amount_order'>1</label>
-                 
-                </div>
-                <div className='logo_conteiner_class'>
-                <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
-                </div>
-                <h1 id='title_logo'>Pizzaria dos Amigos</h1>
+  <FaShoppingCart  style={{ width: '18px', height: '18px', color: isCartfoHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease' }} 
+   onMouseEnter={() => setIsCartHovered(true)} 
+  onMouseLeave={() => setIsCartHovered(false)}   data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+  <label id='amount_order'>1</label>              
+  </div>
+  <div className='logo_conteiner_class'>
+  <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
+  </div>
+  <h1 id='title_logo'>Pizzaria dos Amigos</h1>
                 
 
 
                 
-            </header>
-    </div>
+  </header>
+  </div>
     )
 }
 export default Header_component;

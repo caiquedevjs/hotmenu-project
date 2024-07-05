@@ -6,6 +6,9 @@ import Modal_product_component from '../modal_products_component/modal_products_
 import ModalCartItems from '../modal_cart_itens/modal_cart_itens';
 
 const Grid_component = ({ categoryId,categoryName}) => {
+
+  
+  // <------- estados dos produtos, carrinho de itens ------->
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -38,7 +41,7 @@ const Grid_component = ({ categoryId,categoryName}) => {
     setSelectedProduct(product);
   };
 
-  // Função para dividir o array de produtos em subarrays de 2 produtos
+  // <-------Função para dividir o array de produtos em subarrays de 2 produtos------->
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
     const arrayLength = arr.length;
@@ -52,14 +55,14 @@ const Grid_component = ({ categoryId,categoryName}) => {
     return tempArray;
   };
 
-  // Divide os produtos em linhas de 2 colunas
+  // <-------Divide os produtos em linhas de 2 colunas------->
   const productsChunks = chunkArray(products, 2);
 
   
-   // Defina o número máximo de caracteres desejado
-   const maxLength = 65;
+   // <-------Defina o número máximo de caracteres desejado na descrição do produto no grid------->
+   const maxLength = 62;
 
-   // Função para truncar o texto
+   // <-------Função para truncar o texto------->
    const truncateText = (text) => {
      if (text.length <= maxLength) {
        return text;
@@ -94,7 +97,7 @@ const Grid_component = ({ categoryId,categoryName}) => {
         </div>
       ))}
 
-      {/* Renderização dos modais */}
+      {/* <-------Renderização dos modais dinâmico-------> */}
       {products.map((product, index) => (
         <Modal_product_component
           key={`modal-${index}`}
