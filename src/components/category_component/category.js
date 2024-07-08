@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import './category_styles.css';
 import Grid_component from '../Grid_component/Grid_component';
