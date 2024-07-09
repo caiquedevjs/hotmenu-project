@@ -17,7 +17,7 @@ export const Size_device = () => {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []); // O array vazio [] garante que o useEffect só será executado uma vez, após a montagem inicial
+    }, []); // <-----------O array vazio [] garante que o useEffect só será executado uma vez, após a montagem inicial----------->
 
     const iconSize = windowWidth <= 768 ? 20 : 40; 
 

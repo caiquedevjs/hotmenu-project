@@ -3,7 +3,7 @@ import './selector_category.css';
 
 const SelectorCategoryComponent = ({ categories }) => {
   if (!categories || categories.length === 0) {
-    return null; // Retorna null ou algum componente de carregamento se não houver categorias ainda
+    return null; // <-----------Retorna null ou algum componente de carregamento se não houver categorias ainda----------->
   }
 
   return (

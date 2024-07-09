@@ -29,7 +29,7 @@ const Modal_hours_component = () => {
                         {daysOfWeek.map((item, index) => (
                             <div key={index}>
                                 <p style={{ color: currentDay === index ? '#fa6b18' : 'black' }}>
-                                    {/* Renderizar o ícone apenas para o dia atual */}
+                                    {/* <-----------Renderizar o ícone apenas para o dia atual-----------> */}
                                     {currentDay === index && <FcAlarmClock  style={{ marginRight: 5 }} />}
                                     {item.day} - {item.hours}
                                 </p>
