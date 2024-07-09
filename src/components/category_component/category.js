@@ -16,12 +16,12 @@ const Category_component = () => {
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        const fetchedCategories = await fetchCategories(); // Busca as categorias da API
+        const fetchedCategories = await fetchCategories(); // <------- Busca as categorias da API ------->
         setCategories(fetchedCategories);
-        setIsLoading(false); // Marca o carregamento como completo
+        setIsLoading(false); // <------- Marca o carregamento como completo ------->
       } catch (error) {
         console.error('Erro ao buscar categorias:', error);
-        setIsLoading(false); // Marca o carregamento como completo mesmo em caso de erro
+        setIsLoading(false); // <------- Marca o carregamento como completo mesmo em caso de erro ------->
       }
     };
 
