@@ -60,7 +60,7 @@ const Grid_component = ({ categoryId,categoryName}) => {
 
   
    // <-------Defina o número máximo de caracteres desejado na descrição do produto no grid------->
-   const maxLength = 62;
+   const maxLength = 90;
 
    // <-------Função para truncar o texto------->
    const truncateText = (text) => {

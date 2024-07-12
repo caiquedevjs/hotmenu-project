@@ -39,7 +39,7 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
     const newItem = {
       id: product.Id,
       title: product.Nome,
-      price: totalPrice, // Usa o preço atualizado
+      price: calculateTotalPrice(), // Usa o preço atualizado
       img: `https://hotmenu.com.br/arquivos/${product.Foto}`,
       description: product.Descricao,
       quantity: 1

@@ -10,7 +10,7 @@ import ModalBusca from './components/modal_search_component/modal_search_compone
 
 function App() {
   const [showScrollButton, setShowScrollButton] = useState(false);
-
+  
   useEffect(() => {
     const handleScroll = () => {
       if (window.pageYOffset > 300) {

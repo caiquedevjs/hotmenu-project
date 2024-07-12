@@ -104,6 +104,10 @@
     top: auto;
     margin-top: 30px;
     bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    right: -10px;
     
   }
   .carousel-fade{
@@ -167,8 +171,6 @@
         top: auto;
         bottom: 20px;
         width: 40px;
-        
-        
       }
       .img-fluid{
         width: 250px;
