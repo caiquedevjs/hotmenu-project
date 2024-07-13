@@ -49,6 +49,7 @@
         font-family: "Roboto", sans-serif;
         font-size: 14px;
         font-weight: bold;
+        text-align: left;
         
     }
     .product-description-title{
@@ -56,9 +57,11 @@
         margin-right: 60px;
         font-size: 10px;
         font-family: "Roboto", sans-serif;
+        text-align: left;
     }
     .product-description-price{
         margin-right: 100%;
+        background-color: rgba(255, 94, 0, 0.801)
     }
     .product-conteiner{
         display: flex;
