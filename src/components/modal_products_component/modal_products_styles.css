@@ -61,7 +61,7 @@
     line-height: 1.5;
   }
   #product-img-modal:hover{
-    transform: scale(1.2);
+    transform: scale(1.1);
     transition: 1s;
     cursor: pointer; 
 
@@ -74,7 +74,9 @@
   }
   
   /* Estilos específicos para o conteúdo do modal */
-  
+  #pruduct-description-p{
+    margin-top: 20px;
+  }
   .product-img-options img {
     max-width: 100%;
     height: auto;
@@ -149,4 +151,10 @@
   .options-btn-add:hover {
     background-color: #332D2D;
     border: 1px solid #332D2D;
+  }
+  #product-img-modal{
+    width: 400px;
+    height: 400px;
+    border-radius: 5px;
+
   }

@@ -70,6 +70,7 @@ const Header_component = () =>{
   <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
   </div>
   <h1 id='title_logo'>Pizzaria dos Amigos</h1>
+  <h6>Pizzas tradicionais e de qualidade!</h6>
                 
 
 

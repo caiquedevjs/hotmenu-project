@@ -61,12 +61,12 @@
         margin-top: 50px;
     }
     #category_label_title{
-        width: 98%;
+        width: 93%;
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
-        margin-left: 5px;
+        margin-left: 13px;
     }
    
     
