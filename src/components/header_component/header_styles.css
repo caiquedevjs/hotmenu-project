@@ -100,6 +100,7 @@
     transition: top 2s ease;
     display: flex;
     flex-direction: column;
+    gap: 1px;
   }
   
   .icons_header_conteiner_class.fixed {
@@ -110,11 +111,13 @@
     flex-direction: column;
     position: fixed;
     right: 10px;
+    gap: 1px;
     
   }
   .carousel-fade{
    
     width: 100vw;
+    
     
     border-radius: 10px;
   }
@@ -146,7 +149,7 @@
     margin-right: 50%;
   }
   .iten-img{
-    background-color: #fa6b18;
+    background-color: #ce2929;
     padding: 10px;
     border-radius: 10px;
     width: 100px;
@@ -156,7 +159,7 @@
    
     .icons_header_conteiner_class {
         position: fixed;
-        top: 90px;
+        top: 120px;
         right: -12px;
         z-index: 100;
         transition: top 2s ease;
@@ -176,16 +179,16 @@
         right: -12px;
       }
       .img-fluid{
-        width: 250px;
-        height: 250px;
+        width: 130px;
+        height: 130px;
         border-radius: 15px;
-        margin-top: 25%;
+        margin-top: 30%;
         
     }
     #title_logo{
         font-family: "Roboto", sans-serif;
         font-weight: bold;
-        font-size: 30px;
+        font-size: 25px;
         margin-top: 20px;
       }
       #amount_order{
@@ -206,8 +209,12 @@
         
         border-radius: 10px;
       }
-
-
+      .carousel-item img{
+        height: 125px;
+      }
+      .estabelecimento-description{
+        font-size: 12px;
+      }
   }
   
   

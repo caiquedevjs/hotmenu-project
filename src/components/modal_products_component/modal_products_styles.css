@@ -141,8 +141,8 @@
     font-size: 1rem;
     text-align: center;
     color: #fff;
-    background-color: #fa6b18;
-    border: 1px solid #fa6b18;
+    background-color: #ce2929;
+    border: 1px solid #ce2929;
     border-radius: 0.25rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -153,8 +153,8 @@
     border: 1px solid #332D2D;
   }
   #product-img-modal{
-    width: 400px;
-    height: 400px;
+    width: 360px;
+    height: 360px;
     border-radius: 5px;
 
   }

@@ -10,16 +10,20 @@
 }
 
 .status_moment_component {
-    width: 150px;
-    padding: 10px;
+    width: 70px;
+    padding: 3px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: center;
-    font-size: 18px;
+    
     font-family: "Roboto", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.status-text{
+    margin-top: 8px;
+    font-size: 12px;
 }
 
 .status_open {

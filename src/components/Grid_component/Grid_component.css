@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 .product-img{
-    width: 60px;
-    height: 60px;
-    margin-right: 5px;
+    width: 90px;
+    height: 90px;
+    margin-right: 10px;
+    border-radius: 8px;
 }
-.product-conteiner{
+#text_category{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -14,30 +15,35 @@
     border-radius: 10px;
 }
 #product-title{
+    margin-top: 20px;
     cursor: pointer;
     font-family: "Roboto", sans-serif;
     font-size: 16px;
     font-weight: bold;
     text-align: left;
-    margin-top: 5px;
+    
 }
 #product-title:hover{
-    color: rgba(255, 94, 0, 0.801);
+    color: #ce2929;
 }
 #card_container{
     border-radius: 10px;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.308); /* Sombra com desfoque de 10px, cor preta com 10% de opacidade */
+    box-shadow: 5px 5px 13px rgba(0, 0, 0, 0.308); /* Sombra com desfoque de 10px, cor preta com 10% de opacidade */
 }
 .product-description-title{
     max-width: 250px;
-    font-size: 14px;
+    font-size: 16px;
     font-family: "Roboto", sans-serif;
     text-align: left;
+    align-items: center;
+    
+
 }
 .product-description{
     display: flex;
    flex-direction: column;
-   justify-content: space-evenly;
+   
+   
 }
 .product-description-price{
     display: flex;
@@ -51,7 +57,7 @@
     
 }
 .product-description-price svg{
-    color: #fa6b18;
+    color: #ce2929;
 }
 /* Media query para dispositivos móveis */
 @media (max-width: 768px) {
@@ -61,19 +67,21 @@
         justify-content: center;
     }
     #product-title{
+        margin-top: 20px;
         cursor: pointer;
         font-family: "Roboto", sans-serif;
-        font-size: 14px;
+        font-size: 10px;
         font-weight: bold;
         text-align: left;
         
+        
     }
     .product-description-title{
-        max-width: 760px;
-        margin-right: 60px;
+        max-width: 100px;
         font-size: 10px;
         font-family: "Roboto", sans-serif;
         text-align: left;
+        margin-bottom: 60px;
     }
     .product-description-price{
         display: flex;
@@ -81,11 +89,12 @@
         gap: 5px;
         align-items: center;
         text-align: left;
+        
     
         
         
     }
-    .product-conteiner{
+    #text_category{
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -98,12 +107,15 @@
 
     }
     .product-img{
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
+    margin-right: 10px;
+    border-radius: 8px;
+    
 }
 
 #product-title:hover{
-    color: rgba(255, 94, 0, 0.801);
+    color: #ce2929;
 
 
     }

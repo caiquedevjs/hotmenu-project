@@ -57,11 +57,11 @@ const Header_component = () =>{
 </div>
  {/* <-------estrutura dos icons do header-------> */}
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
-  <FaSearch style={{ width: '20px', height: '20px',  color: isSearchfoHovered ? 'black' : '#fa6b18', marginTop : '10px', cursor : 'pointer', transition: 'color 0.5s ease' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"
+  <FaSearch style={{ width: '20px', height: '20px',  color: isSearchfoHovered ? 'black' : '#ce2929', marginTop : '10px', cursor : 'pointer', transition: 'color 0.5s ease' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"
   onMouseEnter={() => setISearchHovered(true)} 
   onMouseLeave={() => setISearchHovered(false)}/>
           
-  <FaShoppingCart  style={{ width: '20px', height: '20px', color: isCartfoHovered ? 'black' : '#fa6b18', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease' }} 
+  <FaShoppingCart  style={{ width: '20px', height: '20px', color: isCartfoHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease' }} 
    onMouseEnter={() => setIsCartHovered(true)} 
   onMouseLeave={() => setIsCartHovered(false)}   data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
   {/*<label id='amount_order'>1</label> */}             
@@ -70,7 +70,7 @@ const Header_component = () =>{
   <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
   </div>
   <h1 id='title_logo'>Pizzaria dos Amigos</h1>
-  <h6>Pizzas tradicionais e de qualidade!</h6>
+  <h6 className='estabelecimento-description'>Pizzas tradicionais e de qualidade!</h6>
                 
 
 

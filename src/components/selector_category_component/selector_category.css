@@ -4,7 +4,7 @@
     width: 70%; /* Largura do botão dropdown */
     /* Outros estilos conforme necessário */
     font-family: "Roboto", sans-serif;
-    background-color:  #fa6b18;
+    background-color:  #ce2929;
     border: none;
     font-weight: bold;
     font-size: 24px;
@@ -25,13 +25,13 @@
 @media (max-width: 768px) {
 
     .btn.dropdown-toggle {
-        width: 300px; /* Largura do botão dropdown */
+        width: 250px; /* Largura do botão dropdown */
         /* Outros estilos conforme necessário */
         font-family: "Roboto", sans-serif;
     }
     
     .dropdown-menu {
-        width: 300px; /* Largura do menu suspenso */
+        width: 250px; /* Largura do menu suspenso */
         /* Outros estilos conforme necessário */
         font-family: "Roboto", sans-serif;
     }

@@ -4,16 +4,16 @@ import { fetchProducts } from '../service/productService';
 import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import ModalCartItems from '../modal_cart_itens/modal_cart_itens';
+import 'react-tooltip/dist/react-tooltip.css'
+import { Tooltip } from 'react-tooltip'
 
-const Grid_component = ({ categoryId,categoryName}) => {
-
-  
+const Grid_component = ({ categoryId, categoryName }) => {
   // <------- estados dos produtos, carrinho de itens ------->
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
-  
+  const [maxLength, setMaxLength] = useState(60);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -28,6 +28,20 @@ const Grid_component = ({ categoryId,categoryName}) => {
 
     fetchAllProducts();
   }, [categoryId]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      setMaxLength(isMobile ? 38 : 60);
+    };
+
+    handleResize(); // Inicializa o estado com o valor correto
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const addToCart = (newItem) => {
     setCartItems([...cartItems, newItem]);
@@ -58,17 +72,13 @@ const Grid_component = ({ categoryId,categoryName}) => {
   // <-------Divide os produtos em linhas de 2 colunas------->
   const productsChunks = chunkArray(products, 2);
 
-  
-   // <-------Defina o número máximo de caracteres desejado na descrição do produto no grid------->
-   const maxLength = 60;
-
-   // <-------Função para truncar o texto------->
-   const truncateText = (text) => {
-     if (text.length <= maxLength) {
-       return text;
-     }
-     return `${text.substring(0, maxLength)}...`;
-   };
+  // <-------Função para truncar o texto------->
+  const truncateText = (text) => {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return `${text.substring(0, maxLength)}...`;
+  };
 
   return (
     <div className="container text-center">
@@ -81,17 +91,24 @@ const Grid_component = ({ categoryId,categoryName}) => {
               <div className="container-sm">
                 <div id='card_container'>
                   <div id='text_category'>
-                    <div className='product-conteiner'>
-                      <div className='product-description'>
-                        <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
-                        <p className='product-description-title'>{truncateText(product.Descricao)}</p>
-                        <strong><p 
-                        className='product-description-price'> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag-fill" viewBox="0 0 16 16">
-                        <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                      </svg>R${product.PrecoDeVenda}</p></strong> 
+                    <div className='product-description'>
+                      <p data-bs-toggle="modal" data-bs-target={`#product-modal-${product.Id}`} onClick={() => openModal(product)} id='product-title'>{product.Nome}</p>
+                      <p className='product-description-title'>{truncateText(product.Descricao)}</p>
+                      <div className='conteiner-price'>
+                        <strong>
+                          <p className='product-description-price'
+                            data-tooltip-id="my-tooltip"
+                            data-tooltip-content="preço de venda"
+                            data-tooltip-place="top">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16">
+                              <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                            </svg> R${product.PrecoDeVenda}
+                            <Tooltip id="my-tooltip" />
+                          </p>
+                        </strong>
                       </div>
-                      <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`}className='product-img' />
                     </div>
+                    <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`} className='product-img' />
                   </div>
                 </div>
               </div>
