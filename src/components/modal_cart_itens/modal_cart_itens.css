@@ -18,7 +18,13 @@
 }
 .modal-footer{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-around;
-    gap: 80px;
+    
+}
+.cart-btn-conteiner{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 90px;
 }
