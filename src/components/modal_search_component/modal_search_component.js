@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaSearch } from "react-icons/fa";
+import './modal_search_component.css';
 
 const ModalBusca = ({ categories }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,7 +34,7 @@ const ModalBusca = ({ categories }) => {
               />
               <FaSearch
                 id='modal_search_icon_id'
-                style={{ width: '20px', height: '20px', color: '#fa6b18', marginTop: '10px', cursor: 'pointer' }}
+                style={{ width: '20px', height: '20px', color: '#ce2929', marginTop: '10px', cursor: 'pointer' }}
               />
             </div>
             <div className="container text-center" id='grid_category_id'>

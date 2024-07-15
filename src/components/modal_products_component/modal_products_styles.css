@@ -1,5 +1,5 @@
 /* modal_products_styles.css */
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 /* Estilos gerais do modal */
 .modal {
     display: none; /* O modal é ocultado por padrão */
@@ -94,7 +94,10 @@
     justify-content: space-between;
     align-items: center;
   }
-  
+  .options-container-head h5{
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+  }
   .options-description-container {
     margin-top: 1rem;
     display: flex;
@@ -146,6 +149,9 @@
     border-radius: 0.25rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-family: "Roboto", sans-serif;
+    font-size: 18px;
+    font-weight: bold;
   }
   
   .options-btn-add:hover {
