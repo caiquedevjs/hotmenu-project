@@ -4,16 +4,16 @@ import { fetchProducts } from '../service/productService';
 import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import ModalCartItems from '../modal_cart_itens/modal_cart_itens';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
+import 'react-tooltip/dist/react-tooltip.css';
+import { Tooltip } from 'react-tooltip';
 
 const Grid_component = ({ categoryId, categoryName }) => {
-  // <------- estados dos produtos, carrinho de itens ------->
+  // Estados dos produtos, carrinho de itens
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
   const [maxLength, setMaxLength] = useState(60);
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -27,6 +27,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
 
     fetchAllProducts();
+
   }, [categoryId]);
 
   useEffect(() => {
@@ -43,10 +44,6 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
   }, []);
 
-  const addToCart = (newItem) => {
-    setCartItems([...cartItems, newItem]);
-  };
-
   const handleCloseCart = () => {
     setIsCartOpen(false);
   };
@@ -55,24 +52,30 @@ const Grid_component = ({ categoryId, categoryName }) => {
     setSelectedProduct(product);
   };
 
-  // <-------Função para dividir o array de produtos em subarrays de 2 produtos------->
+  // Função para adicionar ao carrinho
+  const onAddToCart = (cartItem) => {
+    setCartItems([...cartItems, cartItem]);
+    console.log('Item adicionado ao carrinho:', cartItem);
+  };
+
+  // Função para dividir o array de produtos em subarrays de 2 produtos
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
     const arrayLength = arr.length;
     let tempArray = [];
-    
+
     for (index = 0; index < arrayLength; index += chunkSize) {
       const chunk = arr.slice(index, index + chunkSize);
       tempArray.push(chunk);
     }
-    
+
     return tempArray;
   };
 
-  // <-------Divide os produtos em linhas de 2 colunas------->
+  // Divide os produtos em linhas de 2 colunas
   const productsChunks = chunkArray(products, 2);
 
-  // <-------Função para truncar o texto------->
+  // Função para truncar o texto
   const truncateText = (text) => {
     if (text.length <= maxLength) {
       return text;
@@ -82,8 +85,8 @@ const Grid_component = ({ categoryId, categoryName }) => {
 
   return (
     <div className="container text-center">
-      <ModalCartItems cartItems={cartItems} onClose={handleCloseCart} />
-
+      <ModalCartItems cartItems={cartItems} onClose={handleCloseCart} isOpen={isCartOpen} />
+      
       {productsChunks.map((row, rowIndex) => (
         <div key={rowIndex} className="row g-2 mb-2">
           {row.map((product, index) => (
@@ -117,15 +120,15 @@ const Grid_component = ({ categoryId, categoryName }) => {
         </div>
       ))}
 
-      {/* <-------Renderização dos modais dinâmico-------> */}
+      {/* Renderização dos modais dinâmico */}
       {products.map((product, index) => (
         <Modal_product_component
           key={`modal-${index}`}
           id={`product-modal-${product.Id}`}
           product={product}
-          addToCart={addToCart}
           onClose={() => setSelectedProduct(null)}
           categoryName={categoryName}
+          onAddToCart={onAddToCart}
         />
       ))}
     </div>

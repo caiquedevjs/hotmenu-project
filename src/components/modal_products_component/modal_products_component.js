@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
+import Grid_component from '../Grid_component/Grid_component';
 
-const Modal_product_component = ({ id, product, onClose, addToCart, categoryName }) => {
+const Modal_product_component = ({ id, product, onClose, categoryName, onAddToCart }) => {
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
 
   // <-------Estado local para armazenar o preço total------->
@@ -29,25 +30,18 @@ const Modal_product_component = ({ id, product, onClose, addToCart, categoryName
 
     return totalPrice.toFixed(2);
   };
-
-  // <-------Função para lidar com a adição do produto ao carrinho------->
   const handleAddToCart = () => {
-    if (!product || !product.PrecoDeVenda) {
-      return;
-    }
-
-    const newItem = {
-      id: product.Id,
-      title: product.Nome,
-      price: calculateTotalPrice(), // Usa o preço atualizado
-      img: `https://hotmenu.com.br/arquivos/${product.Foto}`,
-      description: product.Descricao,
-      quantity: 1
+    const cartItem = {
+      id: product.id,
+      name: product.Nome,
+      price: calculateTotalPrice(),
+      photo: `https://hotmenu.com.br/arquivos/${product.Foto}`,
+      quantity: 1, // Pode ser ajustado conforme necessário
     };
-
-    addToCart(newItem);
-    onClose();
+    onAddToCart(cartItem);
+    onClose(); // Fecha o modal após adicionar ao carrinho
   };
+ 
 
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

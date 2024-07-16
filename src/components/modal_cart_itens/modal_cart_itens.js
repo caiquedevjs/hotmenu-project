@@ -1,9 +1,11 @@
 
 import React from 'react';
-import ShoppingCart from './shoppingCart'; 
+import ShoppingCart from '../modal_cart_itens/shoppingCart'; 
 import './modal_cart_itens.css';
 import './modal_cupom_desconto.css';
 import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css'
+
 
 
  //<------- Modal de cupom de desconto -------> 
@@ -17,11 +19,13 @@ const ModalCartItems = ({ cartItems, onClose }) => {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id='modal-body-cupom-desconto'>
-            <input className='cupom-desconto-input' placeholder='digite seu cupom'></input> 
+            <input className='cupom-desconto-input' placeholder='digite seu cupom'
+             data-tooltip-id="tooltip-bsucar-cupom"
+             data-tooltip-content="busque um cupom para ultilizar"
+             data-tooltip-place="right"
+             data-tooltip-offset="5"></input> 
             <button className='btn-buscar-cupom'>buscar</button>
-          </div>
-          <div class="modal-footer">
-           
+            <Tooltip id='tooltip-bsucar-cupom'></Tooltip>
           </div>
         </div>
       </div>
