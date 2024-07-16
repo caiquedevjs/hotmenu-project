@@ -2,10 +2,11 @@
 import React from 'react';
 import ShoppingCart from './shoppingCart'; 
 import './modal_cart_itens.css';
+import './modal_cupom_desconto.css';
 import { Tooltip } from 'react-tooltip';
 
 
-
+ //<------- Modal de cupom de desconto -------> 
 const ModalCartItems = ({ cartItems, onClose }) => {
   return (
     <><div class="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -15,12 +16,12 @@ const ModalCartItems = ({ cartItems, onClose }) => {
             <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            ...
+          <div class="modal-body" id='modal-body-cupom-desconto'>
+            <input className='cupom-desconto-input' placeholder='digite seu cupom'></input> 
+            <button className='btn-buscar-cupom'>buscar</button>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+           
           </div>
         </div>
       </div>
