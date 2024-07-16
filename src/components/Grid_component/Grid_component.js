@@ -54,9 +54,9 @@ const Grid_component = ({ categoryId, categoryName }) => {
 
   // Função para adicionar ao carrinho
   const onAddToCart = (cartItem) => {
-    setCartItems((prevent)=>[...prevent, cartItem]);
+    setCartItems([...cartItems, cartItem]);
     console.log('Item adicionado ao carrinho:', cartItem);
-    console.log(cartItems)
+    console.log(setCartItems)
   };
 
   // Função para dividir o array de produtos em subarrays de 2 produtos
