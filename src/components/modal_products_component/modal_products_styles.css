@@ -76,6 +76,7 @@
   /* Estilos específicos para o conteúdo do modal */
   #pruduct-description-p{
     margin-top: 20px;
+    text-align: left;
   }
   .product-img-options img {
     max-width: 100%;

@@ -1,8 +1,11 @@
 // ShoppingCart.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../modal_cart_itens/shoppingCart_styles.css';
 
 const ShoppingCart = ({ items }) => {
+  useEffect(()=>{
+    console.log(items)
+  })
   return (
     <div className='itens-shopping-conteiner'>
       {items.map(item => (

@@ -11,6 +11,7 @@
     border-radius: 8px;
     font-family: "Roboto", sans-serif;
     text-align: center;
+    width: 50%;
 }
 .btn-buscar-cupom{
     background-color: #ce2929;

@@ -19,7 +19,7 @@ export const Size_device = () => {
         };
     }, []); // <-----------O array vazio [] garante que o useEffect só será executado uma vez, após a montagem inicial----------->
 
-    const iconSize = windowWidth <= 768 ? 20 : 40; 
+    const iconSize = windowWidth <= 768 ? 30 : 40; 
 
     return {
         windowWidth,

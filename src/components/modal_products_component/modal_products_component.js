@@ -30,9 +30,10 @@ const Modal_product_component = ({ id, product, onClose, categoryName, onAddToCa
 
     return totalPrice.toFixed(2);
   };
+ 
   const handleAddToCart = () => {
     const cartItem = {
-      id: product.id,
+      id:product.Id,
       name: product.Nome,
       price: calculateTotalPrice(),
       photo: `https://hotmenu.com.br/arquivos/${product.Foto}`,

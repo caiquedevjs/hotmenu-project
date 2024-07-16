@@ -15,7 +15,7 @@ const ModalCartItems = ({ cartItems, onClose }) => {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id='modal-body-cupom-desconto'>
@@ -42,6 +42,7 @@ const ModalCartItems = ({ cartItems, onClose }) => {
             <div className="modal-body">
               {/* <-------Renderiza o componente ShoppingCart com os itens do carrinho -------> */}
               <ShoppingCart items={cartItems} />
+              
               
             </div>
             <div className="modal-footer">
