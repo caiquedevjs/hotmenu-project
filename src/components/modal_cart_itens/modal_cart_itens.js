@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/heading-has-content */
 
 import React from 'react';
-import ShoppingCart from '../modal_cart_itens/shoppingCart'; 
 import './modal_cart_itens.css';
 import './modal_cupom_desconto.css';
 import { Tooltip } from 'react-tooltip';
@@ -10,7 +9,7 @@ import 'react-tooltip/dist/react-tooltip.css'
 
 
  //<------- Modal de cupom de desconto -------> 
-const ModalCartItems = ({ cartItems, onClose }) => {
+const ModalCartItems = () => {
   return (
     <><div class="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -32,22 +31,17 @@ const ModalCartItems = ({ cartItems, onClose }) => {
       </div>
     </div>
     
-    
+     {/* <------- Modal carrinho de compras -------> */}
     <div className="modal fade" id="modal_shoppingCart_id" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">Carrinho de compras</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={onClose}></button>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              {/* <-------Renderiza o componente ShoppingCart com os itens do carrinho -------> */}
-              <ShoppingCart items={cartItems} />
-              
-              
             </div>
             <div className="modal-footer">
-            
             <div className='modal-footer-conteiner'>
             <strong><p className='Total-price-cart'>Preço Total:</p></strong>
             <div className='cart-btn-conteiner'>
