@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../service/productService';
 import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
-import ModalCartItems from '../modal_cart_itens/modal_cart_itens';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
 

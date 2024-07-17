@@ -28,3 +28,19 @@
     align-items: center;
     gap: 90px;
 }
+.cart-item-img{
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+}
+.text-cart{
+    font-family: "Roboto", sans-serif;
+    font-size: 10px;
+    
+}
+#modal-body-cartItens{
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    text-align: left;
+}

@@ -37,6 +37,7 @@ function App() {
 
   return (
     <div className="App">
+     
       <Header_component />
       <Status_moment_component />
       <Infos_component />
@@ -45,6 +46,7 @@ function App() {
       <Selector_category_component />
      
       <ModalBusca/>
+     
       
 
     
