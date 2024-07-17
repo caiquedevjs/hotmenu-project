@@ -30,12 +30,18 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const removeFromCart = (index) => {
+    const updatedItems = [...cartItems];
+    updatedItems.splice(index, 1); // Remove o item no índice especificado
+    setCartItems(updatedItems);
+  };
+
   const totalCartPrice = () => {
     return cartItems.reduce((total, item) => total + item.totalPrice, 0).toFixed(2);
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, totalCartPrice }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice }}>
       {children}
     </CartContext.Provider>
   );

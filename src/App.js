@@ -1,6 +1,6 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import './App.css';
-
 import Header_component from './components/header_component/header';
 import Infos_component from './components/infos_component/infos';
 import Infos_icons_component from './components/infos_icons_component/infos_icons';
@@ -38,13 +38,12 @@ function App() {
   return (
     <div className="App">
      
-      <Header_component />
-      <Status_moment_component />
-      <Infos_component />
-      <Infos_icons_component />
-      <Category_component />
-      <Selector_category_component />
-     
+      <Header_component/>
+      <Status_moment_component/>
+      <Infos_component/>
+      <Infos_icons_component/>
+      <Category_component/>
+      <Selector_category_component/>
       <ModalBusca/>
      
       

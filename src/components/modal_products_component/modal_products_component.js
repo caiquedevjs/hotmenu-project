@@ -64,12 +64,13 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
                   <p>{additional.description} - R$ {additional.price}</p>
                 </div>
                 <div className='options-icons-plus-dash'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-square-fill" viewBox="0 0 16 16" id='btn-plus' onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
-                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                  </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+                </svg>
+                                  
                   <span>{additional.count}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-square-fill" viewBox="0 0 16 16" id='btn-dash' onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
-                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
                   </svg>
                 </div>
               </div>
@@ -79,12 +80,22 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
             <h5>Alguma sugestão?</h5>
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
-          <h5><strong>Preço Total:</strong> R$ {calculateTotalPrice()}</h5>
+          <div className='control-price-total'>
           <div className="quantity-control">
-            <button className="btn-decrement" onClick={() => setQuantity(prev => Math.max(1, prev - 1))}>-</button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => Math.max(1, prev - 1))}>
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
+                  </svg>
+            
             <span>{quantity}</span>
-            <button className="btn-increment" onClick={() => setQuantity(prev => prev + 1)}>+</button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => prev + 1)}>
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+           </svg>
+                      
           </div>
+          <h5><strong> Total:</strong> R$ {calculateTotalPrice()}</h5>
+          </div>
+          
+          
           <button className='options-btn-add' onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>

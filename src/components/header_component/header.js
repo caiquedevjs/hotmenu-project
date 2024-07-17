@@ -11,7 +11,9 @@ import { CartContext } from '../modal_cart_itens/CartContext';
 
 
 const Header_component = () =>{
-  const { cartItems, totalCartPrice } = useContext(CartContext);
+  // <------- estado do carrinho ------->
+  const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
+  
 
     // <-------logica de mudança de estado hover dos icones do header------->
  const [isCartfoHovered, setIsCartHovered] = useState(false);
@@ -88,16 +90,22 @@ const Header_component = () =>{
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body" id='modal-body-cartItens'>
-              {cartItems.length === 0 ? (
-                <p>Seu carrinho está vazio</p>
+            {cartItems.length === 0 ? (
+                <p id='span-carrinho-vazio'>Seu carrinho está vazio</p>
               ) : (
                 cartItems.map((item, index) => (
                   <div key={index} className="cart-item">
+                    <div className='product-img-cart-item'>
                     <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" id='remove-item-cart' onClick={() => removeFromCart(index)}>
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
+                    </svg>
+                    </div>
+                    
                     <div className="cart-item-details">
                       <p className='text-cart-name'>{item.quantity}x {item.product.Nome}</p>
                       <p className='text-cart-description'>{item.product.Descricao}</p>
-                      <p className='text-cart-price'><strong>Total:</strong> R$ {item.totalPrice}</p>
+                      <p className='text-cart-price'><strong>Preço:</strong> R$ {item.totalPrice}</p>
                     </div>
                   </div>
                 ))
@@ -105,10 +113,10 @@ const Header_component = () =>{
             </div>
             <div className="modal-footer">
               <div className='modal-footer-conteiner'>
-                <p className='Total-price-cart'> <strong>Preço Total: R$</strong> {totalCartPrice()}</p>
+                <p className='Total-price-cart'> <strong>Preço total: R$</strong> {totalCartPrice()}</p>
                 <div className='cart-btn-conteiner'>
                   <button type="button" className="btn-compra">Finalizar compra</button>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-ticket-perforated-fill" viewBox="0 0 16 16" id='ticket-icons' data-tooltip-id="tooltip-cupom-desconto"
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-ticket-perforated-fill" viewBox="0 0 16 16" id='ticket-icons' data-tooltip-id="tooltip-cupom-desconto"
                     data-tooltip-content="cumpom de desconto"
                     data-tooltip-place="right"
                     data-tooltip-offset="5"
