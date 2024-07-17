@@ -13,14 +13,19 @@ import { CartContext } from '../modal_cart_itens/CartContext';
 const Header_component = () =>{
   // <------- estado do carrinho ------->
   const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
+
+  // <------- imprimir o arrey de produto do estado do carrinho ------->
+  useEffect(()=>{
+    console.log(cartItems)
+  })
   
 
-    // <-------logica de mudança de estado hover dos icones do header------->
+    // <------- logica de mudança de estado hover dos icones do header ------->
  const [isCartfoHovered, setIsCartHovered] = useState(false);
  const [isSearchfoHovered, setISearchHovered] = useState(false);
 
 
-// <-------logica para botão de scroll para o topo da pagina------->
+// <------- logica para botão de scroll para o topo da pagina ------->
  const [isIconsFixed, setIsIconsFixed] = useState(false);
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -101,13 +106,13 @@ const Header_component = () =>{
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
                     </svg>
                     </div>
-                    
                     <div className="cart-item-details">
                       <p className='text-cart-name'>{item.quantity}x {item.product.Nome}</p>
                       <p className='text-cart-description'>{item.product.Descricao}</p>
                       <p className='text-cart-price'><strong>Preço:</strong> R$ {item.totalPrice}</p>
                     </div>
                   </div>
+                  
                 ))
               )}
             </div>
