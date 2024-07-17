@@ -53,6 +53,9 @@
     font-family: "Roboto", sans-serif;
     text-align: center;
 }
+#remove-item-cart{
+    cursor: pointer;
+}
 @media (max-width: 768px) {
     .btn-compra{
         
