@@ -8,12 +8,12 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
 
 const Grid_component = ({ categoryId, categoryName }) => {
-  // Estados dos produtos, carrinho de itens
+ 
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [maxLength, setMaxLength] = useState(60);
-  const [cartItems, setCartItems] = useState([]);
+  
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -52,13 +52,6 @@ const Grid_component = ({ categoryId, categoryName }) => {
     setSelectedProduct(product);
   };
 
-  // Função para adicionar ao carrinho
-  const onAddToCart = (cartItem) => {
-    setCartItems([...cartItems, cartItem]);
-    console.log('Item adicionado ao carrinho:', cartItem);
-    console.log(setCartItems)
-  };
-
   // Função para dividir o array de produtos em subarrays de 2 produtos
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
@@ -86,7 +79,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
 
   return (
     <div className="container text-center">
-      <ModalCartItems cartItems={cartItems} onClose={handleCloseCart} isOpen={isCartOpen} />
+      
       
       {productsChunks.map((row, rowIndex) => (
         <div key={rowIndex} className="row g-2 mb-2">
@@ -129,7 +122,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
           product={product}
           onClose={() => setSelectedProduct(null)}
           categoryName={categoryName}
-          onAddToCart={onAddToCart}
+          
         />
       ))}
     </div>
