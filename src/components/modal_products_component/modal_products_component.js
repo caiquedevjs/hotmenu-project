@@ -3,7 +3,7 @@ import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import Grid_component from '../Grid_component/Grid_component';
 
-const Modal_product_component = ({ id, product, onClose, categoryName, onAddToCart }) => {
+const Modal_product_component = ({ id, product, onClose, categoryName }) => {
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
 
   // <-------Estado local para armazenar o preço total------->
@@ -31,17 +31,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName, onAddToCa
     return totalPrice.toFixed(2);
   };
  
-  const handleAddToCart = () => {
-    const cartItem = {
-      id:product.Id,
-      name: product.Nome,
-      price: calculateTotalPrice(),
-      photo: `https://hotmenu.com.br/arquivos/${product.Foto}`,
-      quantity: 1, // Pode ser ajustado conforme necessário
-    };
-    onAddToCart(cartItem);
-    onClose(); // Fecha o modal após adicionar ao carrinho
-  };
+
  
 
   return (
@@ -89,7 +79,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName, onAddToCa
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
           <h5><strong>Preço Total:</strong> R$ {calculateTotalPrice()}</h5>
-          <button className='options-btn-add' onClick={handleAddToCart}>Adicionar ao carrinho</button>
+          <button className='options-btn-add'>Adicionar ao carrinho</button>
         </div>
       </div>
     </div>
