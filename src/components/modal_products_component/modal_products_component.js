@@ -96,7 +96,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
           </div>
           
           
-          <button className='options-btn-add' onClick={handleAddToCart}>Adicionar ao carrinho</button>
+          <button className='options-btn-add' data-bs-dismiss="modal" aria-label="Close" onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>
     </div>
