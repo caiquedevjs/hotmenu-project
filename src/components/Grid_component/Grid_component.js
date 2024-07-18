@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../service/productService';
@@ -8,6 +9,9 @@ import { Tooltip } from 'react-tooltip';
 
 const Grid_component = ({ categoryId, categoryName }) => {
  
+
+
+  // <---------- Variaveis de estados ---------->
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -51,7 +55,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
     setSelectedProduct(product);
   };
 
-  // Função para dividir o array de produtos em subarrays de 2 produtos
+  // <----------  Função para dividir o array de produtos em subarrays de 2 produtos ---------->
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
     const arrayLength = arr.length;
@@ -65,10 +69,10 @@ const Grid_component = ({ categoryId, categoryName }) => {
     return tempArray;
   };
 
-  // Divide os produtos em linhas de 2 colunas
+  // <---------- Divide os produtos em linhas de 2 colunas ---------- >
   const productsChunks = chunkArray(products, 2);
 
-  // Função para truncar o texto
+  // <---------- Função para truncar o texto ---------->
   const truncateText = (text) => {
     if (text.length <= maxLength) {
       return text;
@@ -113,7 +117,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
         </div>
       ))}
 
-      {/* Renderização dos modais dinâmico */}
+      {/* <---------- Renderização dos modais dinâmico ----------> */}
       {products.map((product, index) => (
         <Modal_product_component
           key={`modal-${index}`}

@@ -3,10 +3,10 @@ import { TfiAlarmClock } from "react-icons/tfi";
 import { FcAlarmClock } from "react-icons/fc";
 
 const Modal_hours_component = () => {
-    // Obter o dia da semana atual (0 para Domingo, 1 para Segunda-feira, ..., 6 para Sábado)
+    // <---------- Obter o dia da semana atual (0 para Domingo, 1 para Segunda-feira, ..., 6 para Sábado) ---------->
     const currentDay = new Date().getDay();
 
-    // Array com os dias da semana e seus respectivos horários
+    //  <---------- Array com os dias da semana e seus respectivos horários ---------->
     const daysOfWeek = [
         { day: 'Domingo', hours: '19:00 às 00:00' },
         { day: 'Segunda', hours: '19:00 às 00:00' },

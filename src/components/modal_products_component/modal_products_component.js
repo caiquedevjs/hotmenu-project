@@ -4,17 +4,25 @@ import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
 
 const Modal_product_component = ({ id, product, onClose, categoryName }) => {
+
+
+  // <---------- Constantes de estados ---------->
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
+
+
+  // <---------- Verificação do produto ---------- >
   useEffect(() => {
     if (product && product.PrecoDeVenda) {
       setTotalPrice(parseFloat(product.PrecoDeVenda));
     }
   }, [product]);
 
+
+// < ----------  Função do calculo do preço do produto + adicionais ---------- >
   const calculateTotalPrice = () => {
     if (!product || !product.PrecoDeVenda) {
       return "0.00";
@@ -30,6 +38,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
     return totalPrice.toFixed(2);
   };
 
+// <----------  Função de adicionar o produto do modal no carrinho de compras ---------->
   const handleAddToCart = () => {
     const totalPrice = calculateTotalPrice();
     addToCart(product, additionalStates, parseFloat(totalPrice), quantity);

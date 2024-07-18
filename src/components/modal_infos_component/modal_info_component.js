@@ -2,6 +2,7 @@
 import React from 'react';
 
 const Modal_infos_component = () =>{
+    // <---------- Modal de Informações ---------->
     return(
         <div class="modal fade" id="info-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
