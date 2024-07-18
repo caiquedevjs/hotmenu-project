@@ -8,8 +8,9 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product, additionalStates, totalPrice, quantity) => {
     const existingItem = cartItems.find(item => item.product.Id === product.Id && JSON.stringify(item.additionalStates) === JSON.stringify(additionalStates));
 
-    if (existingItem) {
-      // Se o produto já existe, atualiza a quantidade e o preço total
+       // <---------- Se o produto já existe, atualiza a quantidade e o preço total ---------->
+                        
+    if (existingItem) {           
       const updatedItems = cartItems.map(item => {
         if (item.product.Id === product.Id && JSON.stringify(item.additionalStates) === JSON.stringify(additionalStates)) {
           return {
@@ -22,7 +23,8 @@ export const CartProvider = ({ children }) => {
       });
       setCartItems(updatedItems);
     } else {
-      // Se o produto não existe, adiciona como um novo item
+      // <---------- Se o produto não existe, adiciona como um novo item ---------->
+      //              Logica de verificação do produto com o mesmo ID, descrição e adicionais.
       setCartItems(prevItems => [
         ...prevItems,
         { product, additionalStates, totalPrice, quantity }
@@ -32,8 +34,8 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = (index) => {
     const updatedItems = [...cartItems];
-    updatedItems.splice(index, 1); // Remove o item no índice especificado
-    setCartItems(updatedItems);
+    updatedItems.splice(index, 1); // <---------- Remove o item no índice especificado ---------->                                        
+    setCartItems(updatedItems);    //             logica de remorção do produto pelo Index do arrey do carrinho de compras. 
   };
 
   const totalCartPrice = () => {
