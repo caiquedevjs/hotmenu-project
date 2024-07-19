@@ -33,6 +33,9 @@
     font-weight: bold;
 
 }
+.btn-buscar-cupom:hover{
+    background-color:#332D2D ;
+}
 #tooltip-bsucar-cupom{ 
     font-size: 10px;
 }

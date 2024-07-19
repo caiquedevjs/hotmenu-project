@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../header_component/header_styles.css';
 import './modal_cart_itens.css';
 import './modal_cupom_desconto.css';
+import './modal_finalizar_pedido.css';
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
 import { Tooltip } from 'react-tooltip';
 import { CartContext } from '../modal_cart_itens/CartContext';
@@ -208,7 +209,7 @@ const Header_component = () =>{
 
       <form class="row g-3">
   <div class="col-md-6">
-    <label for="inputEmail4" class="form-label">Nome</label>
+    <label for="inputEmail4" className="form-label">Nome</label>
     <input type="text" class="form-control" id="inputNomel4"/>
   </div>
   <div class="col-md-6">
@@ -246,8 +247,8 @@ const Header_component = () =>{
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Limpar Sacola</button>
-        <button type="button" class="btn btn-primary">Finalizar pedido</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Finalizar pedido</button>
+        <button type="button" class="btn btn-primary">Excluir pedido</button>
       </div>
     </div>
   </div>
