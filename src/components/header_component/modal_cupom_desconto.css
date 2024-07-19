@@ -4,6 +4,12 @@
     flex-direction: row;
     justify-content: space-between;
 }
+#modal-header-title{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap:5px;
+}
 .cupom-desconto-input{
     border: none;
     background-color: whitesmoke;
@@ -12,13 +18,21 @@
     font-family: "Roboto", sans-serif;
     text-align: center;
     width: 50%;
+    font-size: small;
+}
+.cupom-desconto-input::placeholder{
+    font-size: small;
 }
 .btn-buscar-cupom{
     background-color: #ce2929;
-    border-radius: 8px;
+    border-radius: 5px;
     padding: 5px;
     color: white;
     font-family: "Roboto", sans-serif;
     border: none;
+    font-weight: bold;
 
+}
+#tooltip-bsucar-cupom{ 
+    font-size: 10px;
 }

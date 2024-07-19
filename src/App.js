@@ -9,6 +9,7 @@ import Selector_category_component from './components/selector_category_componen
 import Category_component from './components/category_component/category';
 import ModalBusca from './components/modal_search_component/modal_search_component';
 
+
 function App() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   

@@ -180,3 +180,9 @@
     padding: 5px;
     size: 35px;
   }
+  .bi-plus-circle-fill{
+    cursor: pointer;
+  }
+  .bi-dash-circle-fill{
+    cursor: pointer;
+  }
