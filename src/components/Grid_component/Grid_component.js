@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../service/productService';
 import './Grid_component.css';
@@ -20,6 +18,22 @@ const Grid_component = ({ categoryId, categoryName }) => {
         const productsData = await fetchProducts(); // Busca todos os produtos
         const filteredProducts = productsData.filter(product => product.CategoriaId === categoryId);
         setProducts(filteredProducts);
+
+        // Verificar a URL após carregar os produtos
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+          const productId = hash.split('-')[2]; // Obtém o ID do produto do hash
+          const product = filteredProducts.find(p => p.Id === parseInt(productId, 10));
+          if (product) {
+            setSelectedProduct(product);
+            setTimeout(() => {
+              const modalElement = document.getElementById(hash);
+              if (modalElement) {
+                modalElement.style.display = 'block'; // Exibe o modal
+              }
+            }, 100);
+          }
+        }
       } catch (error) {
         console.error('Erro ao buscar os produtos:', error);
       }
@@ -48,6 +62,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
 
   const openModal = (product) => {
     setSelectedProduct(product);
+    window.history.pushState(null, '', `/#product-modal-${product.Id}`);
   };
 
   // <----------  Função para dividir o array de produtos em subarrays de 2 produtos ---------->
@@ -121,10 +136,26 @@ const Grid_component = ({ categoryId, categoryName }) => {
           key={`modal-${index}`}
           id={`product-modal-${product.Id}`}
           product={product}
-          onClose={() => setSelectedProduct(null)}
+          onClose={() => {
+            setSelectedProduct(null);
+            window.history.pushState(null, '', '/');
+          }}
           categoryName={categoryName}
         />
       ))}
+
+      {/* Renderiza o modal do produto selecionado */}
+      {selectedProduct && (
+        <Modal_product_component
+          id={`product-modal-${selectedProduct.Id}`}
+          product={selectedProduct}
+          onClose={() => {
+            setSelectedProduct(null);
+            window.history.pushState(null, '', '/');
+          }}
+          categoryName={categoryName}
+        />
+      )}
     </div>
   );
 };

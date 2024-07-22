@@ -101,6 +101,14 @@
     width: 100px;
     height: 100px;
   }
+  #tooltip-cupom-btn{
+    font-size: 11px;
+  }
+  #cupom-icon-modal-title{
+    width: 30px;
+    height: 30px;
+    color: #ce2929;
+  }
   @media only screen and (max-width: 768px) {
    
     .icons_header_conteiner_class {

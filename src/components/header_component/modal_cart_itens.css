@@ -45,6 +45,7 @@
 .modal-footer-conteiner {
     display: flex;
     justify-content: space-between;
+    margin-right: 22px;
 }
 
 /* Estilo para os labels e preços */
@@ -62,11 +63,13 @@
 /* Estilo para preços */
 .prices-conteiner {
     text-align: right; /* Alinha o texto à direita */
+    margin-left: 10px;
 }
 
 /* Estilo adicional para o botão de compra */
 .btn-compra {
     background-color: #ce2929;
+    width:89%;
     color: white;
     font-family: "Roboto", sans-serif;
     font-size: 16px;
@@ -117,4 +120,13 @@
 }
 #icon-cupom-btn{
     cursor: pointer;
+    margin-right: 105px;
+    width: 70px;
+    height: 70px;
+    margin-bottom: 50px;
+   
+}
+#add-footer{
+    display: flex;
+    flex-direction: row;
 }
