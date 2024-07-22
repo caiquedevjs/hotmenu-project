@@ -8,15 +8,11 @@ import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
 
 const Grid_component = ({ categoryId, categoryName }) => {
- 
-
-
   // <---------- Variaveis de estados ---------->
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [maxLength, setMaxLength] = useState(60);
-  
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -30,7 +26,6 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
 
     fetchAllProducts();
-
   }, [categoryId]);
 
   useEffect(() => {
@@ -80,10 +75,13 @@ const Grid_component = ({ categoryId, categoryName }) => {
     return `${text.substring(0, maxLength)}...`;
   };
 
+  // <---------- Função para formatar o preço ---------->
+  const formatPrice = (price) => {
+    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+  };
+
   return (
     <div className="container text-center">
-      
-      
       {productsChunks.map((row, rowIndex) => (
         <div key={rowIndex} className="row g-2 mb-2">
           {row.map((product, index) => (
@@ -102,7 +100,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
                             data-tooltip-place="top">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16">
                               <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                            </svg> R${product.PrecoDeVenda}
+                            </svg> R${formatPrice(product.PrecoDeVenda)}
                             <Tooltip id="tooltip-preço-venda" />
                           </p>
                         </strong>
@@ -125,7 +123,6 @@ const Grid_component = ({ categoryId, categoryName }) => {
           product={product}
           onClose={() => setSelectedProduct(null)}
           categoryName={categoryName}
-          
         />
       ))}
     </div>

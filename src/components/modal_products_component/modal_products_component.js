@@ -37,6 +37,11 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
     totalPrice *= quantity;
     return totalPrice.toFixed(2);
   };
+   // <---------- Função para formatar o preço ---------->
+   const formatPrice = (price) => {
+    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+  };
+
 
 // <----------  Função de adicionar o produto do modal no carrinho de compras ---------->
   const handleAddToCart = () => {
@@ -58,7 +63,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
               <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`} alt={product.Nome} id='product-img-modal' />
             </div>
             <p id='pruduct-description-p'>{product.Descricao}</p>
-            <h5><strong>Preço:</strong> R$ {product.PrecoDeVenda}</h5>
+            <h5><strong>Preço:</strong> R$ {formatPrice(product.PrecoDeVenda)}</h5>
 
             <div className='options-container'>
               <div className='options-container-head'>

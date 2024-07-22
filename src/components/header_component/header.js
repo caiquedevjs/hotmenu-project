@@ -41,6 +41,22 @@ const Header_component = () =>{
       setIsIconsFixed(false);
     }
   };
+  // <---------- Função para formatar o preço ---------->
+  const formatPrice = (price) => {
+    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+  };
+
+
+
+    // <---------- Função para truncar o texto ---------->
+    const [maxLength, setMaxLength] = useState(60);
+    const truncateText = (text) => {
+      if (text.length <= maxLength) {
+        return text;
+      }
+      return `${text.substring(0, maxLength)}...`;
+    };
+  
 
     return (
  <div className='Header-component'>
@@ -99,6 +115,7 @@ const Header_component = () =>{
               </h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="overflow-y-auto">
             <div className="modal-body" id='modal-body-cartItens'>
               {cartItems.length === 0 ? (
                 <p id='span-carrinho-vazio'>Seu carrinho está vazio 😞</p>
@@ -107,19 +124,23 @@ const Header_component = () =>{
                   <div key={index} className="cart-item">
                     <div className='product-img-cart-item'>
                       <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-circle-fill" viewBox="0 0 16 16" id='remove-item-cart' onClick={() => removeFromCart(index)}>
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16" id='remove-item-cart' onClick={() => removeFromCart(index)}>
+                      <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+                    </svg>
+                      
                     </div>
                     <div className="cart-item-details">
                       <p className='text-cart-name'>{item.quantity}x {item.product.Nome}</p>
-                      <p className='text-cart-description'>{item.product.Descricao}</p>
-                      <p className='text-cart-price'><strong>Preço:</strong> R$ {item.totalPrice}</p>
+                      <p className='text-cart-description'>{truncateText(item.product.Descricao)}</p>
+                      <p className='text-cart-price'><strong>Preço:</strong> R$ {formatPrice(item.totalPrice)}</p>
                     </div>
                   </div>
                 ))
               )}
             </div>
+            </div>
+
+            
             <div className="modal-footer">
               <div id='mdfCart'>
                 <div className='modal-footer-conteiner'>
