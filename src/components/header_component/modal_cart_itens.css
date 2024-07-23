@@ -45,7 +45,7 @@
 .modal-footer-conteiner {
     display: flex;
     justify-content: space-between;
-    margin-right: 22px;
+    
 }
 
 /* Estilo para os labels e preços */
@@ -57,7 +57,8 @@
 
 /* Estilo para labels */
 .prices-labels {
-    text-align: left; /* Alinha o texto à esquerda */
+    text-align: left;
+   /* Alinha o texto à esquerda */
 }
 
 /* Estilo para preços */
@@ -69,7 +70,7 @@
 /* Estilo adicional para o botão de compra */
 .btn-compra {
     background-color: #ce2929;
-    width:89%;
+    width:100%;
     color: white;
     font-family: "Roboto", sans-serif;
     font-size: 16px;

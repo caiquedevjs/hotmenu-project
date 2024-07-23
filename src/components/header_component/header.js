@@ -51,7 +51,7 @@ const Header_component = () =>{
 
 
     // <---------- Função para truncar o texto ---------->
-    const [maxLength, setMaxLength] = useState(60);
+    const [maxLength, setMaxLength] = useState(40);
     const truncateText = (text) => {
       if (text.length <= maxLength) {
         return text;
@@ -183,13 +183,10 @@ const Header_component = () =>{
                     <strong><p className='Total-price-cart'>R$ {totalCartPrice()}</p></strong>
                   </div>
                 </div>
-                
                 <div className='btn-card'>
-                
                 <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra">
                   Finalizar Compra
                 </button>
-                 
                 </div>
                </div>
             </div>
