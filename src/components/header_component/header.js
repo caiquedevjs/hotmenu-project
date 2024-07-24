@@ -16,6 +16,7 @@ const Header_component = () =>{
   // <------- estado do carrinho ------->
   const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
 
+
   // <------- imprimir o arrey de produto do estado do carrinho ------->
   useEffect(()=>{
     console.log(cartItems)
@@ -234,8 +235,6 @@ const Header_component = () =>{
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        
-
       <form class="row g-3">
   <div class="col-md-6">
     <label for="inputEmail4" className="form-label">Nome</label>
