@@ -244,6 +244,18 @@ const Header_component = () =>{
     <label for="inputPassword4" class="form-label">Telefone</label>
     <input type="text" class="form-control" id="inputTelefone4"/>
   </div>
+  
+  <div class="dropdown-center">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
+    formas de entrega
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Retirar no estabelecimento</a></li>
+    <li><a class="dropdown-item" href="#">Receber em casa</a></li>
+    
+  </ul>
+</div>
+
   <div class="col-12">
     <label for="inputAddress" class="form-label">Endereço</label>
     <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>

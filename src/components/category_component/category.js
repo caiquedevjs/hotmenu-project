@@ -29,7 +29,11 @@ const Category_component = () => {
   }, []);
 
   if (isLoading) {
-    return <div>A carregar...</div>;
+    return <div>
+      <div class="spinner-border" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+    </div>;
   }
 
   return (
