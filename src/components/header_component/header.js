@@ -75,6 +75,12 @@ const Header_component = () =>{
     setList(cartItems);
   };
 
+   // <---------- função para remover pedido ao list ---------->
+   const hendlerRemovePedido = () =>{
+    setList([])
+   }
+
+
     return (
  <div className='Header-component'>
   <header className='header_class'>
@@ -199,7 +205,7 @@ const Header_component = () =>{
                   </div>
                 </div>
                 <div className='btn-card'>
-                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" >
+                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={ handleAddPedido}>
                   Finalizar Compra
                 </button>
                 </div>
@@ -253,12 +259,17 @@ const Header_component = () =>{
           
           <div className='cart-finalize-list'>
                 <h5>Resumo do Pedido:</h5>
+                <div class="overflow-y-auto">
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
-                    <p>{item.product.Nome} - Quantidade: {item.quantity} - R$ {formatPrice(item.product.Preço * item.quantity)}</p>
+                    <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
+                    <p>{item.product.Nome} - Quantidade: {item.quantity}</p>
                   </div>
                 ))}
+                
               </div>
+                </div>
+                
             
             <form className="row g-3">
               <div className="col-md-6">
@@ -324,7 +335,7 @@ const Header_component = () =>{
           </div>
           <div className="modal-footer">
             <button type="button"  data-bs-dismiss="modal" id='finalizar-pedido-btn'>Finalizar pedido</button>
-            <button type="button" id='excluir-pedido-btn'>Excluir pedido</button>
+            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}>Excluir pedido</button>
           </div>
         </div>
       </div>
