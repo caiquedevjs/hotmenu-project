@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 
-.form-label{
-    margin-right: 90%;
+.form-label-credit{
+    margin-right: 70%;
     font-family: "Roboto", sans-serif;
     font-size: 12px;
 }
@@ -12,4 +12,35 @@
 }
 #btn-forma-pagamento{
     width: 20px;
+}
+.form-label-credit-usuario{
+    margin-right: 88%;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+}
+#finalizar-pedido-btn{
+    background-color: #ce2929;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+#finalizar-pedido-btn:hover{
+    background-color: #332D2D;
+}
+#excluir-pedido-btn{
+    background-color: #ce2929;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+#excluir-pedido-btn:hover{
+    background-color: #332D2D;
 }

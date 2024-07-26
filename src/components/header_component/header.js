@@ -59,7 +59,21 @@ const Header_component = () =>{
       }
       return `${text.substring(0, maxLength)}...`;
     };
-  
+
+    // <---------- função para deixar os campos de endereço visivel ---------->
+    const [showAddressFields, setShowAddressFields] = useState(false);
+    const handleDeliveryOption = (option) => {
+      if (option === 'home') {
+        setShowAddressFields(true);
+      } else {
+        setShowAddressFields(false);
+      }
+    };
+      // <---------- função para adicionar pedido ao list ---------->
+  const [list, setList] = useState([]);
+  const handleAddPedido = () => {
+    setList(cartItems);
+  };
 
     return (
  <div className='Header-component'>
@@ -185,7 +199,7 @@ const Header_component = () =>{
                   </div>
                 </div>
                 <div className='btn-card'>
-                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra">
+                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" >
                   Finalizar Compra
                 </button>
                 </div>
@@ -223,76 +237,98 @@ const Header_component = () =>{
 
     
 {/* <-------- Modal de finalizar compra -------> */}
-<div class="modal fade" id="modal-finalizar-compra" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{'color': '#ce2929'}}>
-      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
-    </svg>
-        </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-      <form class="row g-3">
-  <div class="col-md-6">
-    <label for="inputEmail4" className="form-label">Nome</label>
-    <input type="text" class="form-control" id="inputNomel4"/>
-  </div>
-  <div class="col-md-6">
-    <label for="inputPassword4" class="form-label">Telefone</label>
-    <input type="text" class="form-control" id="inputTelefone4"/>
-  </div>
-  
-  <div class="dropdown-center">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
-    formas de entrega
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Retirar no estabelecimento</a></li>
-    <li><a class="dropdown-item" href="#">Receber em casa</a></li>
-    
-  </ul>
-</div>
+<div className="modal fade" id="modal-finalizar-compra" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h1 className="modal-title fs-5" id="exampleModalLabel">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+              </svg>
+            </h1>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div className="modal-body">
 
-  <div class="col-12">
-    <label for="inputAddress" class="form-label">Endereço</label>
-    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
-  </div>
-  <div class="col-12">
-    <label for="inputAddress2" class="form-label">Complemento</label>
-    <input type="text" class="form-control" id="inputComplemento" placeholder="Apartment, studio, or floor"/>
-  </div>
-  <div class="col-md-6">
-    <label for="inputCity" class="form-label">City</label>
-    <input type="text" class="form-control" id="inputCity"/>
-  </div>
-  
-  <div class="col-md-2">
-    <label for="inputZip" class="form-label">Cep</label>
-    <input type="text" class="form-control" id="inputCep"/>
-  </div>
-</form>
+          
+          <div className='cart-finalize-list'>
+                <h5>Resumo do Pedido:</h5>
+                {list.map((item, index) => (
+                  <div key={index} className="finalize-item">
+                    <p>{item.product.Nome} - Quantidade: {item.quantity} - R$ {formatPrice(item.product.Preço * item.quantity)}</p>
+                  </div>
+                ))}
+              </div>
+            
+            <form className="row g-3">
+              <div className="col-md-6">
+                <label htmlFor="inputNome4" className="form-label-credit-usuario">Nome</label>
+                <input type="text" className="form-control" id="inputNome4"/>
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="inputTelefone4" className="form-label-credit-usuario">Telefone</label>
+                <input type="text" className="form-control" id="inputTelefone4"/>
+              </div>
+              
+              <div className="dropdown-center">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false">
+                  Formas de entrega
+                </button>
+                <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
+                  <li><a className="dropdown-item" href="#" onClick={() => handleDeliveryOption('pickup')}>Retirar no estabelecimento</a></li>
+                  <li><a className="dropdown-item" href="#" onClick={() => handleDeliveryOption('home')}>Receber em casa</a></li>
+                </ul>
+              </div>
 
+              {showAddressFields && (
+                <>
+                  <div className="col-12">
+                    <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
+                    <input type="text" className="form-control" id="inputAddress" placeholder="1234 Main St"/>
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
+                    <input type="text" className="form-control" id="inputComplemento" placeholder="Apartment, studio, or floor"/>
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
+                    <input type="text" className="form-control" id="inputCity"/>
+                  </div>
+                  <div className="col-md-2">
+                    <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
+                    <input type="text" className="form-control" id="inputZip"/>
+                  </div>
+                </>
+              )}
+              <div className='card-credit-form'>
 
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Finalizar pedido</button>
-        <button type="button" class="btn btn-primary">Excluir pedido</button>
+              <div className="col-md-2">
+                    <label htmlFor="inputZip" className="form-label-credit">Número do cartão</label>
+                    <input type="text" className="form-control" id="inputZip"/>
+                  </div>
+                  <div className="col-md-2">
+                    <label htmlFor="inputZip" className="form-label-credit">Nome do titular</label>
+                    <input type="text" className="form-control" id="inputZip"/>
+                  </div>
+                  <div className="col-md-2">
+                    <label htmlFor="inputZip" className="form-label-credit">Data de vencimento</label>
+                    <input type="text" className="form-control" id="inputZip"/>
+                  </div>
+                  <div className="col-md-2">
+                    <label htmlFor="inputZip" className="form-label-credit-usuario">CVC</label>
+                    <input type="text" className="form-control" id="inputZip"/>
+                  </div>
+              </div>
+              
+            </form>
+          </div>
+          <div className="modal-footer">
+            <button type="button"  data-bs-dismiss="modal" id='finalizar-pedido-btn'>Finalizar pedido</button>
+            <button type="button" id='excluir-pedido-btn'>Excluir pedido</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>         
 
   </div>
     )
