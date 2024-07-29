@@ -52,12 +52,13 @@
 .prices-labels, .prices-conteiner {
     display: flex;
     flex-direction: column;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 /* Estilo para labels */
 .prices-labels {
     text-align: left;
+    margin-left: 189px;
    /* Alinha o texto à esquerda */
 }
 
@@ -78,11 +79,12 @@
     border: none;
     border-radius: 5px;
     padding: 5px;
+    
 }
 .btn-card{
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 15%;
 }
 .Total-price-cart{
     display: flex;
@@ -119,13 +121,24 @@
     cursor: pointer;
     margin-left: 10px;
 }
-#icon-cupom-btn{
-    cursor: pointer;
-    margin-right: 105px;
-    width: 70px;
-    height: 70px;
-    margin-bottom: 50px;
+.btn-cupom{
+    background-color: #ce2929;
+    width:100%;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    
+
    
+   
+}
+.btn-cupom:hover{
+    background-color: #332D2D;
+    color: white;
 }
 #add-footer{
     display: flex;

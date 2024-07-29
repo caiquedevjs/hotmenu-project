@@ -123,9 +123,8 @@ const handleFinalizarPedido = () => {
       toast.error("Não há pedidos para finalizar");
     }
   } else {
-    toast.error("Por favor, preencha todos os campos obrigatórios.", {
-      theme: 'dark'
-    });
+    toast.error("Por favor, preencha todos os campos obrigatórios."
+    );
   }
 };
 
@@ -217,12 +216,8 @@ const handleFinalizarPedido = () => {
 
             
             <div className="modal-footer" id='add-footer'>
-            <RiDiscountPercentFill  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  id='icon-cupom-btn' style={{color: isCupomfoHovered ? '#332D2D' : '#ce2929', transition: 'color 0.5s ease'}}
-              onMouseEnter={() => setIsCupomHovered(true)} 
-              onMouseLeave={() => setIsCupomHovered(false)}
-              data-tooltip-id="tooltip-cupom-btn"
-             data-tooltip-content="adicione o seu cupom aqui."
-             data-tooltip-place="top-start"/>
+              
+           
              <Tooltip id='tooltip-cupom-btn'/>
               <div id='mdfCart'>
               
@@ -256,11 +251,18 @@ const handleFinalizarPedido = () => {
                     <strong><p className='Total-price-cart'>R$ {totalCartPrice()}</p></strong>
                   </div>
                 </div>
+                
                 <div className='btn-card'>
+                <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className="btn-compra" 
+              
+              data-tooltip-id="tooltip-cupom-btn"
+             data-tooltip-content="adicione o seu cupom aqui."
+             data-tooltip-place="top-start">Adicionar cupom</button>
                 <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={handleAddPedido}>
                   Finalizar Compra
                 </button>
                 </div>
+               
                </div>
             </div>
           </div>
@@ -324,7 +326,8 @@ const handleFinalizarPedido = () => {
                 
             
                 <form className="row g-3">
-              <div className="col-md-6">
+                  <div className='user--inputs-conteine'>
+                  <div className="col-md-6">
                 <label htmlFor="inputNome4" className="form-label-credit-usuario">Nome</label>
                 <input type="text" className="form-control" id="inputNome4" value={nome} onChange={(e) => setNome(e.target.value)} />
               </div>
@@ -332,6 +335,8 @@ const handleFinalizarPedido = () => {
                 <label htmlFor="inputTelefone4" className="form-label-credit-usuario">Telefone</label>
                 <input type="text" className="form-control" id="inputTelefone4" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
               </div>
+                  </div>
+              
               <div className="dropdown-center">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false">
                   Formas de entrega
@@ -365,19 +370,19 @@ const handleFinalizarPedido = () => {
                 <h4 className='pay-title-form'>Pagamento</h4>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-                  <label className="form-label-credit-usuario" for="exampleRadios1">
-                    Crédito
+                  <label className="form-label-credit-check" for="exampleRadios1">
+                    Cartão de crédito
                   </label>
                 </div>
                 <div class="form-check">
                 <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-                <label  className="form-label-credit-usuario" for="exampleRadios1">
-                  Debíto
+                <label  className="form-label-credit-check" for="exampleRadios1">
+                  Cartão de débito
                 </label>
               </div>
               <div class="form-check">
               <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-              <label  className="form-label-credit-usuario" for="exampleRadios1">
+              <label  className="form-label-credit-check" for="exampleRadios1">
                 Pix
               </label>
             </div>
