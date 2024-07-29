@@ -8,7 +8,10 @@ import { FaSearch,FaShoppingCart } from "react-icons/fa";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { Tooltip } from 'react-tooltip';
 import { CartContext } from '../modal_cart_itens/CartContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+        
 
 
 
@@ -69,18 +72,67 @@ const Header_component = () =>{
         setShowAddressFields(false);
       }
     };
-      // <---------- função para adicionar pedido ao list ---------->
+   
   const [list, setList] = useState([]);
-  const handleAddPedido = () => {
-    setList(cartItems);
+  const [nome, setNome] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [complemento, setComplemento] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [cep, setCep] = useState('');
+  const [cartao, setCartao] = useState('');
+  const [titular, setTitular] = useState('');
+  const [vencimento, setVencimento] = useState('');
+  const [cvc, setCvc] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  const validateForm = () => {
+    if (
+      nome &&
+      telefone &&
+      (showAddressFields ? endereco && complemento && bairro && cep : true) &&
+      cartao &&
+      titular &&
+      vencimento &&
+      cvc
+    ) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
   };
 
-   // <---------- função para remover pedido ao list ---------->
-   const hendlerRemovePedido = () =>{
+  useEffect(() => {
+    validateForm();
+  }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc]);
+
+  const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`, );
+  const notify02 = () => toast.success('você receberá o status do pedido pelo whatsapp.',
+   
+  )
+const handleAddPedido =() =>{
+  setList(cartItems);
+}
+const handleFinalizarPedido = () => {
+  if (isFormValid) {
+    if (list.length > 0) {
+      notify();
+      notify02();
+      setList([]);
+    } else {
+      toast.error("Não há pedidos para finalizar");
+    }
+  } else {
+    toast.error("Por favor, preencha todos os campos obrigatórios.", {
+      theme: 'dark'
+    });
+  }
+};
+
+  const hendlerRemovePedido = () => {
     setList([])
-   }
-
-
+  };
+  
     return (
  <div className='Header-component'>
   <header className='header_class'>
@@ -205,7 +257,7 @@ const Header_component = () =>{
                   </div>
                 </div>
                 <div className='btn-card'>
-                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={ handleAddPedido}>
+                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={handleAddPedido}>
                   Finalizar Compra
                 </button>
                 </div>
@@ -271,16 +323,15 @@ const Header_component = () =>{
                 </div>
                 
             
-            <form className="row g-3">
+                <form className="row g-3">
               <div className="col-md-6">
                 <label htmlFor="inputNome4" className="form-label-credit-usuario">Nome</label>
-                <input type="text" className="form-control" id="inputNome4"/>
+                <input type="text" className="form-control" id="inputNome4" value={nome} onChange={(e) => setNome(e.target.value)} />
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputTelefone4" className="form-label-credit-usuario">Telefone</label>
-                <input type="text" className="form-control" id="inputTelefone4"/>
+                <input type="text" className="form-control" id="inputTelefone4" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
               </div>
-              
               <div className="dropdown-center">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false">
                   Formas de entrega
@@ -290,57 +341,81 @@ const Header_component = () =>{
                   <li><a className="dropdown-item" href="#" onClick={() => handleDeliveryOption('home')}>Receber em casa</a></li>
                 </ul>
               </div>
-
               {showAddressFields && (
                 <>
                   <div className="col-12">
                     <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
-                    <input type="text" className="form-control" id="inputAddress" placeholder="1234 Main St"/>
+                    <input type="text" className="form-control" id="inputAddress" placeholder="1234 Main St" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
-                    <input type="text" className="form-control" id="inputComplemento" placeholder="Apartment, studio, or floor"/>
+                    <input type="text" className="form-control" id="inputComplemento" placeholder="Apartment, studio, or floor" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
-                    <input type="text" className="form-control" id="inputCity"/>
+                    <input type="text" className="form-control" id="inputCity" value={bairro} onChange={(e) => setBairro(e.target.value)} />
                   </div>
                   <div className="col-md-2">
                     <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
-                    <input type="text" className="form-control" id="inputZip"/>
+                    <input type="text" className="form-control" id="inputZip" value={cep} onChange={(e) => setCep(e.target.value)} />
                   </div>
                 </>
               )}
               <div className='card-credit-form'>
-
-              <div className="col-md-2">
-                    <label htmlFor="inputZip" className="form-label-credit">Número do cartão</label>
-                    <input type="text" className="form-control" id="inputZip"/>
-                  </div>
-                  <div className="col-md-2">
-                    <label htmlFor="inputZip" className="form-label-credit">Nome do titular</label>
-                    <input type="text" className="form-control" id="inputZip"/>
-                  </div>
-                  <div className="col-md-2">
-                    <label htmlFor="inputZip" className="form-label-credit">Data de vencimento</label>
-                    <input type="text" className="form-control" id="inputZip"/>
-                  </div>
-                  <div className="col-md-2">
-                    <label htmlFor="inputZip" className="form-label-credit-usuario">CVC</label>
-                    <input type="text" className="form-control" id="inputZip"/>
-                  </div>
+                <h4 className='pay-title-form'>Pagamento</h4>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
+                  <label className="form-label-credit-usuario" for="exampleRadios1">
+                    Crédito
+                  </label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
+                <label  className="form-label-credit-usuario" for="exampleRadios1">
+                  Debíto
+                </label>
               </div>
-              
+              <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
+              <label  className="form-label-credit-usuario" for="exampleRadios1">
+                Pix
+              </label>
+            </div>
+            <div className='titular-card-pay-conteiner'>
+            <div className="col-md-2">
+                  <label htmlFor="inputZip" >Número do cartão</label>
+                  <input type="text" className="form-control" id="inputZip" value={cartao} onChange={(e) => setCartao(e.target.value)} />
+                </div>
+                <div className="col-md-2">
+                  <label htmlFor="inputZip" >Nome do titular</label>
+                  <input type="text" className="form-control" id="inputZip" value={titular} onChange={(e) => setTitular(e.target.value)} />
+                </div>
+            </div>
+               <div className='titular-card-pay-conteiner'>
+               <div className="col-md-2">
+                  <label htmlFor="inputZip" >Data de vencimento</label>
+                  <input type="text" className="form-control" id="inputZip" value={vencimento} onChange={(e) => setVencimento(e.target.value)} />
+                </div> 
+                <div className="col-md-2">
+                  <label htmlFor="inputZip" >CVC</label>
+                  <input type="text" className="form-control" id="inputZip" value={cvc} onChange={(e) => setCvc(e.target.value)} />
+                </div>
+
+               </div>
+                
+              </div>
             </form>
           </div>
+          
           <div className="modal-footer">
-            <button type="button"  data-bs-dismiss="modal" id='finalizar-pedido-btn'>Finalizar pedido</button>
+            <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido} >Finalizar pedido</button>
+            <ToastContainer />
             <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}>Excluir pedido</button>
           </div>
         </div>
       </div>
     </div>
-
+    
   </div>
     )
 }

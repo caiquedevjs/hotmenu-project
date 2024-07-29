@@ -44,3 +44,16 @@
 #excluir-pedido-btn:hover{
     background-color: #332D2D;
 }
+.titular-card-pay-conteiner{
+    display:  flex;
+    flex-direction: row;
+    gap: 5px;
+    margin-top: 5px;
+}
+.titular-card-pay-conteiner label{
+    font-size: 12px;
+}
+.pay-title-form{
+text-align: left;
+border-top: 1px solid #e0e0e0;
+}
