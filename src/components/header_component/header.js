@@ -251,17 +251,23 @@ const handleFinalizarPedido = () => {
                     <strong><p className='Total-price-cart'>R$ {totalCartPrice()}</p></strong>
                   </div>
                 </div>
+                <hr></hr>
                 
                 <div className='btn-card'>
-                <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className="btn-compra" 
+                
+                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={handleAddPedido}>
+                  Finalizar Compra
+                </button>
+                
+                 <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
               
               data-tooltip-id="tooltip-cupom-btn"
              data-tooltip-content="adicione o seu cupom aqui."
              data-tooltip-place="top-start">Adicionar cupom</button>
-                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={handleAddPedido}>
-                  Finalizar Compra
-                </button>
+             
                 </div>
+                
+               
                
                </div>
             </div>

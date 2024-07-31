@@ -34,6 +34,7 @@
     flex: 1;
     margin-top: 20px;
     text-align: left;
+   
 }
 
 /* Estilo para o rodapé do modal */
@@ -48,24 +49,27 @@
     
 }
 
-/* Estilo para os labels e preços */
-.prices-labels, .prices-conteiner {
-    display: flex;
-    flex-direction: column;
-    font-size: 11px;
-}
 
 /* Estilo para labels */
 .prices-labels {
     text-align: left;
-    margin-left: 189px;
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    margin-right: 200px;
+   
    /* Alinha o texto à esquerda */
 }
 
 /* Estilo para preços */
 .prices-conteiner {
     text-align: right; /* Alinha o texto à direita */
-    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    margin-right: 100px;
+    
+    
 }
 
 /* Estilo adicional para o botão de compra */
@@ -80,12 +84,22 @@
     border-radius: 5px;
     padding: 5px;
     
+    
+    
 }
-.btn-card{
-    display: flex;
-    flex-direction: row;
-    gap: 15%;
+.btn-cupom{
+    margin-top: 10px;
+    background-color: #ce2929;
+    width:100%;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px; 
 }
+
 .Total-price-cart{
     display: flex;
     flex-direction: row;
@@ -94,6 +108,10 @@
 }
 
 .btn-compra:hover {
+    background-color: #332D2D;
+    color: white;
+}
+.btn-cupom:hover{
     background-color: #332D2D;
     color: white;
 }
@@ -121,7 +139,94 @@
     cursor: pointer;
     margin-left: 10px;
 }
-.btn-cupom{
+
+.btn-card{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+
+
+
+@media only screen and (max-width: 768px) {
+/* Estilo geral do modal */
+.modal-content {
+    font-family: "Roboto", sans-serif;
+}
+
+/* Estilo para o contêiner do modal de itens do carrinho */
+
+/* Opcional: Ajustar o primeiro item para garantir visibilidade */
+
+/* Estilo para os itens do carrinho */
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 50px;
+}
+
+.product-img-cart-item {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.cart-item-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    
+}
+
+.cart-item-details {
+    flex: 1;
+    margin-top: 20px;
+    text-align: left;
+   
+}
+
+/* Estilo para o rodapé do modal */
+.modal-footer {
+    padding: 15px;
+}
+
+/* Estilo para o contêiner dos preços e labels */
+.modal-footer-conteiner {
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+
+/* Estilo para labels */
+.prices-labels {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    margin-right: 80px;
+   
+   /* Alinha o texto à esquerda */
+}
+
+/* Estilo para preços */
+.prices-conteiner {
+    text-align: right; /* Alinha o texto à direita */
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    margin-right: 90px;
+    
+    
+}
+
+/* Estilo adicional para o botão de compra */
+.btn-compra {
     background-color: #ce2929;
     width:100%;
     color: white;
@@ -132,15 +237,67 @@
     border-radius: 5px;
     padding: 5px;
     
+    
+    
+}
+.btn-cupom{
+    margin-top: 10px;
+    background-color: #ce2929;
+    width:100%;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px; 
+}
 
-   
-   
+.Total-price-cart{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+.btn-compra:hover {
+    background-color: #332D2D;
+    color: white;
 }
 .btn-cupom:hover{
     background-color: #332D2D;
     color: white;
 }
-#add-footer{
+
+/* Estilo para texto no carrinho */
+.text-cart-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.text-cart-description {
+    font-size: 12px;
+    color: #666;
+    text-align: left;
+    margin-inline: -2px;
+}
+
+.text-cart-price {
+    font-size: 12px;
+    color: #333;
+}
+
+#remove-item-cart {
+   
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-card{
     display: flex;
-    flex-direction: row;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
 }
