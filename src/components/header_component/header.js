@@ -388,7 +388,7 @@ const handleFinalizarPedido = () => {
               </div>
               <div class="form-check">
               <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-              <label  className="form-label-credit-check" for="exampleRadios1">
+              <label  className="form-label-credit-check-pix" for="exampleRadios1">
                 Pix
               </label>
             </div>

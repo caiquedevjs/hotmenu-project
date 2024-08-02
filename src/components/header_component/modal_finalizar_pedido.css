@@ -59,11 +59,95 @@ border-top: 1px solid #e0e0e0;
 }
 .form-label-credit-check{
     font-size: 12px;
-    margin-right: 244px;
+   
    
     
 }
 .user-inputs-conteiner{
     border-top: 1px solid #e0e0e0; 
     margin-top: 5%;
+}
+@media only screen and (max-width: 768px) {
+
+
+    .form-label-credit{
+        margin-right: 70%;
+        font-family: "Roboto", sans-serif;
+        font-size: 12px;
+    }
+    .form-label::placeholder{
+        font-family: "Roboto", sans-serif;
+        font-size: 8px;
+    }
+    #btn-forma-pagamento{
+        width: 20px;
+    }
+    .form-label-credit-usuario{
+        margin-right: 88%;
+        font-family: "Roboto", sans-serif;
+        font-size: 12px;
+    }
+    #finalizar-pedido-btn{
+        background-color: #ce2929;
+        color: white;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    #finalizar-pedido-btn:hover{
+        background-color: #332D2D;
+    }
+    #excluir-pedido-btn{
+        background-color: #ce2929;
+        color: white;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    #excluir-pedido-btn:hover{
+        background-color: #332D2D;
+    }
+    .titular-card-pay-conteiner{
+        display:  flex;
+        flex-direction: row;
+        gap: 5px;
+        margin-top: 5px;
+    }
+    .titular-card-pay-conteiner label{
+        font-size: 12px;
+    }
+    .pay-title-form{
+    text-align: left;
+    border-top: 1px solid #e0e0e0;
+    }
+    .form-label-credit-check{
+        font-size: 12px;
+        margin-right: 200px;
+       
+        
+    }
+    .form-label-credit-check-pix{
+        font-size: 12px;
+        margin-right: 270px;
+       
+        
+    }
+    .user-inputs-conteiner{
+        border-top: 1px solid #e0e0e0; 
+        margin-top: 5%;
+    }
+
+
+
+
+
+
+
+
 }
