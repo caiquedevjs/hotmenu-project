@@ -138,6 +138,7 @@ const handleFinalizarPedido = () => {
 
   const hendlerRemovePedido = () => {
     setList([])
+    toast.success("Pedido excluido com sucesso.")
   };
 
   const [selectedOption, setSelectedOption] = useState('credit');
