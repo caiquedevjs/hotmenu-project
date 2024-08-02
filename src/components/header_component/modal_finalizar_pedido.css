@@ -142,10 +142,37 @@ border-top: 1px solid #e0e0e0;
         border-top: 1px solid #e0e0e0; 
         margin-top: 5%;
     }
+    .btn.dropdown-toggle {
+        width: 300px; /* Largura do botão dropdown */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+    }
+    
+    .dropdown-menu {
+        width: 300px; /* Largura do menu suspenso */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+    }
+    
+    .dropdown-item {
+        width: 100%; /* Largura dos itens da lista */
+        /* Outros estilos conforme necessário */
+    }
+    .dropdown-menu {
+        width: 70%; /* Largura do menu suspenso */
+        /* Outros estilos conforme necessário */
+        
+    }
+    
+    .dropdown-item {
+        width: 100%; /* Largura dos itens da lista */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;}
 
-
-
-
+    #deliveryOptions{
+        width: 100%;
+    }    
 
 
 
