@@ -107,9 +107,7 @@ const Header_component = () =>{
   }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc]);
 
   const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`, );
-  const notify02 = () => toast.success('você receberá o status do pedido pelo whatsapp.',
-   
-  )
+  const notify02 = () => toast.success('você receberá o status do pedido pelo whatsapp.',)
 const handleAddPedido =() =>{
   setList(cartItems);
 }
@@ -130,6 +128,11 @@ const handleFinalizarPedido = () => {
 
   const hendlerRemovePedido = () => {
     setList([])
+  };
+
+  const [selectedOption, setSelectedOption] = useState('credit');
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
   };
   
     return (
@@ -374,24 +377,76 @@ const handleFinalizarPedido = () => {
               )}
               <div className='card-credit-form'>
                 <h4 className='pay-title-form'>Pagamento</h4>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-                  <label className="form-label-credit-check" for="exampleRadios1">
-                    Cartão de crédito
-                  </label>
-                </div>
-                <div class="form-check">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-                <label  className="form-label-credit-check" for="exampleRadios1">
-                  Cartão de débito
-                </label>
-              </div>
-              <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="opcao1" checked/>
-              <label  className="form-label-credit-check-pix" for="exampleRadios1">
-                Pix
-              </label>
-            </div>
+                <div className="form-check">
+        <input
+          className="form-check-input"
+          type="radio"
+          name="paymentOption"
+          id="creditOption"
+          value="credit"
+          checked={selectedOption === 'credit'}
+          onChange={handleOptionChange}
+        />
+        <label className="form-label-credit-check" htmlFor="creditOption">
+          Cartão de crédito
+        </label>
+      </div>
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="radio"
+          name="paymentOption"
+          id="debitOption"
+          value="debit"
+          checked={selectedOption === 'debit'}
+          onChange={handleOptionChange}
+        />
+        <label className="form-label-credit-check" htmlFor="debitOption">
+          Cartão de débito
+        </label>
+      </div>
+      <div className="form-check">
+        <input
+          className="form-check-input"
+          type="radio"
+          name="paymentOption"
+          id="pixOption"
+          value="pix"
+          checked={selectedOption === 'pix'}
+          onChange={handleOptionChange}
+        />
+        <label className="form-label-credit-check-pix" htmlFor="pixOption">
+          Pix
+        </label>
+      </div>
+
+      {selectedOption === 'credit' && (
+        <div className="card-icons">
+          <img src="icons8-cartão-de-crédito-mastercard-48.png" alt="Mastercard" />
+          <img src="icons8-visa-48.png" alt="Visa" />
+          <img src="master_card_credit.svg" id="master_card" alt="Mastercard" />
+          <img src="icons8-amex-48.png" alt="Amex" />
+          <img src="paypal_card.svg" id="payal_card" alt="PayPal" />
+        </div>
+      )}
+
+      {selectedOption === 'debit' && (
+        <div className="debit-icons">
+          <img src="icons8-cartão-de-crédito-mastercard-48.png" alt="Mastercard" />
+          <img src="icons8-visa-48.png" alt="Visa" />
+          <img src="paypal_card.svg" id="payal_card" alt="PayPal" />
+          <img src="icons8-amex-48.png" alt="Amex" />
+          <img src="master_card_credit.svg" id="master_card" alt="Mastercard" />
+        </div>
+      )}
+
+      {selectedOption === 'pix' && (
+        <div className="pix-icons">
+          <img src="pix-icon.png" alt="Pix" />
+          <img src="money-icon(1).png" alt="Money" />
+        </div>
+      )}
+
             <div className='titular-card-pay-conteiner'>
             <div className="col-md-2">
                   <label htmlFor="inputZip" >Número do cartão</label>
