@@ -117,6 +117,16 @@ const handleFinalizarPedido = () => {
       notify();
       notify02();
       setList([]);
+      setNome('');
+      setTelefone('');
+      setBairro('');
+      setEndereco('');
+      setComplemento('');
+      setCep('');
+      setCartao('');
+      setTitular('');
+      setVencimento('');
+      setCvc('');
     } else {
       toast.error("Não há pedidos para finalizar");
     }
@@ -442,8 +452,9 @@ const handleFinalizarPedido = () => {
 
       {selectedOption === 'pix' && (
         <div className="pix-icons">
-          <img src="pix-icon.png" alt="Pix" />
-          <img src="money-icon(1).png" alt="Money" />
+          <div className='conteiner-pix'>
+            <p>chave pix aqui</p>
+          </div>
         </div>
       )}
 

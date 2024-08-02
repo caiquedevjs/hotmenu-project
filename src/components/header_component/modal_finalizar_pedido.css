@@ -172,7 +172,19 @@ border-top: 1px solid #e0e0e0;
 
     #deliveryOptions{
         width: 100%;
-    }    
+    }
+    .conteiner-pix{
+        
+        font-family: "Roboto", sans-serif;
+        background-color: #ce2929;
+        color: #e0e0e0;
+        border-radius: 5px;
+        padding: 5px;
+    }   
+    .conteiner-pix p{
+        margin-top: 10px;
+
+    } 
 
 
 
