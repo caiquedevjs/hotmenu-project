@@ -25,13 +25,13 @@
 @media (max-width: 768px) {
 
     .btn.dropdown-toggle {
-        width: 340px; /* Largura do botão dropdown */
+        width: 300px; /* Largura do botão dropdown */
         /* Outros estilos conforme necessário */
         font-family: "Roboto", sans-serif;
     }
     
     .dropdown-menu {
-        width: 340px; /* Largura do menu suspenso */
+        width: 300px; /* Largura do menu suspenso */
         /* Outros estilos conforme necessário */
         font-family: "Roboto", sans-serif;
     }
