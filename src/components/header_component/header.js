@@ -109,8 +109,12 @@ const Header_component = () =>{
   const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`, );
   const notify02 = () => toast.success('você receberá o status do pedido pelo whatsapp.',)
 const handleAddPedido =() =>{
-  setList(cartItems);
+  
+    setList(cartItems);
+  
+  
 }
+
 const handleFinalizarPedido = () => {
   if (isFormValid) {
     if (list.length > 0) {
@@ -269,9 +273,18 @@ const handleFinalizarPedido = () => {
                 
                 <div className='btn-card'>
                 
-                <button className="btn-compra" data-bs-toggle="modal" data-bs-target="#modal-finalizar-compra" onClick={handleAddPedido}>
+                
+                
+                <button className="btn-compra"  disabled={cartItems.length === 0} data-bs-toggle={cartItems.length > 0 ? 'modal' : undefined} data-bs-target={cartItems.length > 0 ? '#modal-finalizar-compra' : undefined} 
+                onClick={ handleAddPedido } 
+                data-tooltip-id="carrinho-vazio-id"
+                data-tooltip-content= "Adicione um produto pra finalizar a compra."
+                data-tooltip-place="top-start"
+                >
                   Finalizar Compra
                 </button>
+                <Tooltip id='carrinho-vazio-id'></Tooltip>
+                
                 
                  <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
               
