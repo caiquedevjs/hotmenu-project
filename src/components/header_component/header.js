@@ -43,40 +43,72 @@ const Header_component = () =>{
   // <------ renderização das formas de pagamentos ------->
   const [formas, setFormas] = useState([]);
   const [formasPorTipo, setFormasPorTipo] = useState({});
+  const [formasSemTipo, setFormasSemTipo] = useState({});
+
   useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetchFormaPagamentos();
-            if (response && response.FormasDePagamento) {
-                // Organize formas by tipo
-                const formasByTipo = response.FormasDePagamento.reduce((acc, curr) => {
-                    if (!acc[curr.Tipo]) {
-                        acc[curr.Tipo] = [];
-                    }
-                    acc[curr.Tipo].push(curr);
-                    return acc;
-                }, {});
+      const fetchData = async () => {
+          try {
+              const response = await fetchFormaPagamentos();
+              if (response && response.FormasDePagamento) {
+                  // Organize formas by tipo and handle formas without tipo
+                  const formasByTipo = {};
+                  const formasSemTipo = {};
 
-                setFormas(response.FormasDePagamento);
-                setFormasPorTipo(formasByTipo);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar formas de pagamento:', error);
-        }
-    };
+                  response.FormasDePagamento.forEach((curr) => {
+                      if (curr.Tipo) {
+                          if (!formasByTipo[curr.Tipo]) {
+                              formasByTipo[curr.Tipo] = [];
+                          }
+                          formasByTipo[curr.Tipo].push(curr);
+                      } else {
+                          // Ensure each key in formasSemTipo is an array
+                          if (!formasSemTipo[curr.Nome]) {
+                              formasSemTipo[curr.Nome] = [];
+                          }
+                          formasSemTipo[curr.Nome].push(curr);
+                      }
+                  });
 
-    fetchData();
-}, []);
-const renderFormas = (tipo) => {
-  if (!formasPorTipo[tipo]) return null;
-  return formasPorTipo[tipo].map((forma) => (
-      <div key={forma.Id} className="payment-item">
-          <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-          <span>{forma.Nome}</span>
-      </div>
-  ));
+                  setFormasPorTipo(formasByTipo);
+                  setFormasSemTipo(formasSemTipo);
+              }
+          } catch (error) {
+              console.error('Erro ao buscar formas de pagamento:', error);
+          }
+      };
+
+      fetchData();
+  }, []);
+  // Function to render formas by tipo
+  const renderFormas = (tipo) => {
+    if (!formasPorTipo[tipo]) return null;
+    return (
+        <div className="payment-grid">
+            {formasPorTipo[tipo].map((forma) => (
+                <div key={forma.Id} className="payment-item">
+                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+                    
+                </div>
+            ))}
+        </div>
+    );
 };
 
+// Function to render formas sem tipo
+const renderFormasSemTipo = (nome) => {
+    const formas = formasSemTipo[nome];
+    if (!formas || !Array.isArray(formas)) return null;
+    return (
+        <div className="payment-grid">
+            {formas.map((forma) => (
+                <div key={forma.Id} className="payment-item">
+                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+                    
+                </div>
+            ))}
+        </div>
+    );
+};
 
   // <------- estado do carrinho ------->
   const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
@@ -420,7 +452,23 @@ const handleFinalizarPedido = () => {
                         type="radio"
                         name="paymentOption"
                         id={`${tipo}Option`}
-                        value={tipo.toLowerCase()}
+                        value={tipo}
+                        checked={selectedOption === tipo.toLowerCase()}
+                        onChange={handleOptionChange}
+                    />
+                    <label className="form-label-credit-check" htmlFor={`${tipo}Option`}>
+                        {tipo}
+                    </label>
+                </div>
+            ))}
+            {Object.keys(formasSemTipo).map((tipo) => (
+                <div key={tipo} className="form-check">
+                    <input
+                        className="form-check-input"
+                        type="radio"
+                        name="paymentOption"
+                        id={`${tipo}Option`}
+                        value={tipo}
                         checked={selectedOption === tipo.toLowerCase()}
                         onChange={handleOptionChange}
                     />
@@ -432,8 +480,11 @@ const handleFinalizarPedido = () => {
             
             <div className="payment-icons">
                 {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+                {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
             </div>
             
+            
+           
             
 
 

@@ -4,27 +4,35 @@ import { fetchFormaPagamentos } from "../service/productService";
 import { transformFormasDePagamento } from "../../utils/dataTransformationsFormasPagamentos";
 
 const Modal_credit_component = () => {
-    const [formas, setFormas] = useState([]);
     const [formasPorTipo, setFormasPorTipo] = useState({});
+    const [formasSemTipo, setFormasSemTipo] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetchFormaPagamentos();
                 if (response && response.FormasDePagamento) {
-                    const processedData = transformFormasDePagamento(response);
-                    setFormas(processedData.formasDePagamento);
+                    // Organize formas by tipo and handle formas without tipo
+                    const formasByTipo = {};
+                    const formasSemTipo = {};
 
-                    // Organize formas by tipo
-                    const formasByTipo = response.FormasDePagamento.reduce((acc, curr) => {
-                        if (!acc[curr.Tipo]) {
-                            acc[curr.Tipo] = [];
+                    response.FormasDePagamento.forEach((curr) => {
+                        if (curr.Tipo) {
+                            if (!formasByTipo[curr.Tipo]) {
+                                formasByTipo[curr.Tipo] = [];
+                            }
+                            formasByTipo[curr.Tipo].push(curr);
+                        } else {
+                            // Ensure each key in formasSemTipo is an array
+                            if (!formasSemTipo[curr.Nome]) {
+                                formasSemTipo[curr.Nome] = [];
+                            }
+                            formasSemTipo[curr.Nome].push(curr);
                         }
-                        acc[curr.Tipo].push(curr);
-                        return acc;
-                    }, {});
+                    });
 
                     setFormasPorTipo(formasByTipo);
+                    setFormasSemTipo(formasSemTipo);
                 }
             } catch (error) {
                 console.error('Erro ao buscar formas de pagamento:', error);
@@ -34,12 +42,28 @@ const Modal_credit_component = () => {
         fetchData();
     }, []);
 
-    // Function to render forma de pagamento
+    // Function to render formas by tipo
     const renderFormas = (tipo) => {
         if (!formasPorTipo[tipo]) return null;
         return (
             <div className="payment-grid">
                 {formasPorTipo[tipo].map((forma) => (
+                    <div key={forma.Id} className="payment-item">
+                        <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+                        <span>{forma.Nome}</span>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    // Function to render formas sem tipo
+    const renderFormasSemTipo = (nome) => {
+        const formas = formasSemTipo[nome];
+        if (!formas || !Array.isArray(formas)) return null;
+        return (
+            <div className="payment-grid">
+                {formas.map((forma) => (
                     <div key={forma.Id} className="payment-item">
                         <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
                         <span>{forma.Nome}</span>
@@ -67,6 +91,12 @@ const Modal_credit_component = () => {
                                 <div key={tipo} className="payment-category">
                                     <h3 id='pay_text'>{tipo}:</h3>
                                     {renderFormas(tipo)}
+                                </div>
+                            ))}
+                            {Object.keys(formasSemTipo).map((nome) => (
+                                <div key={nome} className="payment-category">
+                                    <h3 id='pay_text'>{nome}:</h3>
+                                    {renderFormasSemTipo(nome)}
                                 </div>
                             ))}
                         </div>

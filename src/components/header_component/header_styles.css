@@ -109,29 +109,7 @@
     height: 30px;
     color: #ce2929;
   }
- /* Estilo do grid */
-.payment-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-}
-
-/* Estilo dos itens do grid */
-.payment-item {
-  text-align: center;
-}
-
-.payment-item img {
-  width: 100%;
-  height: auto;
-  max-width: 70px; /* Ajuste o tamanho máximo conforme necessário */
-  object-fit: contain;
-}
-.payment-icons{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
-}
+ 
   @media only screen and (max-width: 768px) {
    
     .icons_header_conteiner_class {

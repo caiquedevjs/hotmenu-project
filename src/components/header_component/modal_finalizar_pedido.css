@@ -67,6 +67,28 @@ border-top: 1px solid #e0e0e0;
     border-top: 1px solid #e0e0e0; 
     margin-top: 5%;
 }
+/* Estilo do grid */
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  
+  /* Estilo dos itens do grid */
+  .payment-item {
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  
+  .payment-item img {
+    width: 100%;
+    height: auto;
+    max-width: 70px; /* Ajuste o tamanho máximo conforme necessário */
+    object-fit: contain;
+  }
+ 
 @media only screen and (max-width: 768px) {
 
 
