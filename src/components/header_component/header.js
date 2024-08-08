@@ -1,4 +1,7 @@
+
+// <------- import hooks ------->
 import React, { useState, useEffect, useContext } from 'react';
+// <------- import css------->
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../header_component/header_styles.css';
 import './modal_cart_itens.css';
@@ -10,12 +13,34 @@ import { Tooltip } from 'react-tooltip';
 import { CartContext } from '../modal_cart_itens/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { fetchFormaPagamentos } from '../service/productService';
+import { transformFormasDePagamento } from '../../utils/dataTransformationsFormasPagamentos';
 
         
 
 
 
 const Header_component = () =>{
+
+  // <------ renderização das formas de pagamentos ------->
+  const [formas, setFormas] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetchFormaPagamentos();
+        if (response && response.FormaDePagamento) {
+          const processedData = transformFormasDePagamento(response);
+          setFormas(processedData.formasDePagamento);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar formas de pagamento:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
   // <------- estado do carrinho ------->
   const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
 
@@ -231,16 +256,10 @@ const handleFinalizarPedido = () => {
               )}
             </div>
             </div>
-
-            
             <div className="modal-footer" id='add-footer'>
-              
-           
              <Tooltip id='tooltip-cupom-btn'/>
               <div id='mdfCart'>
-              
                 <div className='modal-footer-conteiner'>
-                
                   <div className='prices-labels'>
                     <p className='Total-price-cart'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag-fill" viewBox="0 0 16 16">
@@ -270,11 +289,7 @@ const handleFinalizarPedido = () => {
                   </div>
                 </div>
                 <hr></hr>
-                
                 <div className='btn-card'>
-                
-                
-                
                 <button className="btn-compra"  disabled={cartItems.length === 0} data-bs-toggle={cartItems.length > 0 ? 'modal' : undefined} data-bs-target={cartItems.length > 0 ? '#modal-finalizar-compra' : undefined} 
                 onClick={ handleAddPedido } 
                 data-tooltip-id="carrinho-vazio-id"
@@ -284,18 +299,11 @@ const handleFinalizarPedido = () => {
                   Finalizar Compra
                 </button>
                 <Tooltip id='carrinho-vazio-id'></Tooltip>
-                
-                
                  <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
-              
               data-tooltip-id="tooltip-cupom-btn"
              data-tooltip-content="adicione o seu cupom aqui."
              data-tooltip-place="top-start">Adicionar cupom</button>
-             
                 </div>
-                
-               
-               
                </div>
             </div>
           </div>
@@ -353,11 +361,8 @@ const handleFinalizarPedido = () => {
                     <p>{item.product.Nome} - Quantidade: {item.quantity}</p>
                   </div>
                 ))}
-                
               </div>
                 </div>
-                
-            
                 <form className="row g-3">
                   <div className='user--inputs-conteine'>
                   <div className="col-md-6">
@@ -400,67 +405,34 @@ const handleFinalizarPedido = () => {
                 </>
               )}
               <div className='card-credit-form'>
-                <h4 className='pay-title-form'>Pagamento</h4>
-                <div className="form-check">
-        <input
-          className="form-check-input"
-          type="radio"
-          name="paymentOption"
-          id="creditOption"
-          value="credit"
-          checked={selectedOption === 'credit'}
-          onChange={handleOptionChange}
-        />
-        <label className="form-label-credit-check" htmlFor="creditOption">
-          Cartão de crédito
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="radio"
-          name="paymentOption"
-          id="debitOption"
-          value="debit"
-          checked={selectedOption === 'debit'}
-          onChange={handleOptionChange}
-        />
-        <label className="form-label-credit-check" htmlFor="debitOption">
-          Cartão de débito
-        </label>
-      </div>
-      <div className="form-check">
-        <input
-          className="form-check-input"
-          type="radio"
-          name="paymentOption"
-          id="pixOption"
-          value="pix"
-          checked={selectedOption === 'pix'}
-          onChange={handleOptionChange}
-        />
-        <label className="form-label-credit-check-pix" htmlFor="pixOption">
-          Pix
-        </label>
-      </div>
+      <h4 className='pay-title-form'>Pagamento</h4>
+
+      {formas.map((forma, index) => (
+        <div key={index} className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="paymentOption"
+            id={`${forma.tipo}Option`}
+            value={forma.tipo.toLowerCase()}
+            checked={selectedOption === forma.tipo.toLowerCase()}
+            onChange={handleOptionChange}
+          />
+          <label className="form-label-credit-check" htmlFor={`${forma.tipo}Option`}>
+            {forma.tipo}
+          </label>
+        </div>
+      ))}
 
       {selectedOption === 'credit' && (
         <div className="card-icons">
-          <img src="icons8-cartão-de-crédito-mastercard-48.png" alt="Mastercard" />
-          <img src="icons8-visa-48.png" alt="Visa" />
-          <img src="master_card_credit.svg" id="master_card" alt="Mastercard" />
-          <img src="icons8-amex-48.png" alt="Amex" />
-          <img src="paypal_card.svg" id="payal_card" alt="PayPal" />
+          {/* Inclua imagens dos ícones de cartões aqui */}
         </div>
       )}
 
       {selectedOption === 'debit' && (
         <div className="debit-icons">
-          <img src="icons8-cartão-de-crédito-mastercard-48.png" alt="Mastercard" />
-          <img src="icons8-visa-48.png" alt="Visa" />
-          <img src="paypal_card.svg" id="payal_card" alt="PayPal" />
-          <img src="icons8-amex-48.png" alt="Amex" />
-          <img src="master_card_credit.svg" id="master_card" alt="Mastercard" />
+          {/* Inclua imagens dos ícones de cartões aqui */}
         </div>
       )}
 
@@ -471,6 +443,7 @@ const handleFinalizarPedido = () => {
           </div>
         </div>
       )}
+
 
             <div className='titular-card-pay-conteiner'>
             <div className="col-md-2">
