@@ -242,11 +242,11 @@ const handleFinalizarPedido = () => {
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
-        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease'  }}/>
+        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
           
   <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
-        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease'  }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
   {/*<label id='amount_order'>1</label> */}             
   </div>
   <div className='logo_conteiner_class'>
