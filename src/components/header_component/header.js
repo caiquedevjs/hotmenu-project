@@ -1,20 +1,30 @@
 
-// <------- import hooks ------->
+// <------- import hooks and context------->
 import React, { useState, useEffect, useContext } from 'react';
+import { CartContext } from '../modal_cart_itens/CartContext';
+
 // <------- import css------->
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../header_component/header_styles.css';
 import './modal_cart_itens.css';
 import './modal_cupom_desconto.css';
 import './modal_finalizar_pedido.css';
+import 'react-toastify/dist/ReactToastify.css';
+
+// <------- import react icons, toaltip and toast ------->
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { Tooltip } from 'react-tooltip';
-import { CartContext } from '../modal_cart_itens/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+// <------- import utils------->
 import { fetchFormaPagamentos } from '../service/productService';
 import { transformFormasDePagamento } from '../../utils/dataTransformationsFormasPagamentos';
+import  useHover  from '../../utils/headerHoverHandlers';
+import useScrollToTopButton from '../../utils/scrollHandler';
+import truncateText from '../../utils/truncateText';
+
+
 
         
 
@@ -22,23 +32,50 @@ import { transformFormasDePagamento } from '../../utils/dataTransformationsForma
 
 const Header_component = () =>{
 
+ // <------ constantes utils ------->
+  const cartHover = useHover();
+  const searchHover = useHover();
+  const { isIconsFixed} = useScrollToTopButton();
+  const truncate_Text = (text) => truncateText(text, 40)
+
+
+
   // <------ renderização das formas de pagamentos ------->
   const [formas, setFormas] = useState([]);
+  const [formasPorTipo, setFormasPorTipo] = useState({});
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetchFormaPagamentos();
-        if (response && response.FormaDePagamento) {
-          const processedData = transformFormasDePagamento(response);
-          setFormas(processedData.formasDePagamento);
+        try {
+            const response = await fetchFormaPagamentos();
+            if (response && response.FormasDePagamento) {
+                // Organize formas by tipo
+                const formasByTipo = response.FormasDePagamento.reduce((acc, curr) => {
+                    if (!acc[curr.Tipo]) {
+                        acc[curr.Tipo] = [];
+                    }
+                    acc[curr.Tipo].push(curr);
+                    return acc;
+                }, {});
+
+                setFormas(response.FormasDePagamento);
+                setFormasPorTipo(formasByTipo);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar formas de pagamento:', error);
         }
-      } catch (error) {
-        console.error('Erro ao buscar formas de pagamento:', error);
-      }
     };
 
     fetchData();
-  }, []);
+}, []);
+const renderFormas = (tipo) => {
+  if (!formasPorTipo[tipo]) return null;
+  return formasPorTipo[tipo].map((forma) => (
+      <div key={forma.Id} className="payment-item">
+          <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+          <span>{forma.Nome}</span>
+      </div>
+  ));
+};
 
 
   // <------- estado do carrinho ------->
@@ -51,27 +88,6 @@ const Header_component = () =>{
   })
   
 
-    // <------- logica de mudança de estado hover dos icones do header ------->
- const [isCartfoHovered, setIsCartHovered] = useState(false);
- const [isSearchfoHovered, setISearchHovered] = useState(false);
- const [isCupomfoHovered, setIsCupomHovered] = useState(false);
-
-
-// <------- logica para botão de scroll para o topo da pagina ------->
- const [isIconsFixed, setIsIconsFixed] = useState(false);
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleScroll = () => {
-    const scrollTop = window.scrollY;
-    if (scrollTop > 0) {
-      setIsIconsFixed(true);
-    } else {
-      setIsIconsFixed(false);
-    }
-  };
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
@@ -79,15 +95,7 @@ const Header_component = () =>{
 
 
 
-    // <---------- Função para truncar o texto ---------->
-    const [maxLength, setMaxLength] = useState(40);
-    const truncateText = (text) => {
-      if (text.length <= maxLength) {
-        return text;
-      }
-      return `${text.substring(0, maxLength)}...`;
-    };
-
+   
     // <---------- função para deixar os campos de endereço visivel ---------->
     const [showAddressFields, setShowAddressFields] = useState(false);
     const handleDeliveryOption = (option) => {
@@ -131,14 +139,12 @@ const Header_component = () =>{
     validateForm();
   }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc]);
 
-  const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`, );
-  const notify02 = () => toast.success('você receberá o status do pedido pelo whatsapp.',)
 const handleAddPedido =() =>{
-  
     setList(cartItems);
-  
-  
 }
+ const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`);
+ const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp.');
+
 
 const handleFinalizarPedido = () => {
   if (isFormValid) {
@@ -202,13 +208,13 @@ const handleFinalizarPedido = () => {
 </div>
  {/* <-------estrutura dos icons do header-------> */}
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
-  <FaSearch style={{ width: '20px', height: '20px',  color: isSearchfoHovered ? 'black' : '#ce2929', marginTop : '10px', cursor : 'pointer', transition: 'color 0.5s ease' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"
-  onMouseEnter={() => setISearchHovered(true)} 
-  onMouseLeave={() => setISearchHovered(false)}/>
+  <FaSearch onMouseEnter={cartHover.handleMouseEnter}
+        onMouseLeave={cartHover.handleMouseLeave}
+        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease'  }}/>
           
-  <FaShoppingCart  style={{ width: '20px', height: '20px', color: isCartfoHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease' }} 
-   onMouseEnter={() => setIsCartHovered(true)} 
-  onMouseLeave={() => setIsCartHovered(false)}   data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+  <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
+        onMouseLeave={searchHover.handleMouseLeave}
+        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease'  }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
   {/*<label id='amount_order'>1</label> */}             
   </div>
   <div className='logo_conteiner_class'>
@@ -248,7 +254,7 @@ const handleFinalizarPedido = () => {
                     </div>
                     <div className="cart-item-details">
                       <p className='text-cart-name'>{item.quantity}x {item.product.Nome}</p>
-                      <p className='text-cart-description'>{truncateText(item.product.Descricao)}</p>
+                      <p className='text-cart-description'>{truncate_Text(item.product.Descricao)}</p>
                       <p className='text-cart-price'><strong>Preço:</strong> R$ {formatPrice(item.totalPrice)}</p>
                     </div>
                   </div>
@@ -407,42 +413,28 @@ const handleFinalizarPedido = () => {
               <div className='card-credit-form'>
       <h4 className='pay-title-form'>Pagamento</h4>
 
-      {formas.map((forma, index) => (
-        <div key={index} className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="paymentOption"
-            id={`${forma.tipo}Option`}
-            value={forma.tipo.toLowerCase()}
-            checked={selectedOption === forma.tipo.toLowerCase()}
-            onChange={handleOptionChange}
-          />
-          <label className="form-label-credit-check" htmlFor={`${forma.tipo}Option`}>
-            {forma.tipo}
-          </label>
-        </div>
-      ))}
-
-      {selectedOption === 'credit' && (
-        <div className="card-icons">
-          {/* Inclua imagens dos ícones de cartões aqui */}
-        </div>
-      )}
-
-      {selectedOption === 'debit' && (
-        <div className="debit-icons">
-          {/* Inclua imagens dos ícones de cartões aqui */}
-        </div>
-      )}
-
-      {selectedOption === 'pix' && (
-        <div className="pix-icons">
-          <div className='conteiner-pix'>
-            <p>chave pix aqui</p>
-          </div>
-        </div>
-      )}
+      {Object.keys(formasPorTipo).map((tipo) => (
+                <div key={tipo} className="form-check">
+                    <input
+                        className="form-check-input"
+                        type="radio"
+                        name="paymentOption"
+                        id={`${tipo}Option`}
+                        value={tipo.toLowerCase()}
+                        checked={selectedOption === tipo.toLowerCase()}
+                        onChange={handleOptionChange}
+                    />
+                    <label className="form-label-credit-check" htmlFor={`${tipo}Option`}>
+                        {tipo}
+                    </label>
+                </div>
+            ))}
+            
+            <div className="payment-icons">
+                {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+            </div>
+            
+            
 
 
             <div className='titular-card-pay-conteiner'>
