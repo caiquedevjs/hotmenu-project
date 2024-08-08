@@ -446,38 +446,38 @@ const handleFinalizarPedido = () => {
       <h4 className='pay-title-form'>Pagamento</h4>
 
       {Object.keys(formasPorTipo).map((tipo) => (
-                <div key={tipo} className="form-check">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="paymentOption"
-                        id={`${tipo}Option`}
-                        value={tipo}
-                        checked={selectedOption === tipo.toLowerCase()}
-                        onChange={handleOptionChange}
-                    />
-                    <label className="form-label-credit-check" htmlFor={`${tipo}Option`}>
-                        {tipo}
-                    </label>
-                </div>
-            ))}
-            {Object.keys(formasSemTipo).map((tipo) => (
-                <div key={tipo} className="form-check">
-                    <input
-                        className="form-check-input"
-                        type="radio"
-                        name="paymentOption"
-                        id={`${tipo}Option`}
-                        value={tipo}
-                        checked={selectedOption === tipo.toLowerCase()}
-                        onChange={handleOptionChange}
-                    />
-                    <label className="form-label-credit-check" htmlFor={`${tipo}Option`}>
-                        {tipo}
-                    </label>
-                </div>
-            ))}
-            
+    <div key={tipo} className="form-check">
+        <input
+            className="form-check-input"
+            type="radio"
+            name="paymentOption"
+            id={`${tipo}Option`}
+            value={tipo}
+            checked={selectedOption === tipo.toLowerCase()}
+            onChange={handleOptionChange}
+        />
+        <label className="form-label-check" htmlFor={`${tipo}Option`}>
+            {tipo}
+        </label>
+    </div>
+))}
+{Object.keys(formasSemTipo).map((tipo) => (
+    <div key={tipo} className="form-check">
+        <input
+            className="form-check-input"
+            type="radio"
+            name="paymentOption"
+            id={`${tipo}Option`}
+            value={tipo}
+            checked={selectedOption === tipo.toLowerCase()}
+            onChange={handleOptionChange}
+        />
+        <label className="form-label-check" htmlFor={`${tipo}Option`}>
+            {tipo}
+        </label>
+    </div>
+))}
+
             <div className="payment-icons">
                 {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
                 {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}

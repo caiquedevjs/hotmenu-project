@@ -89,6 +89,8 @@ border-top: 1px solid #e0e0e0;
     object-fit: contain;
   }
  
+
+ 
 @media only screen and (max-width: 768px) {
 
 
@@ -148,18 +150,7 @@ border-top: 1px solid #e0e0e0;
     text-align: left;
     border-top: 1px solid #e0e0e0;
     }
-    .form-label-credit-check{
-        font-size: 12px;
-        margin-right: 230px;
-       
-        
-    }
-    .form-label-credit-check-pix{
-        font-size: 12px;
-        margin-right: 300px;
-       
-        
-    }
+  
     .user-inputs-conteiner{
         border-top: 1px solid #e0e0e0; 
         margin-top: 5%;
