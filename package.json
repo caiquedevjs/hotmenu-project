@@ -24,6 +24,8 @@
     "react-tooltip": "^5.27.1",
     "reducer-redux": "^1.2.1",
     "redux": "^5.0.1",
+    "save": "^2.9.0",
+    "toastify": "^2.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
