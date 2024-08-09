@@ -430,16 +430,17 @@ const handleFinalizarPedido = () => {
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h1 className="modal-title fs-5" id="exampleModalLabel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
+            <h3 className="modal-title fs-5" id='info_text'>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
                 <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
               </svg>
-            </h1>
+              Resumo
+            </h3>
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
           <div className='cart-finalize-list'>
-                <h5>Resumo do Pedido:</h5>
+                
                 <div class="overflow-y-auto">
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
@@ -534,7 +535,7 @@ const handleFinalizarPedido = () => {
         {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
     </div> <hr></hr>
 
-    {selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição' ? (
+    {selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição'  || selectedOption === 'PicPay' ? (
         <div className='titular-card-pay-container'>
         <div className="row">
             <div className="col-md-6">
@@ -636,6 +637,43 @@ const handleFinalizarPedido = () => {
             </div>
         </div>
     ) : null}
+
+{selectedOption === 'Transferência'  ? (
+        <div className='titular-card-pay-container'>
+        
+        <div className='card-date-container'>
+    <div className="row">
+        <div className="card-date-container_grid">
+        <div className=" col-sm-6">
+            <label htmlFor="inputExpiryDate">Número da conta</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputExpiryDate" 
+                value={vencimento} 
+                onChange={(e) => setVencimento(e.target.value)} 
+            /></div>
+            <div className=" col-sm-6">
+            <label htmlFor="inputCVC">Agência</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputCVC" 
+                value={cvc} 
+                onChange={(e) => setCvc(e.target.value)} 
+            />
+        </div>
+        <button className="btn-fazer-transferencia">Trasnferir</button>
+        </div>
+        
+    </div>
+</div>
+
+
+    </div>
+    
+    ) : null}
+    
 </div>
             </form>
           </div>

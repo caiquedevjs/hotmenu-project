@@ -309,6 +309,26 @@ border-top: 1px solid #e0e0e0;
         background-color: #332D2D;
 
     }
+    .btn-fazer-transferencia{
+        background-color: #ce2929; /* Cor de fundo vermelha */
+        border: none;
+        border-radius: 5px; /* Cantos arredondados */
+        cursor: pointer;
+        padding: 5px;
+        color: white;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        
+        margin-top: 22px;
+    }
+    .btn-fazer-transferencia button{
+        width: 50%;
+    }
+    .btn-fazer-transferencia:hover{
+        background-color: #332D2D;
+    }
+    
     
 
 }

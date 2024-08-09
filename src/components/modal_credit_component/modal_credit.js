@@ -46,14 +46,14 @@ const Modal_credit_component = () => {
     const renderFormas = (tipo) => {
         if (!formasPorTipo[tipo]) return null;
         return (
-            <div className="payment-grid">
+            <><div className="payment-grid">
                 {formasPorTipo[tipo].map((forma) => (
                     <div key={forma.Id} className="payment-item">
                         <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                        <span>{forma.Nome}</span>
+
                     </div>
                 ))}
-            </div>
+            </div><hr></hr></>
         );
     };
 
@@ -62,14 +62,14 @@ const Modal_credit_component = () => {
         const formas = formasSemTipo[nome];
         if (!formas || !Array.isArray(formas)) return null;
         return (
-            <div className="payment-grid">
+            <><div className="payment-grid">
                 {formas.map((forma) => (
                     <div key={forma.Id} className="payment-item">
                         <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                        <span>{forma.Nome}</span>
+
                     </div>
                 ))}
-            </div>
+            </div><hr></hr></>
         );
     };
 
