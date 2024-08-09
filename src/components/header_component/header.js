@@ -149,6 +149,29 @@ const renderFormasSemTipo = (nome) => {
     return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
   };
 
+// <---------- Função para copiar chave pix ---------->
+  const CopyButton = () => {
+    const copyToClipboard = () => {
+        const field = document.getElementById('inputPixKey');
+        field.select();
+        document.execCommand('copy');
+    };
+
+    return (
+        <button 
+            type="button" 
+            onClick={copyToClipboard} 
+            className="btn-copy"
+            aria-label="Copiar código Pix"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-copy" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+            </svg>
+        </button>
+    );
+};
+
+
 
 
    
@@ -161,7 +184,7 @@ const renderFormasSemTipo = (nome) => {
         setShowAddressFields(false);
       }
     };
-   
+   const [valorTotalPedido, setValorTotalPedido] = useState()
   const [list, setList] = useState([]);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -197,7 +220,10 @@ const renderFormasSemTipo = (nome) => {
 
 const handleAddPedido =() =>{
     setList(cartItems);
+    setValorTotalPedido(totalCartPrice())
 }
+
+// <---------- Notificações ---------->
  const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`);
  const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp.');
 
@@ -207,6 +233,7 @@ const handleFinalizarPedido = () => {
     if (list.length > 0) {
       notify();
       notify02();
+      setValorTotalPedido()
       setList([]);
       setNome('');
       setTelefone('');
@@ -229,6 +256,7 @@ const handleFinalizarPedido = () => {
 
   const hendlerRemovePedido = () => {
     setList([])
+    setValorTotalPedido()
     toast.success("Pedido excluido com sucesso.")
   };
 
@@ -416,9 +444,13 @@ const handleFinalizarPedido = () => {
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
                     <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
-                    <p>{item.product.Nome} - Quantidade: {item.quantity}</p>
+                    <p className='pedido-desccao'>{item.product.Nome} - Quantidade: {item.quantity}</p>
                   </div>
                 ))}
+              </div><hr></hr>
+              
+              <div className='total-valor-pedido'>
+                <h3 className='total-valor-pedido-text'>Valor total: R$ {valorTotalPedido}</h3>
               </div>
                 </div>
                 <form className="row g-3">
@@ -445,11 +477,11 @@ const handleFinalizarPedido = () => {
                 <>
                   <div className="col-12">
                     <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
-                    <input type="text" className="form-control" id="inputAddress" placeholder="1234 Main St" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
+                    <input type="text" className="form-control" id="inputAddress" placeholder=" Av. Luís Viana Filho, 6462 - Paralela" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
                   </div>
                   <div className="col-12">
                     <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
-                    <input type="text" className="form-control" id="inputComplemento" placeholder="Apartment, studio, or floor" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
+                    <input type="text" className="form-control" id="inputComplemento" placeholder="Wall Street Empresarial" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
@@ -502,7 +534,7 @@ const handleFinalizarPedido = () => {
         {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
     </div> <hr></hr>
 
-    {selectedOption === 'Débito' || selectedOption === 'Crédito' ? (
+    {selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição' ? (
         <div className='titular-card-pay-container'>
         <div className="row">
             <div className="col-md-6">
@@ -526,54 +558,62 @@ const handleFinalizarPedido = () => {
                 />
             </div>
         </div>
-        <div className="row">
-            <div className="col-md-6">
-                <label htmlFor="inputExpiryDate">Data de vencimento</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    id="inputExpiryDate" 
-                    value={vencimento} 
-                    onChange={(e) => setVencimento(e.target.value)} 
-                />
-            </div>
-            <div className="col-md-6">
-                <label htmlFor="inputCVC">CVC</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    id="inputCVC" 
-                    value={cvc} 
-                    onChange={(e) => setCvc(e.target.value)} 
-                />
-            </div>
+        <div className='card-date-container'>
+    <div className="row">
+        <div className="card-date-container_grid">
+        <div className=" col-sm-6">
+            <label htmlFor="inputExpiryDate">Data de vencimento</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputExpiryDate" 
+                value={vencimento} 
+                onChange={(e) => setVencimento(e.target.value)} 
+            /></div>
+            <div className=" col-sm-6">
+            <label htmlFor="inputCVC">CVC</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputCVC" 
+                value={cvc} 
+                onChange={(e) => setCvc(e.target.value)} 
+            />
         </div>
+        </div>
+        
+    </div>
+</div>
+
+
     </div>
     
     ) : null}
 
-    {selectedOption === 'Pix' ? (
-        <div className='titular-card-pay-conteiner'>
-            <div className="col-md-4">
-                <label htmlFor="inputPixKey">Chave Pix</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    id="inputPixKey" 
-                    value={pixKey} 
-                    onChange={(e) => setPixKey(e.target.value)} 
-                />
-            </div>
+{selectedOption === 'Pix' ? (
+    <div className='titular-card-pay-conteiner'>
+        <div className="input-container">
+          <div>
+            <label htmlFor="inputPixKey" className='labelChavePix'>Chave Pix</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputPixKey"
+                readOnly
+                value={pixKey}
+            /></div>
+            <CopyButton />
         </div>
-    ) : null}
+    </div>
+) : null}
 
     {selectedOption === 'Boleto' ? (
         <div className='titular-card-pay-conteiner'>
             <div className="col-md-4">
-                <label htmlFor="generateBoleto">Gerar Boleto</label>
+                
                 <button 
                     type="button" 
-                    className="btn btn-primary" 
+                    className="btn-gerar-boleto" 
                     onClick={generateBoleto}
                 >
                     Gerar Boleto
@@ -585,7 +625,7 @@ const handleFinalizarPedido = () => {
     {selectedOption === 'Dinheiro' ? (
         <div className='titular-card-pay-conteiner'>
             <div className="col-md-4">
-                <label htmlFor="inputChangeValue">Valor para troco</label>
+                <label htmlFor="inputChangeValue" className='labelValorTroco'>Valor para troco</label>
                 <input 
                     type="text" 
                     className="form-control" 
