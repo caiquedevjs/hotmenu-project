@@ -26,8 +26,6 @@ import truncateText from '../../utils/truncateText';
 
 
 
-        
-
 
 
 const Header_component = () =>{
@@ -38,6 +36,32 @@ const Header_component = () =>{
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
+// Definindo os estados
+const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
+const [valorTroco, setValorTroco] = useState(0);
+const [boleto, setBoleto] = useState(null);
+ // Função para gerar o boleto
+ const generateBoleto = () => {
+  // Simulando a criação do boleto
+  const novoBoleto = {
+    chavePIX: pixKey,
+    valor: valorTroco,
+    codigoBoleto: `BOL-${Math.random().toString(36).substring(2, 15)}`, // Simulação de código de boleto
+    dataGeracao: new Date().toLocaleDateString(),
+  };
+
+  if (selectedOption === 'Boleto') {
+    // Exibe o código do boleto em um alerta
+    alert(`Código do Boleto: ${novoBoleto.codigoBoleto}`);
+    setBoleto(novoBoleto);
+  } else {
+    // A verificação é feita apenas se a opção selecionada não for "Boleto"
+    if (!pixKey || valorTroco <= 0) {
+      alert('Preencha todos os campos corretamente.');
+      return;
+    }
+  }
+};
 
 
   // <------ renderização das formas de pagamentos ------->
@@ -367,8 +391,6 @@ const handleFinalizarPedido = () => {
              data-tooltip-place="top-start"
              ></input> 
             <button className='btn-buscar-cupom'>buscar</button>
-            
-           
           </div>
         </div>
       </div>
@@ -388,8 +410,6 @@ const handleFinalizarPedido = () => {
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-
-          
           <div className='cart-finalize-list'>
                 <h5>Resumo do Pedido:</h5>
                 <div class="overflow-y-auto">
@@ -412,7 +432,6 @@ const handleFinalizarPedido = () => {
                 <input type="text" className="form-control" id="inputTelefone4" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
               </div>
                   </div>
-              
               <div className="dropdown-center">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false">
                   Formas de entrega
@@ -443,74 +462,141 @@ const handleFinalizarPedido = () => {
                 </>
               )}
               <div className='card-credit-form'>
-      <h4 className='pay-title-form'>Pagamento</h4>
+    <h4 className='pay-title-form'>Pagamento</h4>
 
-      {Object.keys(formasPorTipo).map((tipo) => (
-    <div key={tipo} className="form-check">
-        <input
-            className="form-check-input"
-            type="radio"
-            name="paymentOption"
-            id={`${tipo}Option`}
-            value={tipo}
-            checked={selectedOption === tipo.toLowerCase()}
-            onChange={handleOptionChange}
-        />
-        <label className="form-label-check" htmlFor={`${tipo}Option`}>
-            {tipo}
-        </label>
-    </div>
-))}
-{Object.keys(formasSemTipo).map((tipo) => (
-    <div key={tipo} className="form-check">
-        <input
-            className="form-check-input"
-            type="radio"
-            name="paymentOption"
-            id={`${tipo}Option`}
-            value={tipo}
-            checked={selectedOption === tipo.toLowerCase()}
-            onChange={handleOptionChange}
-        />
-        <label className="form-label-check" htmlFor={`${tipo}Option`}>
-            {tipo}
-        </label>
-    </div>
-))}
+    {Object.keys(formasPorTipo).map((tipo) => (
+        <div key={tipo} className="form-check">
+            <input
+                className="form-check-input"
+                type="radio"
+                name="paymentOption"
+                id={`${tipo}Option`}
+                value={tipo}
+                checked={selectedOption === tipo.toLowerCase()}
+                onChange={handleOptionChange}
+            />
+            <label className="form-label-check" htmlFor={`${tipo}Option`}>
+                {tipo}
+            </label>
+        </div>
+    ))}
+    {Object.keys(formasSemTipo).map((tipo) => (
+        <div key={tipo} className="form-check">
+            <input
+                className="form-check-input"
+                type="radio"
+                name="paymentOption"
+                id={`${tipo}Option`}
+                value={tipo}
+                checked={selectedOption === tipo.toLowerCase()}
+                onChange={handleOptionChange}
+            />
+            <label className="form-label-check" htmlFor={`${tipo}Option`}>
+                {tipo}
+            </label>
+        </div>
+    ))}
 
-            <div className="payment-icons">
-                {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
-                {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+    <div className="payment-icons">
+        {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+        {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+    </div> <hr></hr>
+
+    {selectedOption === 'Débito' || selectedOption === 'Crédito' ? (
+        <div className='titular-card-pay-container'>
+        <div className="row">
+            <div className="col-md-6">
+                <label htmlFor="inputCardNumber">Número do cartão</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputCardNumber" 
+                    value={cartao} 
+                    onChange={(e) => setCartao(e.target.value)} 
+                />
             </div>
-            
-            
-           
-            
-
-
-            <div className='titular-card-pay-conteiner'>
-            <div className="col-md-2">
-                  <label htmlFor="inputZip" >Número do cartão</label>
-                  <input type="text" className="form-control" id="inputZip" value={cartao} onChange={(e) => setCartao(e.target.value)} />
-                </div>
-                <div className="col-md-2">
-                  <label htmlFor="inputZip" >Nome do titular</label>
-                  <input type="text" className="form-control" id="inputZip" value={titular} onChange={(e) => setTitular(e.target.value)} />
-                </div>
+            <div className="col-md-6">
+                <label htmlFor="inputCardHolder">Nome do titular</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputCardHolder" 
+                    value={titular} 
+                    onChange={(e) => setTitular(e.target.value)} 
+                />
             </div>
-               <div className='titular-card-pay-conteiner'>
-               <div className="col-md-2">
-                  <label htmlFor="inputZip" >Data de vencimento</label>
-                  <input type="text" className="form-control" id="inputZip" value={vencimento} onChange={(e) => setVencimento(e.target.value)} />
-                </div> 
-                <div className="col-md-2">
-                  <label htmlFor="inputZip" >CVC</label>
-                  <input type="text" className="form-control" id="inputZip" value={cvc} onChange={(e) => setCvc(e.target.value)} />
-                </div>
+        </div>
+        <div className="row">
+            <div className="col-md-6">
+                <label htmlFor="inputExpiryDate">Data de vencimento</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputExpiryDate" 
+                    value={vencimento} 
+                    onChange={(e) => setVencimento(e.target.value)} 
+                />
+            </div>
+            <div className="col-md-6">
+                <label htmlFor="inputCVC">CVC</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputCVC" 
+                    value={cvc} 
+                    onChange={(e) => setCvc(e.target.value)} 
+                />
+            </div>
+        </div>
+    </div>
+    
+    ) : null}
 
-               </div>
-                
-              </div>
+    {selectedOption === 'Pix' ? (
+        <div className='titular-card-pay-conteiner'>
+            <div className="col-md-4">
+                <label htmlFor="inputPixKey">Chave Pix</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputPixKey" 
+                    value={pixKey} 
+                    onChange={(e) => setPixKey(e.target.value)} 
+                />
+            </div>
+        </div>
+    ) : null}
+
+    {selectedOption === 'Boleto' ? (
+        <div className='titular-card-pay-conteiner'>
+            <div className="col-md-4">
+                <label htmlFor="generateBoleto">Gerar Boleto</label>
+                <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    onClick={generateBoleto}
+                >
+                    Gerar Boleto
+                </button>
+            </div>
+        </div>
+    ) : null}
+
+    {selectedOption === 'Dinheiro' ? (
+        <div className='titular-card-pay-conteiner'>
+            <div className="col-md-4">
+                <label htmlFor="inputChangeValue">Valor para troco</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="inputChangeValue" 
+                    value={valorTroco} 
+                    onChange={(e) => setValorTroco(e.target.value)} 
+                />
+            </div>
+        </div>
+    ) : null}
+</div>
             </form>
           </div>
           

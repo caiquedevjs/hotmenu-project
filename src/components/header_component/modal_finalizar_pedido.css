@@ -90,6 +90,22 @@ border-top: 1px solid #e0e0e0;
   }
  
 
+
+.form-check-input {
+    margin-right: 0.5rem; /* Ajuste o espaçamento entre o input e o label */
+}
+.form-label-check{
+    text-align: left;
+    margin-right: 100%;
+    max-width: 100%;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+}
+
  
 @media only screen and (max-width: 768px) {
 
