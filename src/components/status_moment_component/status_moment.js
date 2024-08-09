@@ -1,24 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../status_moment_component/status_moment_styles.css';
 
-const Status_moment_component = () => {
-    // Obter a hora atual
-    const currentHour = new Date().getHours();
-
-    // Definir o horário de funcionamento (por exemplo, das 9h às 18h)
-    const openingHour = 9;
-    const closingHour = 0;
-
-    // Verificar se está dentro do horário de funcionamento
-    const isOpen = currentHour >= openingHour && currentHour < closingHour;
-
-    // Determinar as classes CSS dinamicamente com base no estado de isOpen
-    const getStatusClasses = () => {
-        if (isOpen) {
-            return 'status_moment_component status_open';
-        } else {
-            return 'status_moment_component status_closed';
+// Função para buscar horários de funcionamento da API
+const fetchHorarioFuncionamento = async () => {
+    try {
+        const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/hotmenu');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar horário de funcionamento');
         }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Erro ao buscar horário de funcionamento', error);
+        return { status: 'Erro ao carregar horários', horarios: [] }; // Valor padrão caso ocorra erro
+    }
+};
+
+const Status_moment_component = () => {
+    const [horarios, setHorarios] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchAndSetHorarios = async () => {
+            const data = await fetchHorarioFuncionamento();
+            setHorarios(data.horarios);
+            updateStatus(data.horarios);
+        };
+
+        fetchAndSetHorarios();
+    }, []);
+
+    // Atualiza o status com base nos horários de funcionamento
+    const updateStatus = (horarios) => {
+        const currentHour = new Date().getHours();
+        const currentDay = new Date().getDay() + 1; // getDay() retorna 0 para Domingo, 1 para Segunda, etc.
+
+        const hojeHorario = horarios.find(h => h.DiaDaSemana === currentDay);
+        if (hojeHorario) {
+            const [horaIni] = hojeHorario.HoraIni.split(':').map(Number);
+            const [horaFim] = hojeHorario.HoraFim.split(':').map(Number);
+
+            const isOpenNow = currentHour >= horaIni && currentHour < horaFim;
+            setIsOpen(isOpenNow);
+        } else {
+            setIsOpen(false);
+        }
+    };
+
+    const getStatusClasses = () => {
+        return isOpen ? 'status_moment_component status_open' : 'status_moment_component status_closed';
     };
 
     return (
