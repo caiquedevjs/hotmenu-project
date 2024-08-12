@@ -23,6 +23,7 @@ import { transformFormasDePagamento } from '../../utils/dataTransformationsForma
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
 import truncateText from '../../utils/truncateText';
+import SoundMessage from '../assets/sound/message.wav';
 
 
 
@@ -184,7 +185,8 @@ const renderFormasSemTipo = (nome) => {
         setShowAddressFields(false);
       }
     };
-   const [valorTotalPedido, setValorTotalPedido] = useState()
+    const [itemCartCount, setItemCartCount] = useState();
+   const [valorTotalPedido, setValorTotalPedido] = useState();
   const [list, setList] = useState([]);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -295,11 +297,20 @@ const handleFinalizarPedido = () => {
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
         style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
-          
-  <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
+        {cartItems.length === 0 ? (
+          <div className='amount_order_conteiner'>
+          <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
+             onMouseLeave={searchHover.handleMouseLeave}
+             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+              </div>   
+        ) :(
+          <div className='amount_order_conteiner'>
+     <label id='amount_order'>1</label> 
+     <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
         style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
-  {/*<label id='amount_order'>1</label> */}             
+         </div>   
+        )}
   </div>
   <div className='logo_conteiner_class'>
   <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>

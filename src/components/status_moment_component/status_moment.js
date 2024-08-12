@@ -16,7 +16,7 @@ const fetchHorarioFuncionamento = async () => {
     }
 };
 
-const Status_moment_component = () => {
+const StatusMomentComponent = () => {
     const [horarios, setHorarios] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -40,7 +40,8 @@ const Status_moment_component = () => {
             const [horaIni] = hojeHorario.HoraIni.split(':').map(Number);
             const [horaFim] = hojeHorario.HoraFim.split(':').map(Number);
 
-            const isOpenNow = currentHour >= horaIni && currentHour < horaFim;
+            // Ajustar o horário de fechamento que é '00:00' para o próximo dia
+            const isOpenNow = (horaFim === 0 ? currentHour >= horaIni : (currentHour >= horaIni && currentHour < horaFim));
             setIsOpen(isOpenNow);
         } else {
             setIsOpen(false);
@@ -62,4 +63,4 @@ const Status_moment_component = () => {
     );
 };
 
-export default Status_moment_component;
+export default StatusMomentComponent;
