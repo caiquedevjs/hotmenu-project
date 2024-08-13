@@ -45,7 +45,7 @@
 /* Estilo para o contêiner dos preços e labels */
 .modal-footer-conteiner {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     
 }
 
@@ -197,8 +197,8 @@
 
 /* Estilo para o contêiner dos preços e labels */
 .modal-footer-conteiner {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: center;
     
 }
 
@@ -208,7 +208,7 @@
     text-align: left;
     display: flex;
     flex-direction: column;
-    font-size: 16px;
+    font-size: 12px;
     margin-right: 140px;
    
    /* Alinha o texto à esquerda */
@@ -219,7 +219,7 @@
     text-align: right; /* Alinha o texto à direita */
     display: flex;
     flex-direction: column;
-    font-size: 16px;
+    font-size: 12px;
     margin-right: 10px;
     
     

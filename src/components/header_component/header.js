@@ -11,11 +11,12 @@ import './modal_cupom_desconto.css';
 import './modal_finalizar_pedido.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-// <------- import react icons, toaltip and toast ------->
+// <------- import react icons, assets, toaltip and toast ------->
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { Tooltip } from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
+import SoundMessage from '../../assets/sounds/message.wav';
 
 // <------- import utils------->
 import { fetchFormaPagamentos } from '../service/productService';
@@ -23,7 +24,7 @@ import { transformFormasDePagamento } from '../../utils/dataTransformationsForma
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
 import truncateText from '../../utils/truncateText';
-import SoundMessage from '../assets/sound/message.wav';
+
 
 
 
@@ -37,20 +38,21 @@ const Header_component = () =>{
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
-// Definindo os estados
+// <------ estados modos de pagamentos: pix, dinheiro------->
 const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
- // Função para gerar o boleto
+
+ // <------ função para gerar boleto ------->
  const generateBoleto = () => {
-  // Simulando a criação do boleto
+
+  // <------ obejto boleto ------->
   const novoBoleto = {
     chavePIX: pixKey,
     valor: valorTroco,
     codigoBoleto: `BOL-${Math.random().toString(36).substring(2, 15)}`, // Simulação de código de boleto
     dataGeracao: new Date().toLocaleDateString(),
   };
-
   if (selectedOption === 'Boleto') {
     // Exibe o código do boleto em um alerta
     alert(`Código do Boleto: ${novoBoleto.codigoBoleto}`);
@@ -63,6 +65,10 @@ const [boleto, setBoleto] = useState(null);
     }
   }
 };
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
   // <------ renderização das formas de pagamentos ------->
@@ -78,7 +84,6 @@ const [boleto, setBoleto] = useState(null);
                   // Organize formas by tipo and handle formas without tipo
                   const formasByTipo = {};
                   const formasSemTipo = {};
-
                   response.FormasDePagamento.forEach((curr) => {
                       if (curr.Tipo) {
                           if (!formasByTipo[curr.Tipo]) {
@@ -93,7 +98,6 @@ const [boleto, setBoleto] = useState(null);
                           formasSemTipo[curr.Nome].push(curr);
                       }
                   });
-
                   setFormasPorTipo(formasByTipo);
                   setFormasSemTipo(formasSemTipo);
               }
@@ -104,7 +108,6 @@ const [boleto, setBoleto] = useState(null);
 
       fetchData();
   }, []);
-  // Function to render formas by tipo
   const renderFormas = (tipo) => {
     if (!formasPorTipo[tipo]) return null;
     return (
@@ -112,14 +115,11 @@ const [boleto, setBoleto] = useState(null);
             {formasPorTipo[tipo].map((forma) => (
                 <div key={forma.Id} className="payment-item">
                     <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                    
                 </div>
             ))}
         </div>
     );
 };
-
-// Function to render formas sem tipo
 const renderFormasSemTipo = (nome) => {
     const formas = formasSemTipo[nome];
     if (!formas || !Array.isArray(formas)) return null;
@@ -127,13 +127,18 @@ const renderFormasSemTipo = (nome) => {
         <div className="payment-grid">
             {formas.map((forma) => (
                 <div key={forma.Id} className="payment-item">
-                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                    
+                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} /> 
                 </div>
             ))}
         </div>
     );
 };
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
   // <------- estado do carrinho ------->
   const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
@@ -185,8 +190,9 @@ const renderFormasSemTipo = (nome) => {
         setShowAddressFields(false);
       }
     };
-    const [itemCartCount, setItemCartCount] = useState();
-   const [valorTotalPedido, setValorTotalPedido] = useState();
+
+   // <------ estados do formulario, valor total do pedido------->  
+  const [valorTotalPedido, setValorTotalPedido] = useState();
   const [list, setList] = useState([]);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -198,8 +204,10 @@ const renderFormasSemTipo = (nome) => {
   const [titular, setTitular] = useState('');
   const [vencimento, setVencimento] = useState('');
   const [cvc, setCvc] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
+  //<------ função para validar os campos do formulario ------->
   const validateForm = () => {
     if (
       nome &&
@@ -216,20 +224,24 @@ const renderFormasSemTipo = (nome) => {
     }
   };
 
+// <------ effect para disprar a validação dos campos do formulario ------->
   useEffect(() => {
     validateForm();
   }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc]);
 
+// <------ função para adicionar os itens do carrinho a lista de pedido ------->
 const handleAddPedido =() =>{
     setList(cartItems);
     setValorTotalPedido(totalCartPrice())
+    sound.play()
 }
 
 // <---------- Notificações ---------->
+const sound = new Audio(SoundMessage)
  const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`);
  const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp.');
 
-
+//<------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = () => {
   if (isFormValid) {
     if (list.length > 0) {
@@ -255,14 +267,16 @@ const handleFinalizarPedido = () => {
     );
   }
 };
-
+// <------ função para remover o pedido da lista de pedido ------->
   const hendlerRemovePedido = () => {
     setList([])
     setValorTotalPedido()
     toast.success("Pedido excluido com sucesso.")
+    sound.play()
   };
 
-  const [selectedOption, setSelectedOption] = useState('credit');
+
+//<------ função para capitar o valor da escolha da forma de pagamento------->
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
@@ -301,14 +315,14 @@ const handleFinalizarPedido = () => {
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
-             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>
      <label id='amount_order'>1</label> 
      <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
-        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
          </div>   
         )}
   </div>
@@ -318,6 +332,9 @@ const handleFinalizarPedido = () => {
   <h1 id='title_logo'>Pizzaria dos Amigos</h1>
   <h6 className='estabelecimento-description'>Pizzas tradicionais e de qualidade!</h6>      
   </header>
+
+{/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
+
 
 
 
@@ -411,6 +428,10 @@ const handleFinalizarPedido = () => {
         </div>
       </div>
 
+{/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
+
+
+
               {/* <------------ Modal carrinho de cupom de desconto ------------>*/}
       <div class="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
@@ -435,7 +456,10 @@ const handleFinalizarPedido = () => {
       </div>
     </div>
 
-    
+{/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
+
+
+
 {/* <-------- Modal de finalizar compra -------> */}
 <div className="modal fade" id="modal-finalizar-compra" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog">
@@ -451,7 +475,6 @@ const handleFinalizarPedido = () => {
           </div>
           <div className="modal-body">
           <div className='cart-finalize-list'>
-                
                 <div class="overflow-y-auto">
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
@@ -507,7 +530,6 @@ const handleFinalizarPedido = () => {
               )}
               <div className='card-credit-form'>
     <h4 className='pay-title-form'>Pagamento</h4>
-
     {Object.keys(formasPorTipo).map((tipo) => (
         <div key={tipo} className="form-check">
             <input
@@ -540,12 +562,10 @@ const handleFinalizarPedido = () => {
             </label>
         </div>
     ))}
-
     <div className="payment-icons">
         {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
         {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
     </div> <hr></hr>
-
     {selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição'  || selectedOption === 'PicPay' ? (
         <div className='titular-card-pay-container'>
         <div className="row">
@@ -596,12 +616,8 @@ const handleFinalizarPedido = () => {
         
     </div>
 </div>
-
-
     </div>
-    
     ) : null}
-
 {selectedOption === 'Pix' ? (
     <div className='titular-card-pay-conteiner'>
         <div className="input-container">
@@ -618,7 +634,6 @@ const handleFinalizarPedido = () => {
         </div>
     </div>
 ) : null}
-
     {selectedOption === 'Boleto' ? (
         <div className='titular-card-pay-conteiner'>
             <div className="col-md-4">
@@ -633,7 +648,6 @@ const handleFinalizarPedido = () => {
             </div>
         </div>
     ) : null}
-
     {selectedOption === 'Dinheiro' ? (
         <div className='titular-card-pay-conteiner'>
             <div className="col-md-4">
@@ -648,7 +662,6 @@ const handleFinalizarPedido = () => {
             </div>
         </div>
     ) : null}
-
 {selectedOption === 'Transferência'  ? (
         <div className='titular-card-pay-container'>
         
@@ -676,15 +689,10 @@ const handleFinalizarPedido = () => {
         </div>
         <button className="btn-fazer-transferencia">Trasnferir</button>
         </div>
-        
     </div>
 </div>
-
-
     </div>
-    
     ) : null}
-    
 </div>
             </form>
           </div>
@@ -697,7 +705,6 @@ const handleFinalizarPedido = () => {
         </div>
       </div>
     </div>
-    
   </div>
     )
 }
