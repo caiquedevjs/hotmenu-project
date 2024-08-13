@@ -46,7 +46,8 @@
     transition: top 2s ease;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 3px;
+    font-size: 25px;
   }
   
   .icons_header_conteiner_class.fixed {
@@ -58,6 +59,7 @@
     position: fixed;
     right: 10px;
     gap: 1px;
+    font-size: 25px;
     
   }
   .carousel-fade{
@@ -78,11 +80,13 @@
     background-color: #332D2D;
     color: white;
     border-radius: 100%;
-    width: 15px;
-    height: 15px;
+    width: 18px;
+    height: 18px;
     text-align: center;
     font-size: 11px;
     margin-right: 6px;
+    margin-left: 3px;
+    margin-top: 5px;
     z-index: 1;
     
   }
@@ -118,7 +122,8 @@
         right: -12px;
         z-index: 100;
         transition: top 2s ease;
-        width: 40px;
+        width: 45px;
+        font-size: 20px;
         
       }
       .conteiner_hotmenu_logo img{
@@ -130,8 +135,9 @@
       .icons_header_conteiner_class.fixed {
         top: auto;
         bottom: 20px;
-        width: 40px;
+        width: 45px;
         right: -12px;
+        font-size: 20px;
       }
       .img-fluid{
         width: 130px;
@@ -151,12 +157,13 @@
         background-color: #332D2D;
         color: white;
         border-radius: 100%;
-        width: 10px;
-        height: 10px;
+        width: 15px;
+        height: 15px;
         text-align: center;
-        font-size: 8px;
+        font-size: 10px;
         z-index: 1;
-        margin-top: 5px;
+        margin-top: 8px;
+        margin-left: 5px;
       }
       .carousel-fade{
    

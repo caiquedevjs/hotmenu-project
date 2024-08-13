@@ -193,24 +193,36 @@
     padding: 15px;
 }
 
-/* Estilo para o contêiner dos preços e labels */
 .modal-footer-conteiner {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 40vw;
     
 }
 
 
 /* Estilo para labels */
 .prices-labels {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    font-size: 12px;
-    margin-right: 140px;
+   text-align: left;
+   font-family: "Roboto", sans-serif;
+   font-size: 12px;
    
    /* Alinha o texto à esquerda */
 }
+
+/* Estilo para preços */
+.prices-conteiner {
+   text-align: left;
+   font-family: "Roboto", sans-serif;
+   font-size: 12px;
+    
+}
+    
+   
+   /* Alinha o texto à esquerda */
+
 
 /* Estilo para preços */
 .prices-conteiner {
@@ -218,7 +230,7 @@
     display: flex;
     flex-direction: column;
     font-size: 12px;
-    margin-right: 10px;
+   
     
     
 }

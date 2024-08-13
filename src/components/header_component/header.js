@@ -261,10 +261,12 @@ const handleFinalizarPedido = () => {
       setCvc('');
     } else {
       toast.error("Não há pedidos para finalizar");
+      sound.play();
     }
   } else {
     toast.error("Por favor, preencha todos os campos obrigatórios."
     );
+    sound.play();
   }
 };
 // <------ função para remover o pedido da lista de pedido ------->
@@ -310,12 +312,12 @@ const handleFinalizarPedido = () => {
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
-        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '30px' }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
+        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
         {cartItems.length === 0 ? (
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
-             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>
@@ -479,7 +481,7 @@ const handleFinalizarPedido = () => {
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
                     <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
-                    <p className='pedido-desccao'>{item.product.Nome} - Quantidade: {item.quantity}</p>
+                    <p className='pedido-desccao'>{item.product.Nome}<br></br>Quantidade: {item.quantity}</p>
                   </div>
                 ))}
               </div>
