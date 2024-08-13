@@ -482,12 +482,11 @@ const handleFinalizarPedido = () => {
                     <p className='pedido-desccao'>{item.product.Nome} - Quantidade: {item.quantity}</p>
                   </div>
                 ))}
-              </div><hr></hr>
-              
-              <div className='total-valor-pedido'>
-                <h3 className='total-valor-pedido-text'>Valor total: R$ {valorTotalPedido}</h3>
               </div>
                 </div>
+                <div className='total-valor-pedido'>
+                <h3 className='total-valor-pedido-text'>Valor total: R$ {valorTotalPedido}</h3>
+              </div>
                 <form className="row g-3">
                   <div className='user--inputs-conteine'>
                   <div className="col-md-6">

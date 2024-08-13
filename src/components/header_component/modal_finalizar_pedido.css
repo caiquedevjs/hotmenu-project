@@ -1,6 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-
+.finalize-item{
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 50px;
+}
+#inputNome4{
+    width: 200%;
+}
+#inputTelefone4{ 
+    width: 200%;  
+}
 .form-label-credit{
     margin-right: 70%;
     font-family: "Roboto", sans-serif;
@@ -18,6 +31,25 @@
     font-family: "Roboto", sans-serif;
     font-size: 12px;
 }
+.btn.dropdown-toggle {
+    width: 300px; /* Largura do botão dropdown */
+    /* Outros estilos conforme necessário */
+    font-family: "Roboto", sans-serif;
+}
+
+.dropdown-menu {
+    width: 300px; /* Largura do menu suspenso */
+    /* Outros estilos conforme necessário */
+    font-family: "Roboto", sans-serif;
+}
+
+.dropdown-item {
+    width: 100%; /* Largura dos itens da lista */
+    /* Outros estilos conforme necessário */
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+}
+    
 #finalizar-pedido-btn{
     background-color: #ce2929;
     color: white;
@@ -44,6 +76,22 @@
 #excluir-pedido-btn:hover{
     background-color: #332D2D;
 }
+.pedido-desccao{
+    color: #666;
+    font-family: "Roboto", sans-serif; 
+}
+.total-valor-pedido-text{
+    background-color: transparent;
+    color: #332D2D;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #ce2929 ;
+    border-radius: 5px;
+    padding: 10px;
+    width: 50%; 
+    margin-left: 25%;
+}
 .titular-card-pay-conteiner{
     display:  flex;
     flex-direction: row;
@@ -57,16 +105,7 @@
 text-align: left;
 border-top: 1px solid #e0e0e0;
 }
-.form-label-credit-check{
-    font-size: 12px;
-   
-   
-    
-}
-.user-inputs-conteiner{
-    border-top: 1px solid #e0e0e0; 
-    margin-top: 5%;
-}
+
 /* Estilo do grid */
 .payment-grid {
     display: grid;
@@ -89,8 +128,6 @@ border-top: 1px solid #e0e0e0;
     object-fit: contain;
   }
  
-
-
 .form-check-input {
     margin-right: 0.5rem; /* Ajuste o espaçamento entre o input e o label */
 }
@@ -101,14 +138,130 @@ border-top: 1px solid #e0e0e0;
     font-family: "Roboto", sans-serif;
     font-size: 12px;
 }
-.row{
+.conteiner-pix{
+        
+    font-family: "Roboto", sans-serif;
+    background-color: #ce2929;
+    color: #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+}   
+.conteiner-pix p{
+    margin-top: 10px;
+
+} 
+.titular-card-pay-container label{
+    margin-right: 75%; 
+}
+.card-date-container_grid{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.card-date-container_grid input{
+    width: 40%;
+    
+}
+.card-date-container_grid label{
+    margin-right: 75%; 
+}
+.card-date-container_grid button{
+    margin-right: 10px;
+}
+label{
+    text-align: left;
+    font-family: "Roboto", sans-serif;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.labelValorTroco{
+    margin-right: 75%;  
+}
+.labelChavePix{
+    margin-right: 75%; 
+}
+.input-container {
+    display: flex;
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    gap: 10px;
+}
+
+.form-control {
+    flex: 1;
+    margin-right: 10px; /* Espaço entre o campo de entrada e o botão */
+}
+
+.btn-copy {
+    background-color: #ce2929; /* Cor de fundo vermelha */
+    border: none;
+    border-radius: 4px; /* Cantos arredondados */
+    cursor: pointer;
+    padding: 5px; /* Espaço interno */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-copy svg {
+    fill: white; /* Cor do ícone */
+    width: 20px; /* Tamanho do ícone */
+    height: 20px; /* Tamanho do ícone */
+}
+
+.btn-copy:hover {
+  background-color: #332D2D; /* Cor de fundo quando o botão é hoverizado */
+}
+
+.btn-copy:focus {
+    outline: none; /* Remove o contorno padrão quando o botão está em foco */
+}
+.btn-gerar-boleto{
+    background-color: #ce2929; /* Cor de fundo vermelha */
+    border: none;
+    border-radius: 5px; /* Cantos arredondados */
+    cursor: pointer;
+    padding: 5px;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 50px;
+}
+.btn-gerar-boleto:hover{
+    background-color: #332D2D;
+
+}
+.btn-fazer-transferencia{
+    background-color: #ce2929; /* Cor de fundo vermelha */
+    border: none;
+    border-radius: 5px; /* Cantos arredondados */
+    cursor: pointer;
+    padding: 5px;
+    color: white;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    
+    margin-top: 22px;
+}
+.btn-fazer-transferencia button{
+    
+    margin-right: 50px;
+}
+.btn-fazer-transferencia:hover{
+    background-color: #332D2D;
 }
 
  
 @media only screen and (max-width: 768px) {
-
+    #inputNome4{
+        width: 100%;
+    }
+    #inputTelefone4{ 
+        width: 100%;  
+    }
 
     .form-label-credit{
         margin-right: 70%;
@@ -143,6 +296,7 @@ border-top: 1px solid #e0e0e0;
     .pedido-desccao{
         color: #666;
         font-family: "Roboto", sans-serif; 
+        font-size: 14px;
     }
     .total-valor-pedido-text{
         background-color: transparent;
@@ -197,16 +351,6 @@ border-top: 1px solid #e0e0e0;
         width: 300px; /* Largura do menu suspenso */
         /* Outros estilos conforme necessário */
         font-family: "Roboto", sans-serif;
-    }
-    
-    .dropdown-item {
-        width: 100%; /* Largura dos itens da lista */
-        /* Outros estilos conforme necessário */
-    }
-    .dropdown-menu {
-        width: 70%; /* Largura do menu suspenso */
-        /* Outros estilos conforme necessário */
-        
     }
     
     .dropdown-item {
