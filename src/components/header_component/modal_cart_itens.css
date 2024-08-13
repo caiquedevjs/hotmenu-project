@@ -46,29 +46,27 @@
 .modal-footer-conteiner {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 257px;
     
 }
 
 
 /* Estilo para labels */
 .prices-labels {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    font-size: 11px;
-    margin-right: 200px;
+   text-align: left;
+   font-family: "Roboto", sans-serif;
+   font-size: 16px;
    
    /* Alinha o texto à esquerda */
 }
 
 /* Estilo para preços */
 .prices-conteiner {
-    text-align: right; /* Alinha o texto à direita */
-    display: flex;
-    flex-direction: column;
-    font-size: 11px;
-    margin-right: 100px;
-    
+   text-align: left;
+   font-family: "Roboto", sans-serif;
+   font-size: 16px;
     
 }
 
