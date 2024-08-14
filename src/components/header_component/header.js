@@ -238,8 +238,8 @@ const handleAddPedido =() =>{
 
 // <---------- Notificações ---------->
 const sound = new Audio(SoundMessage)
- const notify = () => toast.success(`Olá ${nome}, seu pedido foi feito com sucesso!`);
- const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp.');
+ const notify = () => toast.success(`Olá ${nome} 👋, seu pedido foi feito com sucesso! 🍔🍟 `,{theme: 'dark'});
+ const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp. ⏱️ ', {theme: 'dark'});
 
 //<------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = () => {
@@ -260,11 +260,11 @@ const handleFinalizarPedido = () => {
       setVencimento('');
       setCvc('');
     } else {
-      toast.error("Não há pedidos para finalizar");
+      toast.error("Não há pedidos para finalizar", {theme: 'dark'});
       sound.play();
     }
   } else {
-    toast.error("Por favor, preencha todos os campos obrigatórios."
+    toast.error("Por favor, preencha todos os campos obrigatórios.", {theme: 'dark'}
     );
     sound.play();
   }
@@ -273,7 +273,7 @@ const handleFinalizarPedido = () => {
   const hendlerRemovePedido = () => {
     setList([])
     setValorTotalPedido()
-    toast.success("Pedido excluido com sucesso.")
+    toast.success("Pedido excluido com sucesso. 😞",  {theme: 'dark'})
     sound.play()
   };
 
@@ -487,7 +487,7 @@ const handleFinalizarPedido = () => {
               </div>
                 </div>
                 <div className='total-valor-pedido'>
-                <h3 className='total-valor-pedido-text'>Valor total: R$ {valorTotalPedido}</h3>
+                <p className='total-valor-pedido-p'>Valor total: <span className='total-valor-pedido-span'>R$ {valorTotalPedido}</span></p>
               </div>
                 <form className="row g-3">
                   <div className='user--inputs-conteine'>

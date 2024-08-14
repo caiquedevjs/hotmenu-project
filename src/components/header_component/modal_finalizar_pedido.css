@@ -81,17 +81,18 @@
     color: #666;
     font-family: "Roboto", sans-serif; 
 }
-.total-valor-pedido-text{
-    background-color: transparent;
+.total-valor-pedido-p{
+        
     color: #332D2D;
     font-family: "Roboto", sans-serif;
     font-size: 16px;
-    font-weight: bold;
-    border: 2px solid #ce2929 ;
-    border-radius: 5px;
-    padding: 10px;
-    width: 50%; 
-    margin-left: 25%;
+   
+}
+.total-valor-pedido-span{
+    color: #332D2D;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: bold; 
 }
 .titular-card-pay-conteiner{
     display:  flex;
@@ -299,17 +300,18 @@ label{
         font-family: "Roboto", sans-serif; 
         font-size: 14px;
     }
-    .total-valor-pedido-text{
-        background-color: transparent;
+    .total-valor-pedido-p{
+        
         color: #332D2D;
         font-family: "Roboto", sans-serif;
         font-size: 16px;
-        font-weight: bold;
-        border: 2px solid #ce2929 ;
-        border-radius: 5px;
-        padding: 10px;
-        width: 50%; 
-        margin-left: 25%;
+       
+    }
+    .total-valor-pedido-span{
+        color: #332D2D;
+        font-family: "Roboto", sans-serif;
+        font-size: 16px;
+        font-weight: bold; 
     }
     #excluir-pedido-btn{
         background-color: #ce2929;
