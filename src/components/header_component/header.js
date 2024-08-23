@@ -531,7 +531,9 @@ const handleFinalizarPedido = () => {
               )}
               <div className='card-credit-form'>
     <h4 className='pay-title-form'>Pagamento</h4>
+    <div className='conteiner-check'>
     {Object.keys(formasPorTipo).map((tipo) => (
+      
         <div key={tipo} className="form-check">
             <input
                 className="form-check-input"
@@ -546,8 +548,12 @@ const handleFinalizarPedido = () => {
                 {tipo}
             </label>
         </div>
+        
     ))}
+    </div>
+    <div className='conteiner-check'>
     {Object.keys(formasSemTipo).map((tipo) => (
+      
         <div key={tipo} className="form-check">
             <input
                 className="form-check-input"
@@ -562,7 +568,11 @@ const handleFinalizarPedido = () => {
                 {tipo}
             </label>
         </div>
+        
+        
     ))}
+    </div>
+    
     <div className="payment-icons">
         {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
         {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}

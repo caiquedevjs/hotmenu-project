@@ -476,6 +476,10 @@ label{
         background-color: #332D2D;
     }
     
-    
+    .conteiner-check{
+        display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    }
 
 }
