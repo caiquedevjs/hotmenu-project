@@ -500,7 +500,16 @@ const handleFinalizarPedido = () => {
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputTelefone4" className="form-label-credit-usuario">Telefone</label>
-                <input type="text" className="form-control" id="inputTelefone4" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+
+                <InputMask
+                 className="form-control"
+                 mask = '99999-9999'
+                  id="inputTelefone4" value={telefone} 
+                  onChange={(e) => setTelefone(e.target.value)} 
+                  >
+                </InputMask>
+                  {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputTelefone4" />}
+                  
               </div>
                   </div>
               <div className="dropdown-center">
@@ -527,8 +536,17 @@ const handleFinalizarPedido = () => {
                     <input type="text" className="form-control" id="inputCity" value={bairro} onChange={(e) => setBairro(e.target.value)} />
                   </div>
                   <div className="col-md-2">
+                    
                     <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
-                    <input type="text" className="form-control" id="inputZip" value={cep} onChange={(e) => setCep(e.target.value)} />
+                    <InputMask
+                     mask = "99999 - 999"
+                     className="form-control"
+                      id="inputZip" 
+                      value={cep} 
+                      onChange={(e) => setCep(e.target.value)}
+                    >
+                    {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputZip" />}
+                    </InputMask>
                   </div>
                 </>
               )}
@@ -614,6 +632,7 @@ const handleFinalizarPedido = () => {
         <label htmlFor="inputExpiryDate">Data de vencimento</label>
               <InputMask
                 mask="99/99"
+                placeholder='MM/AA'
                 value={vencimento}
                 onChange={(e) => setVencimento(e.target.value)}
               >
