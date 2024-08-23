@@ -17,6 +17,7 @@ import { RiDiscountPercentFill } from "react-icons/ri";
 import { Tooltip } from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
 import SoundMessage from '../../assets/sounds/message.wav';
+import InputMask from 'react-input-mask';
 
 // <------- import utils------->
 import { fetchFormaPagamentos } from '../service/productService';
@@ -204,6 +205,8 @@ const renderFormasSemTipo = (nome) => {
   const [titular, setTitular] = useState('');
   const [vencimento, setVencimento] = useState('');
   const [cvc, setCvc] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [agency, setAgency] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -582,13 +585,16 @@ const handleFinalizarPedido = () => {
         <div className="row">
             <div className="col-md-6">
                 <label htmlFor="inputCardNumber">Número do cartão</label>
-                <input 
-                    type="text" 
+                <InputMask 
+                   
                     className="form-control" 
                     id="inputCardNumber" 
+                    mask="9999 9999 9999 9999"
                     value={cartao} 
                     onChange={(e) => setCartao(e.target.value)} 
-                />
+                >
+                   {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
+                   </InputMask>
             </div>
             <div className="col-md-6">
                 <label htmlFor="inputCardHolder">Nome do titular</label>
@@ -605,23 +611,24 @@ const handleFinalizarPedido = () => {
     <div className="row">
         <div className="card-date-container_grid">
         <div className=" col-sm-6">
-            <label htmlFor="inputExpiryDate">Data de vencimento</label>
-            <input 
-                type="text" 
-                className="form-control" 
-                id="inputExpiryDate" 
-                value={vencimento} 
-                onChange={(e) => setVencimento(e.target.value)} 
-            /></div>
+        <label htmlFor="inputExpiryDate">Data de vencimento</label>
+              <InputMask
+                mask="99/99"
+                value={vencimento}
+                onChange={(e) => setVencimento(e.target.value)}
+              >
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputExpiryDate" />}
+              </InputMask>
+            </div>
             <div className=" col-sm-6">
             <label htmlFor="inputCVC">CVC</label>
-            <input 
-                type="text" 
-                className="form-control" 
-                id="inputCVC" 
-                value={cvc} 
-                onChange={(e) => setCvc(e.target.value)} 
-            />
+              <InputMask
+                mask="999"
+                value={cvc}
+                onChange={(e) => setCvc(e.target.value)}
+              >
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCVC" />}
+              </InputMask>
         </div>
         </div>
         
@@ -680,23 +687,24 @@ const handleFinalizarPedido = () => {
     <div className="row">
         <div className="card-date-container_grid">
         <div className=" col-sm-6">
-            <label htmlFor="inputExpiryDate">Número da conta</label>
-            <input 
-                type="text" 
-                className="form-control" 
-                id="inputExpiryDate" 
-                value={vencimento} 
-                onChange={(e) => setVencimento(e.target.value)} 
-            /></div>
+        <label htmlFor="inputAccountNumber">Número da conta</label>
+              <InputMask
+                mask="99999 9"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+              >
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAccountNumber" />}
+              </InputMask>
+            </div>
             <div className=" col-sm-6">
-            <label htmlFor="inputCVC">Agência</label>
-            <input 
-                type="text" 
-                className="form-control" 
-                id="inputCVC" 
-                value={cvc} 
-                onChange={(e) => setCvc(e.target.value)} 
-            />
+            <label htmlFor="inputAgency">Agência</label>
+              <InputMask
+                mask="9999 9"
+                value={agency}
+                onChange={(e) => setAgency(e.target.value)}
+              >
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAgency" />}
+              </InputMask>
         </div>
         <button className="btn-fazer-transferencia">Trasnferir</button>
         </div>
@@ -711,7 +719,7 @@ const handleFinalizarPedido = () => {
           <div className="modal-footer">
             <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido} >Finalizar pedido</button>
             <ToastContainer />
-            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}>Excluir pedido</button>
+            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}>Cancelar</button>
           </div>
         </div>
       </div>
