@@ -10,20 +10,21 @@
 }
 
 .status_moment_component {
-    width: 70px;
-    padding: 3px;
+    width: 250px;
+    padding: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: 15px;
     text-align: center;
-    
     font-family: "Roboto", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 10px;
 }
 .status-text{
+    font-family: "Roboto", sans-serif;
     margin-top: 8px;
-    font-size: 12px;
+    font-size: 30px;
 }
 
 .status_open {
@@ -34,4 +35,23 @@
 .status_closed {
     background-color: #f44336; /* Vermelho */
     color: white;
+}
+@media (max-width: 768px){
+    .status_moment_component {
+        width: 70px;
+        padding: 3px;
+        border: none;
+        border-radius: 10px;
+        text-align: center;
+        
+        font-family: "Roboto", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }  
+    .status-text{
+        font-family: "Roboto", sans-serif;
+        margin-top: 8px;
+        font-size: 12px;
+    }
 }

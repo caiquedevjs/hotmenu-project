@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 .btn.dropdown-toggle {
     margin-top: 40px;
-    width: 70%; /* Largura do botão dropdown */
+    width: 80%; /* Largura do botão dropdown */
     /* Outros estilos conforme necessário */
     font-family: "Roboto", sans-serif;
     background-color:  #ce2929;
