@@ -315,19 +315,19 @@ const handleFinalizarPedido = () => {
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
-        style={{ color: cartHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
+        style={{ color: cartHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
         {cartItems.length === 0 ? (
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
-             style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+             style={{ color: searchHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>
      <label id='amount_order'>1</label> 
      <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
-        style={{ color: searchHover.isHovered ? 'black' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+        style={{ color: searchHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
          </div>   
         )}
   </div>

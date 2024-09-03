@@ -81,8 +81,8 @@
   }
   #amount_order{
     position: absolute;
-    background-color: #332D2D;
-    color: white;
+    background-color:#fff933;
+    color: #332D2D;
     border-radius: 100%;
     width: 18px;
     height: 18px;
@@ -158,8 +158,8 @@
       }
       #amount_order{
         position: absolute;
-        background-color: #332D2D;
-        color: white;
+        background-color: #fff933;
+        color:#332D2D;
         border-radius: 100%;
         width: 15px;
         height: 15px;
