@@ -240,7 +240,7 @@ const handleAddPedido =() =>{
 }
 
 // <---------- Notificações ---------->
-const sound = new Audio(SoundMessage)
+ const sound = new Audio(SoundMessage)
  const notify = () => toast.success(`Olá ${nome} 👋, seu pedido foi feito com sucesso! 🍔🍟 `,{theme: 'dark'});
  const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp. ⏱️ ', {theme: 'dark'});
 
@@ -274,10 +274,15 @@ const handleFinalizarPedido = () => {
 };
 // <------ função para remover o pedido da lista de pedido ------->
   const hendlerRemovePedido = () => {
+    if(list.length === 0){
+      toast.error("Não pedido para cancelar!", {theme: 'dark'})
+      sound.play()
+    }
+    else{
     setList([])
     setValorTotalPedido()
     toast.success("Pedido excluido com sucesso. 😞",  {theme: 'dark'})
-    sound.play()
+    sound.play()}
   };
 
 
