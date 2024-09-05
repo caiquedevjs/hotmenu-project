@@ -56,9 +56,6 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
   }, []);
 
-  const handleCloseCart = () => {
-    setIsCartOpen(false);
-  };
 
   const openModal = (product) => {
     setSelectedProduct(product);
