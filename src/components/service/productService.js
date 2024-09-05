@@ -62,3 +62,33 @@ export const fetchFormaPagamentos = async () => {
     return { status: 'Erro ao carregar formas de pagamentos' }; // Valor padrão caso ocorra erro
   }
 };
+
+
+ export const fetchEstabelecimentoData = async () =>{
+  try{
+    const response = await fetch('https://hotmenu.com.br/webhook/Cliente/hotmenu');
+    if(!response.ok){
+      throw new Error('Erro ao buscar dados do estabelecimento');
+    }
+    const data = await response.json();
+    console.log('Dados do estabelecimento: ', data);
+    return data.cliente;
+  }
+  catch(error){
+    console.error('Erro ao bsucar dados dos estabelecimento: ', error);
+    return {status: 'Erro ao buscar dados do estabelecimento'}
+  }
+ }
+
+ // https://hotmenu.com.br/webhook/Cliente/hotmenu
+ 
+// https://hotmenu.com.br/webhook/ObterDadosProduto/78
+ 
+// https://hotmenu.com.br/webhook/ObterPerguntasdoProduto/78
+ 
+
+//https://hotmenu.com.br/webhook/BuscarCupom
+ 
+//BODY:
+//{"Id":"1","Cupom":"BEM10","Celular":"5571999723638"}
+ 

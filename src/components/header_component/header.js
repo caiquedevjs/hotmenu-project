@@ -21,6 +21,7 @@ import InputMask from 'react-input-mask';
 
 // <------- import utils------->
 import { fetchFormaPagamentos } from '../service/productService';
+import { fetchEstabelecimentoData } from '../service/productService';
 import { transformFormasDePagamento } from '../../utils/dataTransformationsFormasPagamentos';
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
@@ -134,6 +135,29 @@ const renderFormasSemTipo = (nome) => {
         </div>
     );
 };
+const [estabelecimento, setEstabelecimento] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+useEffect(() => {
+  const fetchDataEstabelecimento = async () => {
+    try {
+      const response = await fetchEstabelecimentoData();
+      console.log('Dados recebidos no Header:', response); // Verifique o valor aqui
+      if (response) {
+        setEstabelecimento(response);
+      } else {
+        setError('Nenhum dado recebido da API');
+      }
+    } catch (error) {
+      setError('Erro ao buscar dados do estabelecimento');
+      console.error('Erro na busca: ', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDataEstabelecimento();
+}, []);
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -291,9 +315,13 @@ const handleFinalizarPedido = () => {
     setSelectedOption(e.target.value);
   };
   
+
+
     return (
+  
  <div className='Header-component'>
   <header className='header_class'>
+  
    {/* <-------estrutura dos icons do carrossel de banners-------> */}
   <div id="carouselExampleFade" class="carousel slide carousel-fade" >
   <div class="carousel-inner">
@@ -339,9 +367,11 @@ const handleFinalizarPedido = () => {
   <div className='logo_conteiner_class'>
   <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
   </div>
-  <h1 id='title_logo'>Pizzaria dos Amigos</h1>
-  <h6 className='estabelecimento-description'>Pizzas tradicionais e de qualidade!</h6>      
+  <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
+  <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Pizza de qualidade"}</h6> 
+     
   </header>
+  
 
 {/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
 
@@ -750,5 +780,7 @@ const handleFinalizarPedido = () => {
     </div>
   </div>
     )
+  
+
 }
 export default Header_component;
