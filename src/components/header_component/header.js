@@ -48,6 +48,7 @@ const [formas, setFormas] = useState([]);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [hoursData, setHoursData] = useState({ status: '', horarios: [] });
+const [isOpen, setIsOpen] = useState(false);
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false })
 const [showAddressFields, setShowAddressFields] = useState(false);
@@ -220,7 +221,23 @@ useEffect(() => {
   fetchData();
 }, []);
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------
+ // Atualiza o status com base nos horários de funcionamento
+ const updateStatus = (horarios) => {
+  const currentHour = new Date().getHours();
+  const currentDay = new Date().getDay() + 1; // getDay() retorna 0 para Domingo, 1 para Segunda, etc.
 
+  const hojeHorario = horarios.find(h => h.DiaDaSemana === currentDay);
+  if (hojeHorario) {
+      const [horaIni] = hojeHorario.HoraIni.split(':').map(Number);
+      const [horaFim] = hojeHorario.HoraFim.split(':').map(Number);
+
+      // Ajustar o horário de fechamento que é '00:00' para o próximo dia
+      const isOpenNow = (horaFim === 0 ? currentHour >= horaIni : (currentHour >= horaIni && currentHour < horaFim));
+      setIsOpen(isOpenNow);
+  } else {
+      setIsOpen(false);
+  }
+};  
 const isOpenNow = () => {
   if (hoursData.horarios.length === 0) return false;
 
