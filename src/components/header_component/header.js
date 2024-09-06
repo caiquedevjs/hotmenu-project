@@ -507,7 +507,7 @@ const handleFinalizarPedido = () => {
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="modal-header-title">
-            <RiDiscountPercentFill  id='cupom-icon-modal-title'/>
+            <RiDiscountPercentFill  id='cupom-icon-modal-title' style={{color : color}}/>
            Cupom
         </h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -519,7 +519,7 @@ const handleFinalizarPedido = () => {
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
              ></input> 
-            <button className='btn-buscar-cupom'>buscar</button>
+            <button className='btn-buscar-cupom' style={{backgroundColor: color}}>buscar</button>
           </div>
         </div>
       </div>
@@ -535,7 +535,7 @@ const handleFinalizarPedido = () => {
         <div className="modal-content">
           <div className="modal-header">
             <h3 className="modal-title fs-5" id='info_text'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: color }}>
                 <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
               </svg>
               Resumo
@@ -577,7 +577,7 @@ const handleFinalizarPedido = () => {
               </div>
                   </div>
               <div className="dropdown-center">
-                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false" style={{backgroundColor: color}}>
                   Formas de entrega
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
