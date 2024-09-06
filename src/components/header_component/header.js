@@ -21,8 +21,7 @@ import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
 
 // <------- import utils------->
-import { fetchFormaPagamentos } from '../service/productService';
-import { fetchEstabelecimentoData } from '../service/productService';
+import { fetchFormaPagamentos,fetchHorarioFuncionamento,fetchEstabelecimentoData } from '../service/productService';
 import { transformFormasDePagamento } from '../../utils/dataTransformationsFormasPagamentos';
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
@@ -48,6 +47,7 @@ const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
 const [formas, setFormas] = useState([]);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
+const [hoursData, setHoursData] = useState({ status: '', horarios: [] });
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false })
 const [showAddressFields, setShowAddressFields] = useState(false);
@@ -207,8 +207,37 @@ useEffect(() => {
 
   fetchDataEstabelecimento();
 }, []);
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    const data = await fetchHorarioFuncionamento();
+    if (data && data.horarios) {
+      setHoursData(data);
+    }
+  };
+
+  fetchData();
+}, []);
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
+const isOpenNow = () => {
+  if (hoursData.horarios.length === 0) return false;
+
+  const currentDay = new Date().getDay() + 1; // Ajuste para alinhamento com a API
+  const currentTime = new Date().toTimeString().substring(0, 5); // Horário no formato HH:MM
+
+  const todayHours = hoursData.horarios.find(h => h.DiaDaSemana === currentDay);
+  if (!todayHours) return false;
+
+  return currentTime >= todayHours.HoraIni && currentTime <= todayHours.HoraFim;
+};
+const handleCartClick = (e) => {
+  e.preventDefault();
+  if (!isOpenNow()) {
+    alert('A loja está fechada no momento. Você só pode acessar o carrinho durante o horário de funcionamento.');
+  }
+};
 
 
  
@@ -385,6 +414,7 @@ const handleFinalizarPedido = () => {
      <label id='amount_order'>1</label> 
      <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
+        onClick={handleCartClick}
         style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
          </div>   
         )}
