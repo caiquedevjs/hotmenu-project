@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
 // <------- import hooks and context------->
 import React, { useState, useEffect, useContext } from 'react';
@@ -40,10 +41,50 @@ const Header_component = () =>{
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
-// <------ estados modos de pagamentos: pix, dinheiro------->
+// <------- contexto do carrinho ------->
+const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
+
+// <------ estados ------->
+const [formas, setFormas] = useState([]);
+const [formasPorTipo, setFormasPorTipo] = useState({});
+const [formasSemTipo, setFormasSemTipo] = useState({});
+const [estabelecimento, setEstabelecimento] = useState(null);
+const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false })
+const [showAddressFields, setShowAddressFields] = useState(false);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
+const [color, setColor] = useState('');
+const [logoMarca, setLogoMarca] = useState('');
+const [fotoCard, setFotoCard] = useState('');
+const [fotoCard2,setFotoCard2] = useState('');
+const [fotoCard3, setFotoCard3] = useState('');
 const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
+
+// <------ estados do formulario, valor total do pedido------->  
+const [valorTotalPedido, setValorTotalPedido] = useState();
+const [list, setList] = useState([]);
+const [nome, setNome] = useState('');
+const [telefone, setTelefone] = useState('');
+const [endereco, setEndereco] = useState('');
+const [complemento, setComplemento] = useState('');
+const [bairro, setBairro] = useState('');
+const [cep, setCep] = useState('');
+const [cartao, setCartao] = useState('');
+const [titular, setTitular] = useState('');
+const [vencimento, setVencimento] = useState('');
+const [cvc, setCvc] = useState('');
+const [accountNumber, setAccountNumber] = useState('');
+const [agency, setAgency] = useState('');
+const [selectedOption, setSelectedOption] = useState('');
+const [isFormValid, setIsFormValid] = useState(false);
+
+// <---------- Notificações ---------->
+const sound = new Audio(SoundMessage)
+const notify = () => toast.success(`Olá ${nome} 👋, seu pedido foi feito com sucesso! 🍔🍟 `,{theme: 'dark'});
+const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp. ⏱️ ', {theme: 'dark'});
+
 
  // <------ função para gerar boleto ------->
  const generateBoleto = () => {
@@ -74,9 +115,8 @@ const [boleto, setBoleto] = useState(null);
 
 
   // <------ renderização das formas de pagamentos ------->
-  const [formas, setFormas] = useState([]);
-  const [formasPorTipo, setFormasPorTipo] = useState({});
-  const [formasSemTipo, setFormasSemTipo] = useState({});
+ 
+
 
   useEffect(() => {
       const fetchData = async () => {
@@ -135,16 +175,25 @@ const renderFormasSemTipo = (nome) => {
         </div>
     );
 };
-const [estabelecimento, setEstabelecimento] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+
+
 useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData();
-      console.log('Dados recebidos no Header:', response); // Verifique o valor aqui
-      if (response) {
+      console.log('Dados recebidos no Header:', response); 
+      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3) {
         setEstabelecimento(response);
+        setColor(response.CorPadrao);
+        setLogoMarca(response.Logomarca);
+        setFotoCard(response.FotoCard1);
+        setFotoCard2(response.FotoCard2);
+        setFotoCard3(response.FotoCard3);
+        setDeliveryOptions({
+          pickup: response.RetiradaNaLoja,
+          home: response.Delivery
+        });
       } else {
         setError('Nenhum dado recebido da API');
       }
@@ -162,22 +211,20 @@ useEffect(() => {
 
 
 
-
-
-
-  // <------- estado do carrinho ------->
-  const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
-
-
-  // <------- imprimir o arrey de produto do estado do carrinho ------->
-  useEffect(()=>{
-    console.log(cartItems)
-  })
-  
-
+ 
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+  };
+
+  // <---------- Função para calcular o preço com frete  ---------->
+  const totalPriceWithFrete = () => {
+    const cartTotal = parseFloat(totalCartPrice().replace(',', '.')); // Converter para float para cálculo
+    if (estabelecimento && estabelecimento.FreteFixo) {
+      const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
+      return totalComFrete.toFixed(2).replace('.', ',');
+    }
+    return cartTotal.toFixed(2).replace('.', ',');
   };
 
 // <---------- Função para copiar chave pix ---------->
@@ -206,8 +253,8 @@ useEffect(() => {
 
 
    
-    // <---------- função para deixar os campos de endereço visivel ---------->
-    const [showAddressFields, setShowAddressFields] = useState(false);
+// <---------- função para deixar os campos de endereço visivel ---------->
+  
     const handleDeliveryOption = (option) => {
       if (option === 'home') {
         setShowAddressFields(true);
@@ -216,23 +263,7 @@ useEffect(() => {
       }
     };
 
-   // <------ estados do formulario, valor total do pedido------->  
-  const [valorTotalPedido, setValorTotalPedido] = useState();
-  const [list, setList] = useState([]);
-  const [nome, setNome] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [complemento, setComplemento] = useState('');
-  const [bairro, setBairro] = useState('');
-  const [cep, setCep] = useState('');
-  const [cartao, setCartao] = useState('');
-  const [titular, setTitular] = useState('');
-  const [vencimento, setVencimento] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [agency, setAgency] = useState('');
-  const [selectedOption, setSelectedOption] = useState('');
-  const [isFormValid, setIsFormValid] = useState(false);
+
 
   //<------ função para validar os campos do formulario ------->
   const validateForm = () => {
@@ -259,14 +290,10 @@ useEffect(() => {
 // <------ função para adicionar os itens do carrinho a lista de pedido ------->
 const handleAddPedido =() =>{
     setList(cartItems);
-    setValorTotalPedido(totalCartPrice())
+    setValorTotalPedido(totalPriceWithFrete())
     sound.play()
 }
 
-// <---------- Notificações ---------->
- const sound = new Audio(SoundMessage)
- const notify = () => toast.success(`Olá ${nome} 👋, seu pedido foi feito com sucesso! 🍔🍟 `,{theme: 'dark'});
- const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp. ⏱️ ', {theme: 'dark'});
 
 //<------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = () => {
@@ -316,23 +343,21 @@ const handleFinalizarPedido = () => {
   };
   
 
-
     return (
   
  <div className='Header-component'>
   <header className='header_class'>
-  
    {/* <-------estrutura dos icons do carrossel de banners-------> */}
   <div id="carouselExampleFade" class="carousel slide carousel-fade" >
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="dfdgg.jpg" class="d-block w-100" alt="..."/>
+      <img src={`https://hotmenu.com.br/arquivos/${fotoCard}`} class="d-block w-100" alt="..."/>
     </div>
     <div class="carousel-item">
-      <img src="10604251.jpg" class="d-block w-100" alt="..."/>
+      <img src={`https://hotmenu.com.br/arquivos/${fotoCard2}`} class="d-block w-100" alt="..."/>
     </div>
     <div class="carousel-item">
-      <img src="11713789.jpg" class="d-block w-100" alt="..."/>
+      <img src={`https://hotmenu.com.br/arquivos/${fotoCard3}`} class="d-block w-100" alt="..."/>
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
@@ -348,24 +373,24 @@ const handleFinalizarPedido = () => {
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
-        style={{ color: cartHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
+        style={{ color: cartHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
         {cartItems.length === 0 ? (
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
-             style={{ color: searchHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+             style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>
      <label id='amount_order'>1</label> 
      <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
         onMouseLeave={searchHover.handleMouseLeave}
-        style={{ color: searchHover.isHovered ? '#332D2D' : '#ce2929', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+        style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
          </div>   
         )}
   </div>
   <div className='logo_conteiner_class'>
-  <img src="attachment_71444173.png" class="img-fluid" alt="Logo"/>
+  <img src={`https://hotmenu.com.br/arquivos/${logoMarca}`} class="img-fluid" alt="Logo"/>
   </div>
   <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
   <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Pizza de qualidade"}</h6> 
@@ -384,7 +409,7 @@ const handleFinalizarPedido = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-bag-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-bag-fill" viewBox="0 0 16 16" style={{ color: color }}>
                   <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z" />
                 </svg>
               </h5>
@@ -442,8 +467,11 @@ const handleFinalizarPedido = () => {
                   </div>
                   <div className='prices-conteiner'>
                     <p className='Total-price-cart'>R$ {totalCartPrice()}</p>
-                    <p className='Total-price-cart' style={{'color' : '#228B22'}}>R$ 0,00</p>
-                    <strong><p className='Total-price-cart'>R$ {totalCartPrice()}</p></strong>
+              
+                    <p className='Total-price-cart' style={{'color' : '#228B22'}}>
+                    {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+                    </p>
+                    <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
                 <hr></hr>
@@ -453,6 +481,7 @@ const handleFinalizarPedido = () => {
                 data-tooltip-id="carrinho-vazio-id"
                 data-tooltip-content= "Adicione um produto pra finalizar a compra."
                 data-tooltip-place="top-start"
+                style={{backgroundColor : color}}
                 >
                   Finalizar Compra
                 </button>
@@ -460,7 +489,7 @@ const handleFinalizarPedido = () => {
                  <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
               data-tooltip-id="tooltip-cupom-btn"
              data-tooltip-content="adicione o seu cupom aqui."
-             data-tooltip-place="top-start">Adicionar cupom</button>
+             data-tooltip-place="top-start" style={{backgroundColor : color}}>Adicionar cupom</button>
                 </div>
                </div>
             </div>
@@ -552,8 +581,28 @@ const handleFinalizarPedido = () => {
                   Formas de entrega
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
-                  <li><a className="dropdown-item" href="#" onClick={() => handleDeliveryOption('pickup')}>Retirar no estabelecimento</a></li>
-                  <li><a className="dropdown-item" href="#" onClick={() => handleDeliveryOption('home')}>Receber em casa</a></li>
+                {deliveryOptions.pickup && (
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={() => handleDeliveryOption('pickup')}
+              >
+                Retirar no estabelecimento
+              </a>
+            </li>
+          )}
+                  {deliveryOptions.home && (
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={() => handleDeliveryOption('home')}
+              >
+                Receber em casa
+              </a>
+            </li>
+          )}
                 </ul>
               </div>
               {showAddressFields && (
@@ -771,9 +820,9 @@ const handleFinalizarPedido = () => {
           </div>
           
           <div className="modal-footer">
-            <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido} >Finalizar pedido</button>
+            <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido}  style={{backgroundColor : color}}>Finalizar pedido</button>
             <ToastContainer />
-            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}>Cancelar</button>
+            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido} style={{backgroundColor : color}}>Cancelar</button>
           </div>
         </div>
       </div>

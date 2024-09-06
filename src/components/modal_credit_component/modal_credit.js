@@ -1,11 +1,36 @@
 import React, { useEffect, useState } from "react";
 import './modal_credit.css';
-import { fetchFormaPagamentos } from "../service/productService";
-import { transformFormasDePagamento } from "../../utils/dataTransformationsFormasPagamentos";
+import { fetchFormaPagamentos, fetchEstabelecimentoData  } from "../service/productService";
+
 
 const Modal_credit_component = () => {
     const [formasPorTipo, setFormasPorTipo] = useState({});
     const [formasSemTipo, setFormasSemTipo] = useState({});
+    const [estabelecimento, setEstabelecimento] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [color, setColor] = useState("");
+
+    useEffect(() => {
+        const fetchDataEstabelecimento = async () => {
+          try {
+            const data = await fetchEstabelecimentoData();
+            if (data && data.CorPadrao) {
+              setEstabelecimento(data);
+              setColor(data.CorPadrao);
+            } else {
+              setError('Nenhum dado recebido da API');
+            }
+          } catch (error) {
+            setError('Erro ao buscar dados do estabelecimento');
+            console.error('Erro na busca: ', error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchDataEstabelecimento();
+      }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -79,7 +104,7 @@ const Modal_credit_component = () => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h3 id='info_text'>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-credit-card-fill" viewBox="0 0 16 16" style={{ color: '#ce2929' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-credit-card-fill" viewBox="0 0 16 16" style={{ color: color }}>
                                 <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1"/>
                             </svg> Pagamentos
                         </h3>

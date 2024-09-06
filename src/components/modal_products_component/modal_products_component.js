@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
+import {fetchEstabelecimentoData } from '../service/productService';
 
 const Modal_product_component = ({ id, product, onClose, categoryName }) => {
 
@@ -11,6 +12,31 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [estabelecimento, setEstabelecimento] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [color, setColor] = useState("");
+
+  useEffect(() => {
+    const fetchDataEstabelecimento = async () => {
+      try {
+        const data = await fetchEstabelecimentoData();
+        if (data && data.CorPadrao) {
+          setEstabelecimento(data);
+          setColor(data.CorPadrao);
+        } else {
+          setError('Nenhum dado recebido da API');
+        }
+      } catch (error) {
+        setError('Erro ao buscar dados do estabelecimento');
+        console.error('Erro na busca: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataEstabelecimento();
+  }, []);
 
 
 
@@ -95,7 +121,7 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
           <div className='control-price-total'>
-          <div className="quantity-control">
+          <div className="quantity-control" style={{border : `2px solid ${color}`}}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => Math.max(1, prev - 1))}>
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
                   </svg>
@@ -106,13 +132,13 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
            </svg>
                       
           </div>
-          <h5> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16" style={{'color': '#ce2929'}}>
+          <h5> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16" style={{'color': color}}>
                               <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
                             </svg><strong> Total:</strong> R$ {calculateTotalPrice()}</h5>
           </div>
           
           
-          <button className='options-btn-add' data-bs-dismiss="modal" aria-label="Close" onClick={handleAddToCart}>Adicionar ao carrinho</button>
+          <button className='options-btn-add' data-bs-dismiss="modal" aria-label="Close" style={{ backgroundColor : color}} onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchProducts } from '../service/productService';
+import { fetchProducts,fetchEstabelecimentoData } from '../service/productService';
 import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -11,6 +11,32 @@ const Grid_component = ({ categoryId, categoryName }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [maxLength, setMaxLength] = useState(60);
+  const [estabelecimento, setEstabelecimento] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [color, setColor] = useState("");
+
+
+  useEffect(() => {
+    const fetchDataEstabelecimento = async () => {
+      try {
+        const data = await fetchEstabelecimentoData();
+        if (data && data.CorPadrao) {
+          setEstabelecimento(data);
+          setColor(data.CorPadrao);
+        } else {
+          setError('Nenhum dado recebido da API');
+        }
+      } catch (error) {
+        setError('Erro ao buscar dados do estabelecimento');
+        console.error('Erro na busca: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataEstabelecimento();
+  }, []);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -110,7 +136,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
                             data-tooltip-id="tooltip-preço-venda"
                             data-tooltip-content="preço de venda"
                             data-tooltip-place="top">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16" style={{color : color}}>
                               <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
                             </svg> R${formatPrice(product.PrecoDeVenda)}
                             <Tooltip id="tooltip-preço-venda" />

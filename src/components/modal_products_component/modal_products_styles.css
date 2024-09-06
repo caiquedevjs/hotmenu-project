@@ -138,8 +138,6 @@
     font-size: 1rem;
     text-align: center;
     color: #fff;
-    background-color: #ce2929;
-    border: 1px solid #ce2929;
     border-radius: 0.25rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -151,7 +149,7 @@
   
   .options-btn-add:hover {
     background-color: #332D2D;
-    border: 1px solid #332D2D;
+  
   }
   #product-img-modal{
     width: 320px;
@@ -167,7 +165,7 @@
     align-items: center;
   }
   .quantity-control{
-    border: 2px solid #ce2929;
+
     border-radius: 8px;
     padding: 10px;
     width: 100px;

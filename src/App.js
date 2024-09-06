@@ -9,12 +9,37 @@ import Selector_category_component from './components/selector_category_componen
 import Category_component from './components/category_component/category';
 import ModalBusca from './components/modal_search_component/modal_search_component';
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
-        
+import { fetchEstabelecimentoData } from './components/service/productService';
 
 
 function App() {
   const [showScrollButton, setShowScrollButton] = useState(false);
-  
+  const [estabelecimento, setEstabelecimento] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [color, setColor] = useState("");
+
+  useEffect(() => {
+    const fetchDataEstabelecimento = async () => {
+      try {
+        const data = await fetchEstabelecimentoData();
+        if (data && data.CorPadrao) {
+          setEstabelecimento(data);
+          setColor(data.CorPadrao);
+        } else {
+          setError('Nenhum dado recebido da API');
+        }
+      } catch (error) {
+        setError('Erro ao buscar dados do estabelecimento');
+        console.error('Erro na busca: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataEstabelecimento();
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.pageYOffset > 300) {
@@ -57,7 +82,7 @@ function App() {
     
 
       {/* Botão de rolagem para o topo */}
-      <button className={`scroll-to-top ${showScrollButton ? 'show' : ''}`} onClick={scrollToTop}>
+      <button className={`scroll-to-top ${showScrollButton ? 'show' : ''}`} onClick={scrollToTop} style={{backgroundColor: color}}>
         &#8593;
       </button>
 
