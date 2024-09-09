@@ -2,13 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
-import {fetchEstabelecimentoData } from '../service/productService';
+import { fetchEstabelecimentoData } from '../service/productService';
 
 const Modal_product_component = ({ id, product, onClose, categoryName }) => {
-
-
-  // <---------- Constantes de estados ---------->
-  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(categoryName);
+  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(id);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -38,17 +35,12 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
     fetchDataEstabelecimento();
   }, []);
 
-
-
-  // <---------- Verificação do produto ---------- >
   useEffect(() => {
     if (product && product.PrecoDeVenda) {
       setTotalPrice(parseFloat(product.PrecoDeVenda));
     }
   }, [product]);
 
-
-// < ----------  Função do calculo do preço do produto + adicionais ---------- >
   const calculateTotalPrice = () => {
     if (!product || !product.PrecoDeVenda) {
       return "0.00";
@@ -63,19 +55,23 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
     totalPrice *= quantity;
     return totalPrice.toFixed(2);
   };
-   // <---------- Função para formatar o preço ---------->
-   const formatPrice = (price) => {
-    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+
+  const formatPrice = (price) => {
+    return price.toFixed(2).replace('.', ',');
   };
 
-
-// <----------  Função de adicionar o produto do modal no carrinho de compras ---------->
   const handleAddToCart = () => {
     const totalPrice = calculateTotalPrice();
     addToCart(product, additionalStates, parseFloat(totalPrice), quantity);
     onClose();
   };
-
+// Logs para depuração
+useEffect(() => {
+  console.log('ID do Produto:', id);
+  console.log('Dados do Produto:', product);
+  console.log('Estados Adicionais:', additionalStates);
+  console.log('Preço Total:', totalPrice);
+}, [id, product, additionalStates, totalPrice]);
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered">
@@ -104,12 +100,11 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
                   <p>{additional.description} - R$ {additional.price}</p>
                 </div>
                 <div className='options-icons-plus-dash'>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
-                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
-                </svg>
-                                  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+                  </svg>
                   <span>{additional.count}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
                   </svg>
                 </div>
@@ -121,23 +116,19 @@ const Modal_product_component = ({ id, product, onClose, categoryName }) => {
             <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
           </div>
           <div className='control-price-total'>
-          <div className="quantity-control" style={{border : `2px solid ${color}`}}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => Math.max(1, prev - 1))}>
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
-                  </svg>
-            
-            <span>{quantity}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => prev + 1)}>
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
-           </svg>
-                      
+            <div className="quantity-control" style={{border : `2px solid ${color}`}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => Math.max(1, prev - 1))}>
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
+              </svg>
+              <span>{quantity}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => setQuantity(prev => prev + 1)}>
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+              </svg>
+            </div>
+            <h5> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16" style={{'color': color}}>
+              <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+            </svg><strong> Total:</strong> R$ {calculateTotalPrice()}</h5>
           </div>
-          <h5> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-tag-fill" viewBox="0 0 16 16" style={{'color': color}}>
-                              <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                            </svg><strong> Total:</strong> R$ {calculateTotalPrice()}</h5>
-          </div>
-          
-          
           <button className='options-btn-add' data-bs-dismiss="modal" aria-label="Close" style={{ backgroundColor : color}} onClick={handleAddToCart}>Adicionar ao carrinho</button>
         </div>
       </div>

@@ -1,62 +1,25 @@
 import { useState, useEffect } from 'react';
+import { fetchPerguntas } from '../service/productService'; // Importe a função que busca as perguntas
 
-const useAdditionalState = (categoryName) => {
+const useAdditionalState = (productId) => {
   const [additionalStates, setAdditionalStates] = useState([]);
 
   useEffect(() => {
-    if (categoryName === 'PIZZA ') {
-      setAdditionalStates([
-        { id: 1, description: 'Pequena', price: 25.00, count: 0 },
-        { id: 2, description: 'Média', price: 35.00, count: 0 },
-        { id: 3, description: 'Grande', price: 45.00, count: 0 },
-        { id: 4, description: 'Família', price: 60.00, count: 0 }
-      ]);
-    } else if (categoryName === 'BURGUERS') {
-      setAdditionalStates([
-        { id: 1, description: 'Queijo', price: 2.50, count: 0 },
-        { id: 2, description: 'Ovos', price: 2.50, count: 0 },
-        { id: 3, description: 'Presunto', price: 2.50, count: 0 },
-        { id: 4, description: 'Cebola', price: 2.50, count: 0 }
-      ]);
-    } else if (categoryName === 'MARMITARIA') {
-      setAdditionalStates([
-        { id: 1, description: 'Marmita Pequena', price: 15.00, count: 0 },
-        { id: 2, description: 'Marmita Média', price: 20.00, count: 0 },
-        { id: 3, description: 'Marmita Grande', price: 25.00, count: 0 }
-      ]);
-    } else if (categoryName === 'AÇAI ') {
-      setAdditionalStates([
-        { id: 1, description: '500ml', price: 10.00, count: 0 },
-        { id: 2, description: '700ml', price: 15.00, count: 0 },
-        { id: 3, description: '1 litro', price: 20.00, count: 0 }
-      ]);
-    } else if (categoryName === 'PORÇÕES') {
-      setAdditionalStates([
-        { id: 1, description: 'Fritas', price: 12.00, count: 0 },
-        { id: 2, description: 'Onion Rings', price: 10.00, count: 0 },
-        { id: 3, description: 'Frango à Passarinho', price: 15.00, count: 0 }
-      ]);
-    } else if (categoryName === 'SALGADOS ') {
-      setAdditionalStates([
-        { id: 1, description: 'Coxinha', price: 3.00, count: 0 },
-        { id: 2, description: 'Pastel', price: 2.50, count: 0 },
-        { id: 3, description: 'Empada', price: 3.50, count: 0 }
-      ]);
-    } else if (categoryName === 'SUSHI') {
-      setAdditionalStates([
-        { id: 1, description: 'Sushi de Salmão', price: 3.00, count: 0 },
-        { id: 2, description: 'Sushi de Atum', price: 3.50, count: 0 },
-        { id: 3, description: 'Sashimi de Peixe Branco', price: 4.00, count: 0 }
-      ]);
-    } else if (categoryName === 'BEBIDAS') {
-      setAdditionalStates([
-        { id: 1, description: 'Refrigerante Lata', price: 5.00, count: 0 },
-        { id: 2, description: 'Suco Natural', price: 6.00, count: 0 },
-        { id: 3, description: 'Água Mineral', price: 3.00, count: 0 }
-      ]);
+    const fetchAdditionalData = async () => {
+      try {
+        const response = await fetchPerguntas(productId);
+        const perguntas = response.perguntas || []; // Acesse a propriedade 'perguntas' do objeto de resposta
+        setAdditionalStates(perguntas);
+        console.log("debug", additionalStates)
+      } catch (error) {
+        console.error('Erro ao buscar adicionais:', error);
+      }
+    };
+
+    if (productId) {
+      fetchAdditionalData();
     }
-    // Adicione mais lógica para outras categorias conforme necessário
-  }, [categoryName]);
+  }, [productId]);
 
   const handleIncrement = (id) => {
     setAdditionalStates((prevState) => {
@@ -84,7 +47,6 @@ const useAdditionalState = (categoryName) => {
     });
   };
 
-  // Função para calcular o total de adicionais selecionados
   const totalAdditional = () => {
     let total = 0;
     additionalStates.forEach((additional) => {
@@ -99,7 +61,6 @@ const useAdditionalState = (categoryName) => {
     handleIncrement,
     handleDecrement
   };
-
 };
 
 export default useAdditionalState;

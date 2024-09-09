@@ -15,6 +15,23 @@ export const fetchProducts = async () => {
   }
 };
 
+// Função para buscar perguntas do produto
+export const fetchPerguntas = async (productId) => {
+  try {
+    const response = await fetch(`https://hotmenu.com.br/webhook/ObterPerguntasdoProduto/${productId}`);
+    if (!response.ok) {
+      throw new Error('Erro ao buscar perguntas do produto');
+    }
+    const data = await response.json();
+    console.log('Dados das perguntas:', data);
+    return data.perguntas; // Ajuste conforme a estrutura do retorno da API
+  } catch (error) {
+    console.error('Erro ao buscar perguntas:', error);
+    return []; // Retorna um array vazio em caso de erro
+  }
+};
+
+
 // <------- Função para buscar todas as categorias ------->
 export const fetchCategories = async () => {
   try {

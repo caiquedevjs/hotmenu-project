@@ -21,8 +21,7 @@ import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
 
 // <------- import utils------->
-import { fetchFormaPagamentos,fetchHorarioFuncionamento,fetchEstabelecimentoData } from '../service/productService';
-import { transformFormasDePagamento } from '../../utils/dataTransformationsFormasPagamentos';
+import { fetchFormaPagamentos,fetchEstabelecimentoData } from '../service/productService';
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
 import truncateText from '../../utils/truncateText';
@@ -181,7 +180,6 @@ useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData();
-      console.log('Dados recebidos no Header:', response); 
       if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3) {
         setEstabelecimento(response);
         setColor(response.CorPadrao);
