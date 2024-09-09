@@ -32,7 +32,7 @@ import truncateText from '../../utils/truncateText';
 
 
 
-const Header_component = () =>{
+const Header_component = ({handleCartClick}) =>{
 
  // <------ constantes utils ------->
   const cartHover = useHover();
@@ -41,14 +41,12 @@ const Header_component = () =>{
   const truncate_Text = (text) => truncateText(text, 40)
 
 // <------- contexto do carrinho ------->
-const { cartItems, totalCartPrice, removeFromCart } = useContext(CartContext);
+const { cartItems, totalCartPrice, removeFromCart, isOpen } = useContext(CartContext);
 
 // <------ estados ------->
 const [formas, setFormas] = useState([]);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
-const [hoursData, setHoursData] = useState({ status: '', horarios: [] });
-const [isOpen, setIsOpen] = useState(false);
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false })
 const [showAddressFields, setShowAddressFields] = useState(false);
@@ -208,53 +206,6 @@ useEffect(() => {
 
   fetchDataEstabelecimento();
 }, []);
-
-
-useEffect(() => {
-  const fetchData = async () => {
-    const data = await fetchHorarioFuncionamento();
-    if (data && data.horarios) {
-      setHoursData(data);
-    }
-  };
-
-  fetchData();
-}, []);
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------
- // Atualiza o status com base nos horários de funcionamento
- const updateStatus = (horarios) => {
-  const currentHour = new Date().getHours();
-  const currentDay = new Date().getDay() + 1; // getDay() retorna 0 para Domingo, 1 para Segunda, etc.
-
-  const hojeHorario = horarios.find(h => h.DiaDaSemana === currentDay);
-  if (hojeHorario) {
-      const [horaIni] = hojeHorario.HoraIni.split(':').map(Number);
-      const [horaFim] = hojeHorario.HoraFim.split(':').map(Number);
-
-      // Ajustar o horário de fechamento que é '00:00' para o próximo dia
-      const isOpenNow = (horaFim === 0 ? currentHour >= horaIni : (currentHour >= horaIni && currentHour < horaFim));
-      setIsOpen(isOpenNow);
-  } else {
-      setIsOpen(false);
-  }
-};  
-const isOpenNow = () => {
-  if (hoursData.horarios.length === 0) return false;
-
-  const currentDay = new Date().getDay() + 1; // Ajuste para alinhamento com a API
-  const currentTime = new Date().toTimeString().substring(0, 5); // Horário no formato HH:MM
-
-  const todayHours = hoursData.horarios.find(h => h.DiaDaSemana === currentDay);
-  if (!todayHours) return false;
-
-  return currentTime >= todayHours.HoraIni && currentTime <= todayHours.HoraFim;
-};
-const handleCartClick = (e) => {
-  e.preventDefault();
-  if (!isOpenNow()) {
-    alert('A loja está fechada no momento. Você só pode acessar o carrinho durante o horário de funcionamento.');
-  }
-};
 
 
  
@@ -429,10 +380,20 @@ const handleFinalizarPedido = () => {
         ) :(
           <div className='amount_order_conteiner'>
      <label id='amount_order'>1</label> 
-     <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
-        onMouseLeave={searchHover.handleMouseLeave}
-        onClick={handleCartClick}
-        style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', width : '35px' }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+     <FaShoppingCart
+            onMouseEnter={searchHover.handleMouseEnter}
+            onMouseLeave={searchHover.handleMouseLeave}
+            onClick={isOpen ? handleCartClick : undefined}
+            style={{
+              color: isOpen ? (searchHover.isHovered ? '#332D2D' : color) : 'gray', // Cor alterada quando fechado
+              marginTop: '10px',
+              cursor: isOpen ? 'pointer' : 'not-allowed', // Cursor alterado quando fechado
+              transition: 'color 0.5s ease',
+              width: '35px'
+            }}
+            data-bs-toggle={isOpen ? 'modal' : ''}
+            data-bs-target={isOpen ? '#modal_shoppingCart_id' : ''}
+          />
          </div>   
         )}
   </div>
