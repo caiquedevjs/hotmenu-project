@@ -61,7 +61,10 @@ const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
 const [cupom, setCupom] = useState('');
-  const [celular, setCelular] = useState('5571999723638');
+const [celular, setCelular] = useState('');
+const [estebelecimentoId, setEstabelecimentoId] = useState('');
+const [mensagem, setMensagem] = useState('');
+
 
 // <------ estados do formulario, valor total do pedido------->  
 const [valorTotalPedido, setValorTotalPedido] = useState();
@@ -183,13 +186,15 @@ useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData();
-      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3) {
+      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3 && response.Id && response.TelContato) {
         setEstabelecimento(response);
         setColor(response.CorPadrao);
         setLogoMarca(response.Logomarca);
         setFotoCard(response.FotoCard1);
         setFotoCard2(response.FotoCard2);
         setFotoCard3(response.FotoCard3);
+        setEstabelecimentoId(response.Id);
+        setCelular(response.TelContato);
         setDeliveryOptions({
           pickup: response.RetiradaNaLoja,
           home: response.Delivery
@@ -343,19 +348,33 @@ const handleFinalizarPedido = () => {
   //<------ função para requisitar o dado no modal de cupom na api de cupom------->
 
   const handleBuscarCupom = async () => {
+    if (!estabelecimento) {
+      console.error('Dados do estabelecimento não carregados');
+      return;
+    }
+
     try {
       const response = await axios.post('https://hotmenu.com.br/webhook/BuscarCupom', {
-        Id: '1',
+        Id: estebelecimentoId, // Passa o ID do estabelecimento
         Cupom: cupom,
         Celular: celular,
       });
 
-      // Lide com a resposta da API conforme necessário
-      console.log(response.data);
+      const { CupomId, Valido, MsgErro } = response.data;
+
+      if (Valido) {
+        setMensagem('Cupom válido!');
+        console.log(mensagem)
+      } else {
+        setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
+        console.log(mensagem)
+      }
     } catch (error) {
       console.error('Erro ao buscar o cupom:', error);
+      setMensagem('Erro ao buscar o cupom');
     }
   };
+
 
     return (
   
