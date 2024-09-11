@@ -4,7 +4,7 @@ import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
 import { fetchEstabelecimentoData } from '../service/productService';
 
-const Modal_product_component = ({ id, product, onClose, categoryName }) => {
+const Modal_product_component = ({ id, product, onClose }) => {
   const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(id);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);

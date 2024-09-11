@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch } from "react-icons/fa";
 import './modal_search_component.css';
+import { fetchEstabelecimentoData } from '../service/productService';
 
-const ModalBusca = ({ categories }) => {
+const ModalBusca = ({ categories}) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [color, setColor] = useState("");
+  const [estabelecimento, setEstabelecimento] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchDataEstabelecimento = async () => {
+      try {
+        const data = await fetchEstabelecimentoData();
+        if (data && data.CorPadrao) {
+          setEstabelecimento(data);
+          setColor(data.CorPadrao);
+        } else {
+          setError('Nenhum dado recebido da API');
+        }
+      } catch (error) {
+        setError('Erro ao buscar dados do estabelecimento');
+        console.error('Erro na busca: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDataEstabelecimento();
+  }, []);
+
 
   // Função para lidar com a mudança no termo de busca
   const handleSearchChange = (e) => {
@@ -34,7 +60,7 @@ const ModalBusca = ({ categories }) => {
               />
               <FaSearch
                 id='modal_search_icon_id'
-                style={{ width: '20px', height: '20px', color: '#ce2929', marginTop: '10px', cursor: 'pointer' }}
+                style={{ width: '20px', height: '20px', color: color, marginTop: '10px', cursor: 'pointer' }}
               />
             </div>
             <div className="container text-center" id='grid_category_id'>
@@ -44,7 +70,7 @@ const ModalBusca = ({ categories }) => {
                     <div className="col" key={index}>
                       <div id='img_category_conteiner'>
                         <a href={`#category-${category.Id}`} className="category-link" onClick={() => window.location.hash = `#category-${category.Id}`} >
-                          <p id='text_category_id' data-bs-dismiss="modal" aria-label="Close">{category.Nome}</p>
+                          <p id='text_category_id' data-bs-dismiss="modal" aria-label="Close" style={{color: color}}>{category.Nome}</p>
                         </a>
                       </div>
                     </div>
