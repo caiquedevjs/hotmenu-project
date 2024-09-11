@@ -10,7 +10,6 @@ const useAdditionalState = (productId) => {
         const response = await fetchPerguntas(productId);
         const perguntas = response.perguntas || []; // Acesse a propriedade 'perguntas' do objeto de resposta
         setAdditionalStates(perguntas);
-        console.log("debug", additionalStates)
       } catch (error) {
         console.error('Erro ao buscar adicionais:', error);
       }

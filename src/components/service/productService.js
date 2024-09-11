@@ -88,7 +88,6 @@ export const fetchFormaPagamentos = async () => {
       throw new Error('Erro ao buscar dados do estabelecimento');
     }
     const data = await response.json();
-    console.log('Dados do estabelecimento: ', data);
     return data.cliente;
   }
   catch(error){
