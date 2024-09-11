@@ -2,6 +2,7 @@
 
 // <------- import hooks and context------->
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { CartContext } from '../modal_cart_itens/CartContext';
 
 // <------- import css------->
@@ -59,6 +60,8 @@ const [fotoCard3, setFotoCard3] = useState('');
 const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
+const [cupom, setCupom] = useState('');
+  const [celular, setCelular] = useState('5571999723638');
 
 // <------ estados do formulario, valor total do pedido------->  
 const [valorTotalPedido, setValorTotalPedido] = useState();
@@ -337,6 +340,22 @@ const handleFinalizarPedido = () => {
     setSelectedOption(e.target.value);
   };
   
+  //<------ função para requisitar o dado no modal de cupom na api de cupom------->
+
+  const handleBuscarCupom = async () => {
+    try {
+      const response = await axios.post('https://hotmenu.com.br/webhook/BuscarCupom', {
+        Id: '1',
+        Cupom: cupom,
+        Celular: celular,
+      });
+
+      // Lide com a resposta da API conforme necessário
+      console.log(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar o cupom:', error);
+    }
+  };
 
     return (
   
@@ -521,6 +540,9 @@ const handleFinalizarPedido = () => {
           <div class="modal-body" id='modal-body-cupom-desconto'>
           <Tooltip id='tooltip-bsucar-cupom'></Tooltip>
             <input className='cupom-desconto-input' placeholder='digite seu cupom'
+            value={cupom}
+            onChange={(e) => setCupom(e.target.value)}
+            onClick={handleBuscarCupom}
              data-tooltip-id="tooltip-bsucar-cupom"
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
