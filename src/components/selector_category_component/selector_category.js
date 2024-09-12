@@ -1,5 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import {fetchEstabelecimentoData } from '../service/productService';
+import  useHover  from '../../utils/headerHoverHandlers';
 import './selector_category.css';
 
 const SelectorCategoryComponent = ({ categories }) => {
@@ -7,9 +8,12 @@ const SelectorCategoryComponent = ({ categories }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
+  const categoriaHover = useHover();
 
   
   useEffect(() => {
+   
+
     const fetchDataEstabelecimento = async () => {
       try {
         const data = await fetchEstabelecimentoData();
@@ -38,7 +42,11 @@ const SelectorCategoryComponent = ({ categories }) => {
   return (
     <div className='selector_category_component'>
       <div className="dropdown">
-        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style={{backgroundColor : color}}>
+        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" 
+        style={{backgroundColor : categoriaHover.isHovered ? '#332D2D' : color}}
+        onMouseEnter={categoriaHover.handleMouseEnter}
+        onMouseLeave={categoriaHover.handleMouseLeave}
+        >
           Categorias
         </button>
         <ul className="dropdown-menu">

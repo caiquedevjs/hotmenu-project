@@ -37,6 +37,12 @@ const Header_component = ({handleCartClick}) =>{
  // <------ constantes utils ------->
   const cartHover = useHover();
   const searchHover = useHover();
+  const comprarButtonHover = useHover();
+  const cupomButtonHover = useHover();
+  const finalizarButtonHover = useHover();
+  const cancelarButtonHover = useHover();
+  const delliveryBgHover = useHover();
+  const boletoHover = useHover();
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
@@ -57,6 +63,8 @@ const [logoMarca, setLogoMarca] = useState('');
 const [fotoCard, setFotoCard] = useState('');
 const [fotoCard2,setFotoCard2] = useState('');
 const [fotoCard3, setFotoCard3] = useState('');
+const [fotoCard4, setFotoCard4] = useState('');
+const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
@@ -186,13 +194,15 @@ useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData();
-      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3 && response.Id && response.TelContato) {
+      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3 && response.FotoCard4 && response.FotoCard5 && response.Id && response.TelContato) {
         setEstabelecimento(response);
         setColor(response.CorPadrao);
         setLogoMarca(response.Logomarca);
         setFotoCard(response.FotoCard1);
         setFotoCard2(response.FotoCard2);
         setFotoCard3(response.FotoCard3);
+        setFotoCard4(response.FotoCard4);
+        setFotoCard5(response.FotoCard5);
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
         setDeliveryOptions({
@@ -325,6 +335,10 @@ const handleFinalizarPedido = () => {
       setTitular('');
       setVencimento('');
       setCvc('');
+       const telefoneWhatsApp = celular.replace(/\D/g, ''); 
+       const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
+       window.open(urlWhatsApp, '_blank');
+
     } else {
       toast.error("Não há pedidos para finalizar", {theme: 'dark'});
       sound.play();
@@ -400,6 +414,12 @@ const handleFinalizarPedido = () => {
     </div>
     <div class="carousel-item">
       <img src={`https://hotmenu.com.br/arquivos/${fotoCard3}`} class="d-block w-100" alt="..."/>
+    </div>
+    <div class="carousel-item">
+      <img src={`https://hotmenu.com.br/arquivos/${fotoCard4}`} class="d-block w-100" alt="..."/>
+    </div>
+    <div class="carousel-item">
+      <img src={`https://hotmenu.com.br/arquivos/${fotoCard5}`} class="d-block w-100" alt="..."/>
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
@@ -525,11 +545,9 @@ const handleFinalizarPedido = () => {
                   <div className='prices-conteiner'>
                     <p className='Total-price-cart'>R$ {totalCartPrice()}</p>
                     {estabelecimento && estabelecimento.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe ? (
-                       <><p style={{ color: 'red' ,'fontSize': '10px'}}>
+                       <p style={{ color: 'red' ,'fontSize': '11px'}}>
                           Frete grátis 
-                        </p><p className='Total-price-cart' style={{ 'color': '#228B22', 'textDecoration': 'line-through' }}>
-                            {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
-                          </p></> ) :(
+                        </p> ) :(
                       <p className='Total-price-cart' style={{'color' : '#228B22'}}>
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
                       </p>
@@ -544,7 +562,9 @@ const handleFinalizarPedido = () => {
                 data-tooltip-id="carrinho-vazio-id"
                 data-tooltip-content= "Adicione um produto pra finalizar a compra."
                 data-tooltip-place="top-start"
-                style={{backgroundColor : color}}
+                style={{backgroundColor : comprarButtonHover.isHovered ? '#332D2D' : color, cursor: cartItems.length > 0 ? 'pointer' : 'not-allowed'}}
+                onMouseEnter={comprarButtonHover.handleMouseEnter}
+                onMouseLeave={comprarButtonHover.handleMouseLeave}
                 >
                   Finalizar Compra
                 </button>
@@ -552,7 +572,11 @@ const handleFinalizarPedido = () => {
                  <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
               data-tooltip-id="tooltip-cupom-btn"
              data-tooltip-content="adicione o seu cupom aqui."
-             data-tooltip-place="top-start" style={{backgroundColor : color}}>Adicionar cupom</button>
+             data-tooltip-place="top-start"
+             style={{backgroundColor : cupomButtonHover.isHovered ? '#332D2D' : color}}
+             onMouseEnter={cupomButtonHover.handleMouseEnter}
+             onMouseLeave={cupomButtonHover.handleMouseLeave}>Adicionar cupom
+              </button>
                 </div>
                </div>
             </div>
@@ -643,7 +667,11 @@ const handleFinalizarPedido = () => {
               </div>
                   </div>
               <div className="dropdown-center">
-                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false" style={{backgroundColor: color}}>
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
+                 style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
+                 onMouseEnter={delliveryBgHover.handleMouseEnter}
+                 onMouseLeave={delliveryBgHover.handleMouseLeave}
+                >
                   Formas de entrega
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
@@ -829,6 +857,9 @@ const handleFinalizarPedido = () => {
                     type="button" 
                     className="btn-gerar-boleto" 
                     onClick={generateBoleto}
+                    style={{backgroundColor : boletoHover.isHovered ? '#332D2D' : color}}
+                    onMouseEnter={boletoHover.handleMouseEnter}
+                    onMouseLeave={boletoHover.handleMouseLeave}
                 >
                     Gerar Boleto
                 </button>
@@ -886,9 +917,17 @@ const handleFinalizarPedido = () => {
           </div>
           
           <div className="modal-footer">
-            <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido}  style={{backgroundColor : color}}>Finalizar pedido</button>
+            <button type="button"  id='finalizar-pedido-btn'  onClick={handleFinalizarPedido}
+             style={{backgroundColor : finalizarButtonHover.isHovered ? '#332D2D' : color}}
+             onMouseEnter={finalizarButtonHover.handleMouseEnter}
+             onMouseLeave={finalizarButtonHover.handleMouseLeave}
+            >Finalizar pedido</button>
             <ToastContainer />
-            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido} style={{backgroundColor : color}}>Cancelar</button>
+            <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}
+             style={{backgroundColor : cancelarButtonHover.isHovered ? '#332D2D' : color}}
+             onMouseEnter={cancelarButtonHover.handleMouseEnter}
+             onMouseLeave={cancelarButtonHover.handleMouseLeave}
+            >Cancelar</button>
           </div>
         </div>
       </div>
