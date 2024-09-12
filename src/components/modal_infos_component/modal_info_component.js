@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from 'react';
 import { fetchEstabelecimentoData } from '../service/productService';
 import './modal_info.css';
@@ -8,15 +9,17 @@ const Modal_infos_component = () => {
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
   const [logoMarca, setLogoMarca] = useState('');
+  const [celular, setCelular] = useState('');
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
         const data = await fetchEstabelecimentoData();
-        if (data && data.CorPadrao && data.Logomarca) {
+        if (data && data.CorPadrao && data.Logomarca && data.TelContato) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
-          setLogoMarca(data.Logomarca)
+          setLogoMarca(data.Logomarca);
+          setCelular(data.TelContato);
         } else {
           setError('Nenhum dado recebido da API');
         }
@@ -31,7 +34,11 @@ const Modal_infos_component = () => {
     fetchDataEstabelecimento();
   }, []);
 
-
+const handlerClick = () =>{
+  const telefoneWhatsApp = celular.replace(/\D/g, ''); 
+      const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
+      window.open(urlWhatsApp, '_blank');
+}
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -54,8 +61,8 @@ const Modal_infos_component = () => {
               <img src= {`https://hotmenu.com.br/arquivos/${logoMarca}`} id='logo_info' className="img-thumbnail" alt="info logo"/>
               <p id='info_endreco'>{estabelecimento ? estabelecimento.Endereco : "Endereço"}</p>
               <div id='info_social_icons'>
-                <img src="instagram-icone-icon.png" id='logo_social_icons_png'/>
-                <img src="whatsapp.png" id='logo_social_icons_png'/>
+                <img src="instagram-icone-icon.png" id='logo_social_icons_png' style={{ 'cursor' : 'pointer'}}/>
+                <img src="whatsapp.png" id='logo_social_icons_png' onClick={handlerClick} style={{ 'cursor' : 'pointer'}}/>
               </div>
             </div>
           </div>

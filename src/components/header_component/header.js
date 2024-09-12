@@ -181,7 +181,7 @@ const renderFormasSemTipo = (nome) => {
         <div className="payment-grid">
             {formas.map((forma) => (
                 <div key={forma.Id} className="payment-item">
-                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} /> 
+                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome}/> 
                 </div>
             ))}
         </div>
@@ -335,9 +335,9 @@ const handleFinalizarPedido = () => {
       setTitular('');
       setVencimento('');
       setCvc('');
-       const telefoneWhatsApp = celular.replace(/\D/g, ''); 
-       const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
-       window.open(urlWhatsApp, '_blank');
+      const telefoneWhatsApp = celular.replace(/\D/g, ''); 
+      const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
+      window.open(urlWhatsApp, '_blank');
 
     } else {
       toast.error("Não há pedidos para finalizar", {theme: 'dark'});
