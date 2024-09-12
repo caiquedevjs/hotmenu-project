@@ -8,6 +8,7 @@ const ModalBusca = ({ categories = [] }) => {
   const [color, setColor] = useState("");
   const [estabelecimento, setEstabelecimento] = useState(null);
   const [products, setProducts] = useState([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,6 +59,21 @@ const ModalBusca = ({ categories = [] }) => {
     product.Nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Função para lidar com a seleção de produto e navegação para a categoria
+  const handleProductClick = (product) => {
+    setSelectedCategoryId(product.CategoriaId);
+    // Esperar o fechamento do modal antes de rolar
+    setTimeout(() => {
+      const categoryElement = document.getElementById(`category-${product.CategoriaId}`);
+      if (categoryElement) {
+        categoryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 300); // Ajuste o tempo conforme necessário para garantir que o modal esteja fechado
+  };
+    
+
+ 
+
   // Agrupa produtos por categoria
   const productsByCategory = categories.reduce((acc, category) => {
     acc[category.Id] = products.filter(product => product.CategoriaId === category.Id);
@@ -95,7 +111,14 @@ const ModalBusca = ({ categories = [] }) => {
                       <div className="col-6 col-md-4 mb-4" key={index}>
                         <div className="product-container">
                           <p className="product-name" style={{ color: color }}>{product.Nome}</p>
-                          <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`} alt={product.Nome} className="img-fluid product-image" />
+                          <img 
+                            src={`https://hotmenu.com.br/arquivos/${product.Foto}`} 
+                            alt={product.Nome} 
+                            className="img-fluid product-image" 
+                            onClick={() => handleProductClick(product)} 
+                            style={{ cursor: 'pointer' }} 
+                            data-bs-dismiss="modal"
+                          />
                         </div>
                       </div>
                     ))
@@ -112,7 +135,11 @@ const ModalBusca = ({ categories = [] }) => {
                             <h4 className="category-title" style={{ color: color }}>{category.Nome}</h4>
                             {firstProduct ? (
                               <div className="product-container">
-                                <img src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`} alt={firstProduct.Nome} className="img-fluid product-image" />
+                                <img 
+                                  src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`} 
+                                  alt={firstProduct.Nome} 
+                                  className="img-fluid product-image" 
+                                />
                               </div>
                             ) : (
                               <p>Sem produtos disponíveis</p>
