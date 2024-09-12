@@ -440,6 +440,10 @@ const handleFinalizarPedido = () => {
   <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Pizza de qualidade"}</h6> 
      
   </header>
+
+
+
+  
   
 
 {/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
