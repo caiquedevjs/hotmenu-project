@@ -59,3 +59,16 @@
 #grid_category_id{
     margin-top: 40px;
 }
+
+.product-image {
+     width: 100px;
+     height: 100px;
+  }
+  
+  /* Ajustes para telas menores */
+  @media (max-width: 576px) {
+    .product-image {
+        width: 100px;
+        height: 100px;
+    }
+  }

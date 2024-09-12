@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from "react-icons/fa";
 import './modal_search_component.css';
-import { fetchEstabelecimentoData } from '../service/productService';
+import { fetchEstabelecimentoData, fetchProducts } from '../service/productService';
 
-const ModalBusca = ({ categories}) => {
+const ModalBusca = ({ categories = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [color, setColor] = useState("");
   const [estabelecimento, setEstabelecimento] = useState(null);
+  const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Carregar dados do estabelecimento
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
@@ -30,21 +33,40 @@ const ModalBusca = ({ categories}) => {
     fetchDataEstabelecimento();
   }, []);
 
+  // Carregar produtos da API
+  useEffect(() => {
+    const fetchDataProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (error) {
+        setError('Erro ao buscar produtos');
+        console.error('Erro na busca de produtos: ', error);
+      }
+    };
+
+    fetchDataProducts();
+  }, []);
 
   // Função para lidar com a mudança no termo de busca
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    
   };
 
-  // Filtra as categorias com base no termo de busca
-  const filteredCategories = categories ? categories.filter(category =>
-    category.Nome.toLowerCase().includes(searchTerm.toLowerCase())
-  ) : [];
+  // Filtra os produtos com base no termo de busca
+  const filteredProducts = products.filter(product =>
+    product.Nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Agrupa produtos por categoria
+  const productsByCategory = categories.reduce((acc, category) => {
+    acc[category.Id] = products.filter(product => product.CategoriaId === category.Id);
+    return acc;
+  }, {});
 
   return (
     <div className="modal fade" id="modal_search_id" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -63,21 +85,45 @@ const ModalBusca = ({ categories}) => {
                 style={{ width: '20px', height: '20px', color: color, marginTop: '10px', cursor: 'pointer' }}
               />
             </div>
-            <div className="container text-center" id='grid_category_id'>
+
+            {/* Exibir produtos filtrados ou categorias com foto do primeiro produto */}
+            <div className="container text-center" id='grid_products_id'>
               <div className="row">
-                {filteredCategories.length > 0 ? (
-                  filteredCategories.map((category, index) => (
-                    <div className="col" key={index}>
-                      <div id='img_category_conteiner'>
-                        <a href={`#category-${category.Id}`} className="category-link" onClick={() => window.location.hash = `#category-${category.Id}`} >
-                          <p id='text_category_id' data-bs-dismiss="modal" aria-label="Close" style={{color: color}}>{category.Nome}</p>
-                        </a>
+                {searchTerm ? (
+                  filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, index) => (
+                      <div className="col-6 col-md-4 mb-4" key={index}>
+                        <div className="product-container">
+                          <p className="product-name" style={{ color: color }}>{product.Nome}</p>
+                          <img src={`https://hotmenu.com.br/arquivos/${product.Foto}`} alt={product.Nome} className="img-fluid product-image" />
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    ))
+                  ) : (
+                    <p>Produto não encontrado</p>
+                  )
                 ) : (
-                  <p>Nenhuma categoria encontrada</p>
-                  
+                  categories.length > 0 ? (
+                    categories.map((category, catIndex) => {
+                      const firstProduct = productsByCategory[category.Id]?.[0];
+                      return (
+                        <div key={catIndex} className="col-6 col-md-4 mb-4">
+                          <div className="category-section">
+                            <h4 className="category-title" style={{ color: color }}>{category.Nome}</h4>
+                            {firstProduct ? (
+                              <div className="product-container">
+                                <img src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`} alt={firstProduct.Nome} className="img-fluid product-image" />
+                              </div>
+                            ) : (
+                              <p>Sem produtos disponíveis</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p>Não há categorias disponíveis</p>
+                  )
                 )}
               </div>
             </div>
