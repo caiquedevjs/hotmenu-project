@@ -223,12 +223,21 @@ useEffect(() => {
   // <---------- Função para calcular o preço com frete  ---------->
   const totalPriceWithFrete = () => {
     const cartTotal = parseFloat(totalCartPrice().replace(',', '.')); // Converter para float para cálculo
-    if (estabelecimento && estabelecimento.FreteFixo) {
-      const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
-      return totalComFrete.toFixed(2).replace('.', ',');
+
+    // Verifique se o estabelecimento e a lógica de frete fixo estão presentes
+    if (estabelecimento) {
+        // Se frete grátis estiver ativado e o total do carrinho for maior ou igual ao valor para frete grátis
+        if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
+            return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+        } else if (estabelecimento.FreteFixo) {
+            const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
+            return totalComFrete.toFixed(2).replace('.', ','); // Com frete fixo
+        }
     }
-    return cartTotal.toFixed(2).replace('.', ',');
-  };
+
+    return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+};
+
 
 // <---------- Função para copiar chave pix ---------->
   const CopyButton = () => {
@@ -515,10 +524,16 @@ const handleFinalizarPedido = () => {
                   </div>
                   <div className='prices-conteiner'>
                     <p className='Total-price-cart'>R$ {totalCartPrice()}</p>
-              
-                    <p className='Total-price-cart' style={{'color' : '#228B22'}}>
-                    {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
-                    </p>
+                    {estabelecimento && estabelecimento.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe ? (
+                       <><p style={{ color: 'red' ,'fontSize': '10px'}}>
+                          Frete grátis 
+                        </p><p className='Total-price-cart' style={{ 'color': '#228B22', 'textDecoration': 'line-through' }}>
+                            {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+                          </p></> ) :(
+                      <p className='Total-price-cart' style={{'color' : '#228B22'}}>
+                      {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+                      </p>
+                    )}
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
