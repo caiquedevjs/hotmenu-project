@@ -70,9 +70,15 @@ const ModalBusca = ({ categories = [] }) => {
       }
     }, 300); // Ajuste o tempo conforme necessário para garantir que o modal esteja fechado
   };
-    
 
- 
+  // Função para lidar com o clique no ícone de busca
+  const handleSearchIconClick = () => {
+    if (filteredProducts.length > 0) {
+      handleProductClick(filteredProducts[0]);
+    } else {
+      console.log('Nenhum produto encontrado para buscar');
+    }
+  };
 
   // Agrupa produtos por categoria
   const productsByCategory = categories.reduce((acc, category) => {
@@ -98,6 +104,7 @@ const ModalBusca = ({ categories = [] }) => {
               />
               <FaSearch
                 id='modal_search_icon_id'
+                onClick={handleSearchIconClick}
                 style={{ width: '20px', height: '20px', color: color, marginTop: '10px', cursor: 'pointer' }}
               />
             </div>
