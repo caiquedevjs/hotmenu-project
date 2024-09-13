@@ -43,11 +43,12 @@ const Header_component = ({handleCartClick}) =>{
   const cancelarButtonHover = useHover();
   const delliveryBgHover = useHover();
   const boletoHover = useHover();
+  const pixButtonHover = useHover()
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
 // <------- contexto do carrinho ------->
-const { cartItems, totalCartPrice, removeFromCart, isOpen } = useContext(CartContext);
+const { cartItems, totalCartPrice, removeFromCart, isOpen} = useContext(CartContext);
 
 // <------ estados ------->
 const [formas, setFormas] = useState([]);
@@ -65,7 +66,7 @@ const [fotoCard2,setFotoCard2] = useState('');
 const [fotoCard3, setFotoCard3] = useState('');
 const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
-const [pixKey, setPixKey] = useState(`BOL-${Math.random().toString(36).substring(2, 15)}`);
+const [pixKey, setPixKey] = useState(``);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
 const [cupom, setCupom] = useState('');
@@ -76,6 +77,7 @@ const [mensagem, setMensagem] = useState('');
 
 // <------ estados do formulario, valor total do pedido------->  
 const [valorTotalPedido, setValorTotalPedido] = useState();
+const [valorVendaMinima, setValorVendaMinima] = useState(0);
 const [list, setList] = useState([]);
 const [nome, setNome] = useState('');
 const [telefone, setTelefone] = useState('');
@@ -209,6 +211,8 @@ useEffect(() => {
           pickup: response.RetiradaNaLoja,
           home: response.Delivery
         });
+        setPixKey(response.ChavePix);
+        setValorVendaMinima(response.LimiteVendaMinima);
       } else {
         setError('Nenhum dado recebido da API');
       }
@@ -224,7 +228,7 @@ useEffect(() => {
 }, []);
 
 
- 
+console.log("status de funcionamento", isOpen);
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
@@ -263,6 +267,9 @@ useEffect(() => {
             onClick={copyToClipboard} 
             className="btn-copy"
             aria-label="Copiar código Pix"
+            style={{backgroundColor: pixButtonHover.isHovered ? '#332D2D' : color }}
+            onMouseEnter={pixButtonHover.handleMouseEnter}
+            onMouseLeave={pixButtonHover.handleMouseLeave}
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-copy" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
@@ -311,10 +318,16 @@ useEffect(() => {
 
 // <------ função para adicionar os itens do carrinho a lista de pedido ------->
 const handleAddPedido =() =>{
+  if(totalCartPrice() < valorVendaMinima){
+    toast.error(`Valor minimo para compra: ${valorVendaMinima}`);
+   }
+   else{
     setList(cartItems);
     setValorTotalPedido(totalPriceWithFrete())
     sound.play()
+   }
 }
+console.log('debugando valor minimo', valorVendaMinima);
 
 
 //<------ função para finalizar a lista de pedido ------->
@@ -436,7 +449,7 @@ const handleFinalizarPedido = () => {
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
         style={{ color: cartHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
-        {cartItems.length === 0 ? (
+        {cartItems.length === 0 ?  (
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
@@ -557,7 +570,7 @@ const handleFinalizarPedido = () => {
                 </div>
                 <hr></hr>
                 <div className='btn-card'>
-                <button className="btn-compra"  disabled={cartItems.length === 0} data-bs-toggle={cartItems.length > 0 ? 'modal' : undefined} data-bs-target={cartItems.length > 0 ? '#modal-finalizar-compra' : undefined} 
+                <button className="btn-compra"  disabled={cartItems.length === 0 || totalCartPrice() < valorVendaMinima } data-bs-toggle={cartItems.length > 0 || totalCartPrice() < valorVendaMinima ? 'modal' : undefined} data-bs-target={cartItems.length > 0 || totalCartPrice() < valorVendaMinima  ? '#modal-finalizar-compra' : undefined} 
                 onClick={ handleAddPedido } 
                 data-tooltip-id="carrinho-vazio-id"
                 data-tooltip-content= "Adicione um produto pra finalizar a compra."
@@ -845,7 +858,7 @@ const handleFinalizarPedido = () => {
                 readOnly
                 value={pixKey}
             /></div>
-            <CopyButton />
+            <CopyButton/>
         </div>
     </div>
 ) : null}

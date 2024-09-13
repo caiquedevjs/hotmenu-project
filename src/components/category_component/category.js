@@ -5,10 +5,9 @@ import Grid_component from '../Grid_component/Grid_component';
 import { fetchCategories, fetchEstabelecimentoData } from '../service/productService';
 import SelectorCategoryComponent from '../selector_category_component/selector_category';
 import ModalBusca from '../modal_search_component/modal_search_component';
+
 const Category_component = () => {
-
-
-  // <------- Estados das categorias ------->
+  // Estados das categorias
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [estabelecimento, setEstabelecimento] = useState(null);
@@ -16,16 +15,20 @@ const Category_component = () => {
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
 
-  // <------- Logica da busca por catgeorias na API ------->
+  // Lógica da busca por categorias na API
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        const fetchedCategories = await fetchCategories(); // <------- Busca as categorias da API ------->
-        setCategories(fetchedCategories);
-        setIsLoading(false); // <------- Marca o carregamento como completo ------->
+        const fetchedCategories = await fetchCategories(); // Busca as categorias da API
+        // Filtra e ordena categorias
+        const filteredCategories = fetchedCategories
+          .filter(category => !category.Removido)
+          .sort((a, b) => a.Ordem - b.Ordem);
+        setCategories(filteredCategories);
+        setIsLoading(false); // Marca o carregamento como completo
       } catch (error) {
         console.error('Erro ao buscar categorias:', error);
-        setIsLoading(false); // <------- Marca o carregamento como completo mesmo em caso de erro ------->
+        setIsLoading(false); // Marca o carregamento como completo mesmo em caso de erro
       }
     };
 
@@ -56,11 +59,13 @@ const Category_component = () => {
 
 
   if (isLoading) {
-    return <div>
-      <div class="spinner-border" role="status">
-  <span class="visually-hidden">Loading...</span>
-</div>
-    </div>;
+    return (
+      <div>
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -70,14 +75,14 @@ const Category_component = () => {
         {categories.map((category, index) => (
           <div key={index}>
             <div id='category_label_title'>
-              <h4 className='category_title' id={`category-${category.Id}`} style={{backgroundColor : color}}>{category.Nome}</h4>
+              <h4 className='category_title' id={`category-${category.Id}`} style={{ backgroundColor: color }}>{category.Nome}</h4>
             </div>
-            {/* <-------Renderiza o grid de categorias e passa as categoria.Id e categoria.Nome como propriedade-------> */}
+            {/* Renderiza o grid de categorias e passa as categoria.Id e categoria.Nome como propriedade */}
             <Grid_component categoryId={category.Id} categoryName={category.Nome} />
           </div>
         ))}
       </div>
-      {/* <-------Renderiza o ModalBusca e passa as categorias como propriedade-------> */}
+      {/* Renderiza o ModalBusca e passa as categorias como propriedade */}
       <ModalBusca categories={categories} /> 
     </div>
   );
