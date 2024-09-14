@@ -17,33 +17,57 @@ export const CartProvider = ({ children }) => {
         throw new Error('Erro ao buscar horário de funcionamento');
       }
       const data = await response.json();
-      console.log('Dados recebidos da API:', data); // Log dos dados da API
-
-      // Atualizar agendamento de pedidos
-      if (data && data.FechadoLiberarPedido !== undefined) {
-        setAgendamentoDePedidos(data.FechadoLiberarPedido);
-      }
-
-      // Atualizar status com base nos horários de funcionamento
-      updateStatus(data.horarios);
+      console.log('Dados recebidos da API de horários:', data); // Log dos dados da API
+      return data.horarios; // Retorna os horários para serem usados depois
     } catch (error) {
       console.error('Erro ao buscar horário de funcionamento', error);
+      return []; // Retorna um array vazio em caso de erro
+    }
+  };
+
+  const fetchEstabelecimentoData = async () => {
+    try {
+      const response = await fetch('https://hotmenu.com.br/webhook/Cliente/hotmenu');
+      if (!response.ok) {
+        throw new Error('Erro ao buscar dados do estabelecimento');
+      }
+      const data = await response.json();
+      console.log('Dados do estabelecimento:', data.cliente); // Log dos dados do estabelecimento
+      return data.cliente.FechadoLiberarPedido; // Retorna FechadoLiberarPedido
+    } catch (error) {
+      console.error('Erro ao buscar dados do estabelecimento:', error);
+      return false; // Retorna false em caso de erro
+    }
+  };
+
+  // Função para verificar se o estabelecimento está aberto ou fechado
+  const checkIfOpen = async () => {
+    try {
+      // Buscando ambos os dados simultaneamente
+      const [horarios, fechadoLiberarPedido] = await Promise.all([
+        fetchHorarioFuncionamento(),
+        fetchEstabelecimentoData()
+      ]);
+
+      // Atualizar o estado de agendamento de pedidos
+      setAgendamentoDePedidos(fechadoLiberarPedido);
+
+      // Verificação com base no valor de FechadoLiberarPedido
+      if (fechadoLiberarPedido) {
+        console.log('Agendamento de Pedidos ativo, carrinho aberto.');
+        setIsOpen(true);
+      } else {
+        // Se não tiver agendamento, verificar com base nos horários de funcionamento
+        updateStatus(horarios);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar se o estabelecimento está aberto:', error);
       setIsOpen(false);
     }
   };
 
   // Atualiza o status com base nos horários de funcionamento
   const updateStatus = (horarios) => {
-    console.log('Estado de AgendamentoDePedidos:', agendamentoDePedidos); // Log do estado de agendamento
-
-    // Se o agendamento de pedidos estiver ativado, o carrinho deve estar sempre aberto
-    if (agendamentoDePedidos) {
-      console.log('Agendamento de Pedidos ativo, carrinho aberto.');
-      setIsOpen(true);
-      return;
-    }
-
-    // Se o agendamento de pedidos não estiver ativado, verificar os horários
     const currentHour = new Date().getHours();
     const currentDay = new Date().getDay() + 1; // getDay() retorna 0 para Domingo, 1 para Segunda, etc.
 
@@ -65,7 +89,8 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchHorarioFuncionamento();
+    // Chama a função que busca os dados e verifica o status de abertura
+    checkIfOpen();
   }, []);
 
   const addToCart = (product, additionalStates, totalPrice, quantity) => {

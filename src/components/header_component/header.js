@@ -570,14 +570,27 @@ const handleFinalizarPedido = () => {
                 </div>
                 <hr></hr>
                 <div className='btn-card'>
-                <button className="btn-compra"  disabled={cartItems.length === 0 || totalCartPrice() < valorVendaMinima } data-bs-toggle={cartItems.length > 0 || totalCartPrice() < valorVendaMinima ? 'modal' : undefined} data-bs-target={cartItems.length > 0 || totalCartPrice() < valorVendaMinima  ? '#modal-finalizar-compra' : undefined} 
-                onClick={ handleAddPedido } 
-                data-tooltip-id="carrinho-vazio-id"
-                data-tooltip-content= "Adicione um produto pra finalizar a compra."
-                data-tooltip-place="top-start"
-                style={{backgroundColor : comprarButtonHover.isHovered ? '#332D2D' : color, cursor: cartItems.length > 0 ? 'pointer' : 'not-allowed'}}
-                onMouseEnter={comprarButtonHover.handleMouseEnter}
-                onMouseLeave={comprarButtonHover.handleMouseLeave}
+                <button
+                  className="btn-compra"
+                  disabled={cartItems.length === 0 || parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima} // Verifica se o carrinho está vazio ou o valor é menor que o mínimo
+                  data-bs-toggle={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'modal' : undefined} // Verifica se o total atende ao valor mínimo
+                  data-bs-target={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? '#modal-finalizar-compra' : undefined} // Modal aberto somente se o total for maior que o mínimo
+                  onClick={handleAddPedido}
+                  data-tooltip-id="carrinho-vazio-id"
+                  data-tooltip-content={
+                    cartItems.length === 0 
+                      ? "Adicione um produto para finalizar a compra." 
+                      : parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima 
+                      ? `O valor mínimo para compra é: R$ ${valorVendaMinima.toFixed(2).replace('.', ',')}` 
+                      : ""
+                  } // Tooltip atualizado dinamicamente
+                  data-tooltip-place="top-start"
+                  style={{
+                    backgroundColor: comprarButtonHover.isHovered ? '#332D2D' : color, 
+                    cursor: cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'pointer' : 'not-allowed'
+                  }}
+                  onMouseEnter={comprarButtonHover.handleMouseEnter}
+                  onMouseLeave={comprarButtonHover.handleMouseLeave}
                 >
                   Finalizar Compra
                 </button>
