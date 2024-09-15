@@ -56,7 +56,9 @@ const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false, mesa: false})
+const [pagamentoOptions, setPagamentoOptions] = useState({pagamentoOnline : false, pagamentoNaRetirada : false})
 const [showAddressFields, setShowAddressFields] = useState(false);
+const [showMesaNumberFild, setShowMesaNumberFild] = useState(false);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
 const [color, setColor] = useState('');
@@ -69,8 +71,6 @@ const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
-const [pagamentoOnilne, setPagamentoOnline] = useState(false);
-const [pagamentoNaretirada, setPagamentoNaRretirada] =useState(false);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
@@ -93,8 +93,10 @@ const [vencimento, setVencimento] = useState('');
 const [cvc, setCvc] = useState('');
 const [accountNumber, setAccountNumber] = useState('');
 const [agency, setAgency] = useState('');
+const [mesa, setMesa] = useState('');
 const [selectedOption, setSelectedOption] = useState('');
 const [isFormValid, setIsFormValid] = useState(false);
+
 
 // <---------- Notificações ---------->
 const sound = new Audio(SoundMessage)
@@ -209,13 +211,16 @@ useEffect(() => {
         setFotoCard5(response.FotoCard5);
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
-        setPagamentoOnline(response.PgtoOnLine);
-        setPagamentoNaRretirada(response.PgtoRetiradaLocal);
+        setPagamentoOptions({
+          pagamentoOnline: response.PgtoOnLine,
+          pagamentoNaRetirada : response.PgtoRetiradaLocal
+        })
         setDeliveryOptions({
           pickup: response.RetiradaNaLoja,
           home: response.Delivery,
           mesa : response.Mesa
         });
+
         setPixKey(response.ChavePix);
         setValorVendaMinima(response.LimiteVendaMinima);
       } else {
@@ -295,9 +300,16 @@ console.log("status de funcionamento", isOpen);
       } else {
         setShowAddressFields(false);
       }
+      if( option === 'mesa'){
+        setShowMesaNumberFild(true);
+      } else{
+        setShowMesaNumberFild(false);
+      }
     };
 
 
+
+  
 
   //<------ função para validar os campos do formulario ------->
   const validateForm = () => {
@@ -332,7 +344,7 @@ const handleAddPedido =() =>{
     sound.play()
    }
 }
-console.log('debugando valor minimo', valorVendaMinima);
+
 
 
 //<------ função para finalizar a lista de pedido ------->
@@ -353,6 +365,7 @@ const handleFinalizarPedido = () => {
       setTitular('');
       setVencimento('');
       setCvc('');
+      setMesa('');
       const telefoneWhatsApp = celular.replace(/\D/g, ''); 
       const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
       window.open(urlWhatsApp, '_blank');
@@ -771,9 +784,16 @@ const handleFinalizarPedido = () => {
                   </div>
                 </>
               )}
-              <div className='card-credit-form'>
-    <h4 className='pay-title-form'>Pagamento</h4>
+              {showMesaNumberFild && (
+                <div className="col-12">
+                <label htmlFor="inputAddress" className="form-label-credit-usuario">Numero da mesa</label>
+                <input type="text" className="form-control" id="inputAddress" value={mesa} onChange={(e) =>setMesa(e.target.value)}/>
+              </div>
+              )}
 
+
+  <div className='card-credit-form'>
+    <h4 className='pay-title-form'>Pagamento</h4>
     <div className="dropdown-center">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
                  style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
@@ -783,30 +803,30 @@ const handleFinalizarPedido = () => {
                   Formas de pagamento
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
-                {pagamentoNaretirada && (
+                {pagamentoOptions.pagamentoNaRetirada && (
             <li>
               <a
                 className="dropdown-item"
                 href="#"
-                onClick={() => handleDeliveryOption('pickup')}
+                
                 
               >
                 Pagar na retirada
               </a>
             </li>
           )}
-                  {pagamentoOnilne && (
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => handleDeliveryOption('home')}
-              >
-                Pagar online
-                {selectedOption === 'Crédito'}
-              </a>
-            </li>
-          )}
+                  {pagamentoOptions.pagamentoOnline && (
+                    <li>
+                      <a
+                        className="dropdown-item"
+                        href="#"
+                        
+                      >
+                        Pagar online
+                        
+                      </a>
+                    </li>
+                  )}
 
                 </ul>
               </div>
