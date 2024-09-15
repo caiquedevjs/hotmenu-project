@@ -55,7 +55,7 @@ const [formas, setFormas] = useState([]);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [estabelecimento, setEstabelecimento] = useState(null);
-const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false })
+const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false, mesa: false})
 const [showAddressFields, setShowAddressFields] = useState(false);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
@@ -69,6 +69,8 @@ const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
+const [pagamentoOnilne, setPagamentoOnline] = useState(false);
+const [pagamentoNaretirada, setPagamentoNaRretirada] =useState(false);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
@@ -207,9 +209,12 @@ useEffect(() => {
         setFotoCard5(response.FotoCard5);
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
+        setPagamentoOnline(response.PgtoOnLine);
+        setPagamentoNaRretirada(response.PgtoRetiradaLocal);
         setDeliveryOptions({
           pickup: response.RetiradaNaLoja,
-          home: response.Delivery
+          home: response.Delivery,
+          mesa : response.Mesa
         });
         setPixKey(response.ChavePix);
         setValorVendaMinima(response.LimiteVendaMinima);
@@ -723,6 +728,18 @@ const handleFinalizarPedido = () => {
               </a>
             </li>
           )}
+
+          {deliveryOptions.mesa && (
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={() => handleDeliveryOption('mesa')}
+              >
+                Mesa
+              </a>
+            </li>
+          )}
                 </ul>
               </div>
               {showAddressFields && (
@@ -756,6 +773,44 @@ const handleFinalizarPedido = () => {
               )}
               <div className='card-credit-form'>
     <h4 className='pay-title-form'>Pagamento</h4>
+
+    <div className="dropdown-center">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
+                 style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
+                 onMouseEnter={delliveryBgHover.handleMouseEnter}
+                 onMouseLeave={delliveryBgHover.handleMouseLeave}
+                >
+                  Formas de pagamento
+                </button>
+                <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
+                {pagamentoNaretirada && (
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={() => handleDeliveryOption('pickup')}
+                
+              >
+                Pagar na retirada
+              </a>
+            </li>
+          )}
+                  {pagamentoOnilne && (
+            <li>
+              <a
+                className="dropdown-item"
+                href="#"
+                onClick={() => handleDeliveryOption('home')}
+              >
+                Pagar online
+                {selectedOption === 'Crédito'}
+              </a>
+            </li>
+          )}
+
+                </ul>
+              </div>
+
     <div className='conteiner-check'>
     {Object.keys(formasPorTipo).map((tipo) => (
       
