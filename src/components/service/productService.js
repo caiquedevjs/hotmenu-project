@@ -7,7 +7,6 @@ export const fetchProducts = async () => {
       throw new Error('Erro ao buscar produtos');
     }
     const data = await response.json();
-    console.log('Dados da API de Produtos:', data);
     return data; // Supondo que o retorno da API seja um array de produtos
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
@@ -40,8 +39,7 @@ export const fetchCategories = async () => {
       throw new Error('Erro ao buscar categorias');
     }
     const data = await response.json();
-    console.log('Dados da API de Categorias:', data);
-    return data; // Supondo que o retorno da API seja um array de categorias
+    return data;
   } catch (error) {
     console.error('Erro ao buscar categorias:', error);
     return [];
@@ -56,11 +54,10 @@ export const fetchHorarioFuncionamento = async () => {
       throw new Error('Erro ao buscar horário de funcionamento');
     }
     const data = await response.json();
-    console.log('Dados dos horários de funcionamento:', data);
     return data;
   } catch (error) {
     console.error('Erro ao buscar horário de funcionamento', error);
-    return { status: 'Erro ao carregar horários' }; // Valor padrão caso ocorra erro
+    return { status: 'Erro ao carregar horários' };
   }
 };
 
@@ -72,7 +69,6 @@ export const fetchFormaPagamentos = async () => {
       throw new Error('Erro ao forma de pagamentos');
     }
     const data = await response.json();
-    console.log('Dados de formas de pagamento:', data);
     return data;
   } catch (error) {
     console.error('Erro ao buscar formas de pagamentos', error);

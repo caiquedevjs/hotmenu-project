@@ -13,6 +13,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
+  const [suggestion, setSuggestion] = useState(""); // Novo estado para armazenar a sugestão
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
@@ -62,16 +63,10 @@ const Modal_product_component = ({ id, product, onClose }) => {
 
   const handleAddToCart = () => {
     const totalPrice = calculateTotalPrice();
-    addToCart(product, additionalStates, parseFloat(totalPrice), quantity);
+    addToCart(product, additionalStates, parseFloat(totalPrice), quantity, suggestion); // Envia a sugestão
     onClose();
   };
-// Logs para depuração
-useEffect(() => {
-  console.log('ID do Produto:', id);
-  console.log('Dados do Produto:', product);
-  console.log('Estados Adicionais:', additionalStates);
-  console.log('Preço Total:', totalPrice);
-}, [id, product, additionalStates, totalPrice]);
+
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered">
@@ -113,7 +108,12 @@ useEffect(() => {
           </div>
           <div className='options-suggestion'>
             <h5>Alguma sugestão?</h5>
-            <textarea className='suggestion-input' placeholder='alguma sugestão?'></textarea>
+            <textarea
+              className='suggestion-input'
+              placeholder='alguma sugestão?'
+              value={suggestion} // Estado para valor da sugestão
+              onChange={(e) => setSuggestion(e.target.value)} // Atualiza o estado quando o valor muda
+            />
           </div>
           <div className='control-price-total'>
             <div className="quantity-control" style={{border : `2px solid ${color}`}}>

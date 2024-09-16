@@ -136,14 +136,11 @@ const notify02 = () => toast.success('Você receberá o status do pedido pelo Wh
 
   // <------ renderização das formas de pagamentos ------->
  
-
-
   useEffect(() => {
       const fetchData = async () => {
           try {
               const response = await fetchFormaPagamentos();
               if (response && response.FormasDePagamento) {
-                  // Organize formas by tipo and handle formas without tipo
                   const formasByTipo = {};
                   const formasSemTipo = {};
                   response.FormasDePagamento.forEach((curr) => {
@@ -153,7 +150,6 @@ const notify02 = () => toast.success('Você receberá o status do pedido pelo Wh
                           }
                           formasByTipo[curr.Tipo].push(curr);
                       } else {
-                          // Ensure each key in formasSemTipo is an array
                           if (!formasSemTipo[curr.Nome]) {
                               formasSemTipo[curr.Nome] = [];
                           }
@@ -195,8 +191,6 @@ const renderFormasSemTipo = (nome) => {
         </div>
     );
 };
-
-
 
 useEffect(() => {
   const fetchDataEstabelecimento = async () => {
@@ -241,29 +235,23 @@ useEffect(() => {
 }, []);
 
 
-console.log("status de funcionamento", isOpen);
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
-    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+    return price.toFixed(2).replace('.', ',');
   };
 
 // <---------- Função para calcular o preço com frete  ---------->
 const totalPriceWithFrete = () => {
-  // Converte o total do carrinho para float, substituindo vírgulas por pontos
   const cartTotal = parseFloat(totalCartPrice().replace(',', '.'));
-
-  // Verifique se o estabelecimento e a lógica de frete fixo estão presentes
   if (estabelecimento) {
-    // Se frete grátis estiver ativado e o total do carrinho for maior ou igual ao valor para frete grátis
     if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
-      return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+      return cartTotal.toFixed(2).replace('.', ','); 
     } else if (estabelecimento.FreteFixo) {
       const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
-      return totalComFrete.toFixed(2).replace('.', ','); // Com frete fixo
+      return totalComFrete.toFixed(2).replace('.', ','); 
     }
   }
-
-  return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+  return cartTotal.toFixed(2).replace('.', ','); 
 };
 
 
@@ -294,9 +282,6 @@ const totalPriceWithFrete = () => {
 };
 
 
-
-
-   
 // <---------- função para deixar os campos de endereço visivel ---------->
 
     const handleDeliveryOption = (option) => {
@@ -311,13 +296,6 @@ const totalPriceWithFrete = () => {
         setShowMesaNumberFild(false);
       }
     };
-
-    
-
-    
-   
-
-  
 
   //<------ função para validar os campos do formulario ------->
   const validateForm = () => {
@@ -380,6 +358,7 @@ const handleFinalizarPedido = () => {
       Id: item.product.Id,
       Nome: item.product.Nome,
       Quantidade: item.quantity,
+      Sugestão : item.suggestion,
       Preco: item.product.PrecoDeVenda, 
     }));
 
@@ -1069,7 +1048,5 @@ const handleFinalizarPedido = () => {
     </div>
   </div>
     )
-  
-
 }
 export default Header_component;
