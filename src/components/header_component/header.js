@@ -69,13 +69,14 @@ const [fotoCard3, setFotoCard3] = useState('');
 const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
+const [FreteFixo,setFreteFixo] = useState('');
 const [valorTroco, setValorTroco] = useState(0);
 const [boleto, setBoleto] = useState(null);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [mensagem, setMensagem] = useState('');
-const [showPaymentForm, setShowPaymentForm] = useState(false);
+
 
 
 // <------ estados do formulario, valor total do pedido------->  
@@ -212,6 +213,7 @@ useEffect(() => {
         setFotoCard5(response.FotoCard5);
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
+        setFreteFixo(response.ValorFreteFixo)
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
           pagamentoNaRetirada : response.PgtoRetiradaLocal
@@ -245,23 +247,25 @@ console.log("status de funcionamento", isOpen);
     return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
   };
 
-  // <---------- Função para calcular o preço com frete  ---------->
-  const totalPriceWithFrete = () => {
-    const cartTotal = parseFloat(totalCartPrice().replace(',', '.')); // Converter para float para cálculo
+// <---------- Função para calcular o preço com frete  ---------->
+const totalPriceWithFrete = () => {
+  // Converte o total do carrinho para float, substituindo vírgulas por pontos
+  const cartTotal = parseFloat(totalCartPrice().replace(',', '.'));
 
-    // Verifique se o estabelecimento e a lógica de frete fixo estão presentes
-    if (estabelecimento) {
-        // Se frete grátis estiver ativado e o total do carrinho for maior ou igual ao valor para frete grátis
-        if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
-            return cartTotal.toFixed(2).replace('.', ','); // Sem frete
-        } else if (estabelecimento.FreteFixo) {
-            const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
-            return totalComFrete.toFixed(2).replace('.', ','); // Com frete fixo
-        }
+  // Verifique se o estabelecimento e a lógica de frete fixo estão presentes
+  if (estabelecimento) {
+    // Se frete grátis estiver ativado e o total do carrinho for maior ou igual ao valor para frete grátis
+    if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
+      return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+    } else if (estabelecimento.FreteFixo) {
+      const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
+      return totalComFrete.toFixed(2).replace('.', ','); // Com frete fixo
     }
+  }
 
-    return cartTotal.toFixed(2).replace('.', ','); // Sem frete
+  return cartTotal.toFixed(2).replace('.', ','); // Sem frete
 };
+
 
 
 // <---------- Função para copiar chave pix ---------->
@@ -294,7 +298,7 @@ console.log("status de funcionamento", isOpen);
 
    
 // <---------- função para deixar os campos de endereço visivel ---------->
-  
+
     const handleDeliveryOption = (option) => {
       if (option === 'home') {
         setShowAddressFields(true);
@@ -309,6 +313,8 @@ console.log("status de funcionamento", isOpen);
     };
 
     
+
+    
    
 
   
@@ -318,6 +324,7 @@ console.log("status de funcionamento", isOpen);
     if (
       nome &&
       telefone &&
+      (showMesaNumberFild ? mesa : true) &&
       (showAddressFields ? endereco && complemento && bairro && cep : true) &&
       cartao &&
       titular &&
@@ -333,7 +340,7 @@ console.log("status de funcionamento", isOpen);
 // <------ effect para disprar a validação dos campos do formulario ------->
   useEffect(() => {
     validateForm();
-  }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc]);
+  }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc, mesa]);
 
 // <------ função para adicionar os itens do carrinho a lista de pedido ------->
 const handleAddPedido =() =>{
@@ -368,6 +375,30 @@ const handleFinalizarPedido = () => {
       setVencimento('');
       setCvc('');
       setMesa('');
+      
+     const produtos = list.map(item => ({
+      Id: item.product.Id,
+      Nome: item.product.Nome,
+      Quantidade: item.quantity,
+      Preco: item.product.PrecoDeVenda, 
+    }));
+
+    // <---- objeto do pedido ---->
+   
+    const pedido = {
+    
+      DataPedido: new Date().toISOString(), 
+      Status: "Pendente", 
+      Cliente: nome,
+      Tel: telefone,
+      Endereço: showAddressFields ? `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}` : "RETIRADA NO LOCAL",
+      mesa: showMesaNumberFild ? `Mesa número: ${mesa}`: "Não possui mesa",
+      FormaPagamento: selectedOption,
+      Produtos: produtos,
+      frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ? `R$ ${ FreteFixo}`: "Sem frete",
+      preçoTotal: `R$ ${totalPriceWithFrete()}`
+    };
+      console.log(pedido);
       const telefoneWhatsApp = celular.replace(/\D/g, ''); 
       const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
       window.open(urlWhatsApp, '_blank');
@@ -603,7 +634,7 @@ const handleFinalizarPedido = () => {
                       : parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima 
                       ? `O valor mínimo para compra é: R$ ${valorVendaMinima.toFixed(2).replace('.', ',')}` 
                       : ""
-                  } // Tooltip atualizado dinamicamente
+                  } 
                   data-tooltip-place="top-start"
                   style={{
                     backgroundColor: comprarButtonHover.isHovered ? '#332D2D' : color, 
