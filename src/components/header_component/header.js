@@ -75,6 +75,7 @@ const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [mensagem, setMensagem] = useState('');
+const [showPaymentForm, setShowPaymentForm] = useState(false);
 
 
 // <------ estados do formulario, valor total do pedido------->  
@@ -307,7 +308,8 @@ console.log("status de funcionamento", isOpen);
       }
     };
 
-
+    
+   
 
   
 
@@ -793,7 +795,6 @@ const handleFinalizarPedido = () => {
 
 
   <div className='card-credit-form'>
-    <h4 className='pay-title-form'>Pagamento</h4>
     <div className="dropdown-center">
                 <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
                  style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
@@ -820,18 +821,20 @@ const handleFinalizarPedido = () => {
                       <a
                         className="dropdown-item"
                         href="#"
-                        
+                       
                       >
                         Pagar online
+                        
                         
                       </a>
                     </li>
                   )}
 
                 </ul>
-              </div>
+              </div><hr></hr>
 
     <div className='conteiner-check'>
+    
     {Object.keys(formasPorTipo).map((tipo) => (
       
         <div key={tipo} className="form-check">
