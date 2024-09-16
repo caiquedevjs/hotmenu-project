@@ -14,16 +14,28 @@ export const fetchProducts = async () => {
   }
 };
 
-// Função para buscar perguntas do produto
 export const fetchPerguntas = async (productId) => {
   try {
     const response = await fetch(`https://hotmenu.com.br/webhook/ObterPerguntasdoProduto/${productId}`);
+    
+    const contentType = response.headers.get('Content-Type');
+    console.log('Tipo de conteúdo da resposta:', contentType);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erro ao buscar perguntas do produto. Detalhes do erro:', errorText);
       throw new Error('Erro ao buscar perguntas do produto');
     }
-    const data = await response.json();
-    console.log('Dados das perguntas:', data);
-    return data.perguntas; // Ajuste conforme a estrutura do retorno da API
+
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      console.log('Dados das perguntas:', data);
+      return data.perguntas || []; // Retorna um array vazio se perguntas não estiver presente
+    } else {
+      const text = await response.text();
+      console.error('Resposta não é JSON. Conteúdo HTML:', text);
+      return []; // Retorna um array vazio em caso de resposta não JSON
+    }
   } catch (error) {
     console.error('Erro ao buscar perguntas:', error);
     return []; // Retorna um array vazio em caso de erro
