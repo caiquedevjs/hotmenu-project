@@ -20,6 +20,7 @@ import { Tooltip } from 'react-tooltip';
 import { ToastContainer, toast } from 'react-toastify';
 import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
+import { Nav, Tab } from 'react-bootstrap';
 
 // <------- import utils------->
 import { fetchFormaPagamentos,fetchEstabelecimentoData } from '../service/productService';
@@ -76,6 +77,9 @@ const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [mensagem, setMensagem] = useState('');
+const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
+const handleTabSelect = (key) => setActiveTab(key);
+const [activeTab, setActiveTab] = useState('pickup');
 
 
 
@@ -98,6 +102,8 @@ const [agency, setAgency] = useState('');
 const [mesa, setMesa] = useState('');
 const [selectedOption, setSelectedOption] = useState('');
 const [isFormValid, setIsFormValid] = useState(false);
+const [isValid, setIsValid] = useState(true);
+const [errorCard, setErrorCard] = useState('');
 
 
 // <---------- Notificações ---------->
@@ -128,6 +134,67 @@ const notify02 = () => toast.success('Você receberá o status do pedido pelo Wh
     }
   }
 };
+
+// <-------- algoritmo de luhn para validação de número do cartão de credito ------->
+
+const isValidCardNumber = (number) => {
+  const sanitizedNumber = number.replace(/\s+/g, '');
+  
+  if (sanitizedNumber.length < 13 || sanitizedNumber.length > 19) {
+    return false; // Números de cartão devem ter entre 13 e 19 dígitos
+  }
+
+  if (!/^\d+$/.test(sanitizedNumber)) {
+    return false; // Deve conter apenas dígitos
+  }
+
+  let sum = 0;
+  let shouldDouble = false;
+
+  // Lógica do Algoritmo de Luhn
+  for (let i = sanitizedNumber.length - 1; i >= 0; i--) {
+    let digit = parseInt(sanitizedNumber.charAt(i), 10);
+
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return (sum % 10 === 0);
+};
+
+const handleCardChange = (e) => {
+  const value = e.target.value;
+  setCartao(value);
+
+  // Valida o número do cartão e atualiza o estado de erro em tempo real
+  if (isValidCardNumber(value)) {
+    setErrorCard(''); // Limpa o erro se o número for válido
+  } else {
+    setErrorCard('Número do cartão inválido.'); // Define o erro se o número for inválido
+  }
+};
+
+ 
+// <------ função para redimensionar o texto fretis gratis em relação a tela ------>
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 360) {
+        setFontSize('9px');
+      } else if (window.innerWidth <= 768) {
+        setFontSize('11px');
+      } else {
+        setFontSize('13px');
+      }
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
 
 
@@ -338,9 +405,53 @@ const handleAddPedido =() =>{
 const handleFinalizarPedido = () => {
   if (isFormValid) {
     if (list.length > 0) {
-      notify();
-      notify02();
-      setValorTotalPedido()
+      notify(); // Notifica sucesso ou outras ações
+      notify02(); // Notificação secundária ou ações adicionais
+
+      // Mapeia os produtos para o formato desejado
+      const produtos = list.map(item => ({
+        Id: item.product.Id,
+        Nome: item.product.Nome,
+        Quantidade: item.quantity,
+        Sugestão: item.suggestion,
+        Preço: item.product.PrecoDeVenda, 
+      }));
+
+      // Cria o objeto do pedido
+      const pedido = {
+        DataPedido: new Date().toISOString(), 
+        Status: "Pendente", 
+        Cliente: nome,
+        Tel: telefone,
+        Endereço: showAddressFields ? `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}` : "RETIRADA NO LOCAL",
+        mesa: showMesaNumberFild ? `Mesa número: ${mesa}` : "Não possui mesa",
+        FormaPagamento: selectedOption,
+        Produtos: produtos,
+        frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ? `R$ ${FreteFixo}` : "Sem frete",
+        preçoTotal: `R$ ${totalPriceWithFrete()}`
+      };
+
+      // Log do objeto pedido para verificação
+      console.log(pedido);
+
+      // Número do estabelecimento que gera a mensagem
+      const celularWhatsApp = celular.replace(/\D/g, ''); 
+
+      // Mensagem para o destinatário
+      const mensagem = `Você recebeu uma nova mensagem de pedido!\n\nDetalhes do pedido:\n\n${JSON.stringify(pedido, null, 2)}`;
+      const mensagemCodificada = encodeURIComponent(mensagem);
+
+      // Prepara o número de telefone do destinatário (não usado diretamente na URL do WhatsApp)
+      const telefoneDestino = telefone.replace(/\D/g, ''); 
+
+      // Cria a URL do WhatsApp
+      // Nota: WhatsApp não suporta diretamente enviar para números diferentes do número do remetente
+      const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
+
+      // Abre o link do WhatsApp em uma nova aba
+      window.open(urlWhatsApp, '_blank');
+
+      // Limpeza dos campos após o envio
       setList([]);
       setNome('');
       setTelefone('');
@@ -354,44 +465,18 @@ const handleFinalizarPedido = () => {
       setCvc('');
       setMesa('');
       
-     const produtos = list.map(item => ({
-      Id: item.product.Id,
-      Nome: item.product.Nome,
-      Quantidade: item.quantity,
-      Sugestão : item.suggestion,
-      Preco: item.product.PrecoDeVenda, 
-    }));
-
-    // <---- objeto do pedido ---->
-   
-    const pedido = {
-    
-      DataPedido: new Date().toISOString(), 
-      Status: "Pendente", 
-      Cliente: nome,
-      Tel: telefone,
-      Endereço: showAddressFields ? `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}` : "RETIRADA NO LOCAL",
-      mesa: showMesaNumberFild ? `Mesa número: ${mesa}`: "Não possui mesa",
-      FormaPagamento: selectedOption,
-      Produtos: produtos,
-      frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ? `R$ ${ FreteFixo}`: "Sem frete",
-      preçoTotal: `R$ ${totalPriceWithFrete()}`
-    };
-      console.log(pedido);
-      const telefoneWhatsApp = celular.replace(/\D/g, ''); 
-      const urlWhatsApp = `https://wa.me/${telefoneWhatsApp}`;
-      window.open(urlWhatsApp, '_blank');
-
     } else {
-      toast.error("Não há pedidos para finalizar", {theme: 'dark'});
-      sound.play();
+      // Mensagem de erro se não houver pedidos
+      toast.error("Não há pedidos para finalizar", { theme: 'dark' });
+      sound.play(); // Toca um som de erro
     }
   } else {
-    toast.error("Por favor, preencha todos os campos obrigatórios.", {theme: 'dark'}
-    );
-    sound.play();
+    // Mensagem de erro se o formulário não for válido
+    toast.error("Por favor, preencha todos os campos obrigatórios.", { theme: 'dark' });
+    sound.play(); // Toca um som de erro
   }
 };
+
 // <------ função para remover o pedido da lista de pedido ------->
   const hendlerRemovePedido = () => {
     if(list.length === 0){
@@ -588,7 +673,7 @@ const handleFinalizarPedido = () => {
                   <div className='prices-conteiner'>
                     <p className='Total-price-cart'>R$ {totalCartPrice()}</p>
                     {estabelecimento && estabelecimento.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe ? (
-                       <p style={{ color: 'red' ,'fontSize': '11px'}}>
+                       <p  className='freeGratis_class' style={{ color: 'red' ,'fontSize': fontSize}}>
                           Frete grátis 
                         </p> ) :(
                       <p className='Total-price-cart' style={{'color' : '#228B22'}}>
@@ -713,7 +798,7 @@ const handleFinalizarPedido = () => {
 
                 <InputMask
                  className="form-control"
-                 mask = '99999-9999'
+                 mask = '99999-999999'
                   id="inputTelefone4" value={telefone} 
                   onChange={(e) => setTelefone(e.target.value)} 
                   >
@@ -721,88 +806,71 @@ const handleFinalizarPedido = () => {
                   {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputTelefone4" />}
                   
               </div>
-                  </div>
-              <div className="dropdown-center">
-                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
-                 style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
-                 onMouseEnter={delliveryBgHover.handleMouseEnter}
-                 onMouseLeave={delliveryBgHover.handleMouseLeave}
-                >
-                  Formas de entrega
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
-                {deliveryOptions.pickup && (
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => handleDeliveryOption('pickup')}
-              >
-                Retirar no estabelecimento
-              </a>
-            </li>
-          )}
-                  {deliveryOptions.home && (
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => handleDeliveryOption('home')}
-              >
-                Receber em casa
-              </a>
-            </li>
-          )}
+                  </div><hr></hr>
 
-          {deliveryOptions.mesa && (
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => handleDeliveryOption('mesa')}
+        <h3 className='formas_retirada_titulo'>Forma de retirda</h3>
+      <Tab.Container id="delivery-tabs" activeKey={activeTab} onSelect={handleTabSelect}>
+      <Nav variant="tabs" className="mb-3">
+        {deliveryOptions.pickup && (
+          <Nav.Item>
+            <Nav.Link eventKey="pickup" style={{color: color}}>Retirada</Nav.Link>
+          </Nav.Item>
+        )}
+        {deliveryOptions.home && (
+          <Nav.Item>
+            <Nav.Link eventKey="home"style={{color: color}}>Entrega</Nav.Link>
+          </Nav.Item>
+        )}
+        {deliveryOptions.mesa && (
+          <Nav.Item>
+            <Nav.Link eventKey="mesa"style={{color: color}}>Em mesa</Nav.Link>
+          </Nav.Item>
+        )}
+      </Nav>
+      <Tab.Content>
+        {activeTab === 'pickup' && (
+          <Tab.Pane eventKey="pickup">
+            {/* Campos relacionados a retirada no estabelecimento (se houver) */}
+          </Tab.Pane>
+        )}
+        {activeTab === 'home' && (
+          <Tab.Pane eventKey="home">
+            <div className="col-12">
+              <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
+              <input type="text" className="form-control" id="inputAddress" placeholder="Av. Luís Viana Filho, 6462 - Paralela" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
+            </div>
+            <div className="col-12">
+              <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
+              <input type="text" className="form-control" id="inputComplemento" placeholder="Wall Street Empresarial" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
+            </div>
+            <div className="col-md-6">
+              <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
+              <input type="text" className="form-control" id="inputCity" value={bairro} onChange={(e) => setBairro(e.target.value)} />
+            </div>
+            <div className="col-md-2">
+              <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
+              <InputMask
+                mask="99999-999"
+                className="form-control"
+                id="inputZip"
+                value={cep}
+                onChange={(e) => setCep(e.target.value)}
               >
-                Mesa
-              </a>
-            </li>
-          )}
-                </ul>
-              </div>
-              {showAddressFields && (
-                <>
-                  <div className="col-12">
-                    <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
-                    <input type="text" className="form-control" id="inputAddress" placeholder=" Av. Luís Viana Filho, 6462 - Paralela" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
-                  </div>
-                  <div className="col-12">
-                    <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
-                    <input type="text" className="form-control" id="inputComplemento" placeholder="Wall Street Empresarial" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
-                    <input type="text" className="form-control" id="inputCity" value={bairro} onChange={(e) => setBairro(e.target.value)} />
-                  </div>
-                  <div className="col-md-2">
-                    
-                    <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
-                    <InputMask
-                     mask = "99999 - 999"
-                     className="form-control"
-                      id="inputZip" 
-                      value={cep} 
-                      onChange={(e) => setCep(e.target.value)}
-                    >
-                    {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputZip" />}
-                    </InputMask>
-                  </div>
-                </>
-              )}
-              {showMesaNumberFild && (
-                <div className="col-12">
-                <label htmlFor="inputAddress" className="form-label-credit-usuario">Numero da mesa</label>
-                <input type="text" className="form-control" id="inputAddress" value={mesa} onChange={(e) =>setMesa(e.target.value)}/>
-              </div>
-              )}
-
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputZip" />}
+              </InputMask>
+            </div>
+          </Tab.Pane>
+        )}
+        {activeTab === 'mesa' && (
+          <Tab.Pane eventKey="mesa">
+            <div className="col-12">
+              <label htmlFor="inputMesa" className="form-label-credit-usuario">Número da mesa</label>
+              <input type="text" className="form-control" id="inputMesa" value={mesa} onChange={(e) => setMesa(e.target.value)} />
+            </div>
+          </Tab.Pane>
+        )}
+      </Tab.Content>
+    </Tab.Container>
 
   <div className='card-credit-form'>
     <div className="dropdown-center">
@@ -897,14 +965,15 @@ const handleFinalizarPedido = () => {
                 <label htmlFor="inputCardNumber">Número do cartão</label>
                 <InputMask 
                    
-                    className="form-control" 
+                   className={`form-control ${errorCard ? 'is-invalid' : ''}`}
                     id="inputCardNumber" 
                     mask="9999 9999 9999 9999"
                     value={cartao} 
-                    onChange={(e) => setCartao(e.target.value)} 
+                    onChange={handleCardChange } 
                 >
                    {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
                    </InputMask>
+                   {errorCard && <div className="invalid-feedback">{errorCard}</div>}
             </div>
             <div className="col-md-6">
                 <label htmlFor="inputCardHolder">Nome do titular</label>

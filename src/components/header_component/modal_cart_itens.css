@@ -311,3 +311,57 @@
 
 
 }
+
+@media only screen and (max-width: 360px) {
+/* Estilo para labels */
+.prices-labels {
+    text-align: left;
+    font-family: "Roboto", sans-serif;
+    font-size: 11px;
+    flex-wrap: nowrap; 
+ }
+ 
+ /* Estilo para preços */
+ .prices-conteiner {
+    text-align: left;
+    font-family: "Roboto", sans-serif;
+    font-size: 11px;
+    flex-wrap: nowrap;
+    
+    
+     
+ }
+     
+ /* Estilo para preços */
+ .prices-conteiner {
+     
+     display: flex;
+     flex-direction: column;
+     font-size: 11px;
+     flex-wrap: nowrap;
+     
+    
+     
+     
+ }
+
+ .Total-price-cart{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: nowrap;
+}   
+.modal-footer-conteiner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 120px;
+    
+}
+.freeGratis_class{
+    flex-wrap: nowrap;
+}
+
+}

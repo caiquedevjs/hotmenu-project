@@ -26,29 +26,16 @@
 #btn-forma-pagamento{
     width: 20px;
 }
+.formas_retirada_titulo{
+    font-family: "Roboto", sans-serif; 
+    text-align: left;
+}
 .form-label-credit-usuario{
     margin-right: 88%;
     font-family: "Roboto", sans-serif;
     font-size: 12px;
 }
-.btn.dropdown-toggle {
-    width: 300px; /* Largura do botão dropdown */
-    /* Outros estilos conforme necessário */
-    font-family: "Roboto", sans-serif;
-}
 
-.dropdown-menu {
-    width: 300px; /* Largura do menu suspenso */
-    /* Outros estilos conforme necessário */
-    font-family: "Roboto", sans-serif;
-}
-
-.dropdown-item {
-    width: 100%; /* Largura dos itens da lista */
-    /* Outros estilos conforme necessário */
-    font-family: "Roboto", sans-serif;
-    font-weight: bold;
-}
     
 #finalizar-pedido-btn{
     background-color: #ce2929;
@@ -255,7 +242,17 @@ label{
 .btn-fazer-transferencia:hover{
     background-color: #332D2D;
 }
+.form-control.is-invalid {
+    border-color: #dc3545; /* Cor da borda para campos inválidos */
+  }
+  
+  .invalid-feedback {
+    color: #dc3545; /* Cor do texto da mensagem de erro */
+    font-size: 0.875em; /* Tamanho do texto da mensagem de erro */
+    display: block; /* Exibe a mensagem de erro */
+  }
 
+ 
  
 @media only screen and (max-width: 768px) {
     #inputNome4{
@@ -481,5 +478,7 @@ label{
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
     }
+
+   
 
 }
