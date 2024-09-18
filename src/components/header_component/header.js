@@ -57,7 +57,7 @@ const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false, mesa: false})
-const [pagamentoOptions, setPagamentoOptions] = useState({pagamentoOnline : false, pagamentoNaRetirada : false})
+const [pagamentoOptions, setPagamentoOptions] = useState({pagamentoOnline : false, pagamentoNaRetirada : null})
 const [showAddressFields, setShowAddressFields] = useState(false);
 const [showMesaNumberFild, setShowMesaNumberFild] = useState(false);
 const [loading, setLoading] = useState(true);
@@ -79,7 +79,11 @@ const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [mensagem, setMensagem] = useState('');
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
 const handleTabSelect = (key) => setActiveTab(key);
+const handleTabCardSelect = (key) => setActiveTabCard(key);
 const [activeTab, setActiveTab] = useState('pickup');
+const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
+
+
 
 
 
@@ -349,20 +353,7 @@ const totalPriceWithFrete = () => {
 };
 
 
-// <---------- função para deixar os campos de endereço visivel ---------->
 
-    const handleDeliveryOption = (option) => {
-      if (option === 'home') {
-        setShowAddressFields(true);
-      } else {
-        setShowAddressFields(false);
-      }
-      if( option === 'mesa'){
-        setShowMesaNumberFild(true);
-      } else{
-        setShowMesaNumberFild(false);
-      }
-    };
 
   //<------ função para validar os campos do formulario ------->
   const validateForm = () => {
@@ -423,8 +414,8 @@ const handleFinalizarPedido = () => {
         Status: "Pendente", 
         Cliente: nome,
         Tel: telefone,
-        Endereço: showAddressFields ? `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}` : "RETIRADA NO LOCAL",
-        mesa: showMesaNumberFild ? `Mesa número: ${mesa}` : "Não possui mesa",
+        Endereço: (cep === '') && (endereco === '')  && (complemento === '') && (bairro === '') ? "RETIRADA NO LOCAL" : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
+        mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
         FormaPagamento: selectedOption,
         Produtos: produtos,
         frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ? `R$ ${FreteFixo}` : "Sem frete",
@@ -872,230 +863,285 @@ const handleFinalizarPedido = () => {
       </Tab.Content>
     </Tab.Container>
 
-  <div className='card-credit-form'>
-    <div className="dropdown-center">
-                <button className="btn btn-secondary dropdown-toggle" type="button" id="deliveryOptions" data-bs-toggle="dropdown" aria-expanded="false"
-                 style={{backgroundColor : delliveryBgHover.isHovered ? '#332D2D' : color}}
-                 onMouseEnter={delliveryBgHover.handleMouseEnter}
-                 onMouseLeave={delliveryBgHover.handleMouseLeave}
-                >
-                  Formas de pagamento
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="deliveryOptions">
-                {pagamentoOptions.pagamentoNaRetirada && (
-            <li>
-              <a
-                className="dropdown-item"
-                href="#"
-                
-                
-              >
-                Pagar na retirada
-              </a>
-            </li>
+    <h3 className='formas_retirada_titulo'>Forma de pagamento</h3>
+    <Tab.Container id="pagamento-tabs" activeKey={activeTabCard} onSelect={handleTabCardSelect}>
+      <Nav variant="tabs" className="mb-3">
+      {(pagamentoOptions.pagamentoNaRetirada === null || true) &&(
+          <Nav.Item>
+            <Nav.Link eventKey="pagamentoNaRetirada"style={{color: color}}>Pagar na retirada</Nav.Link>
+          </Nav.Item>
           )}
-                  {pagamentoOptions.pagamentoOnline && (
-                    <li>
-                      <a
-                        className="dropdown-item"
-                        href="#"
-                       
-                      >
-                        Pagar online
-                        
-                        
-                      </a>
-                    </li>
-                  )}
-
-                </ul>
-              </div><hr></hr>
-
-    <div className='conteiner-check'>
-    
-    {Object.keys(formasPorTipo).map((tipo) => (
+        {pagamentoOptions.pagamentoOnline  && (
+          <Nav.Item>
+            <Nav.Link eventKey="pagamentoOnline" style={{color: color}}>Pagar online</Nav.Link>
+          </Nav.Item>
+        )}
+        
+      </Nav>
       
-        <div key={tipo} className="form-check">
-            <input
-                className="form-check-input"
-                type="radio"
-                name="paymentOption"
-                id={`${tipo}Option`}
-                value={tipo}
-                checked={selectedOption === tipo.toLowerCase()}
-                onChange={handleOptionChange}
-            />
-            <label className="form-label-check" htmlFor={`${tipo}Option`}>
-                {tipo}
-            </label>
-        </div>
-        
-    ))}
-    </div>
-    <div className='conteiner-check'>
-    {Object.keys(formasSemTipo).map((tipo) => (
-      
-        <div key={tipo} className="form-check">
-            <input
-                className="form-check-input"
-                type="radio"
-                name="paymentOption"
-                id={`${tipo}Option`}
-                value={tipo}
-                checked={selectedOption === tipo.toLowerCase()}
-                onChange={handleOptionChange}
-            />
-            <label className="form-label-check" htmlFor={`${tipo}Option`}>
-                {tipo}
-            </label>
-        </div>
-        
-        
-    ))}
+      <Tab.Content> 
+        {activeTabCard==='pagamentoNaRetirada' &&(
+          <Tab.Pane eventKey="pagamentoNaRetirada">
+          <div className='conteiner-check'>
+
+{Object.keys(formasPorTipo).map((tipo) => (
+  
+    <div key={tipo} className="form-check">
+        <input
+            className="form-check-input"
+            type="radio"
+            name="paymentOption"
+            id={`${tipo}Option`}
+            value={tipo}
+            checked={selectedOption === tipo.toLowerCase()}
+            onChange={handleOptionChange}
+        />
+        <label className="form-label-check" htmlFor={`${tipo}Option`}>
+            {tipo}
+        </label>
     </div>
     
-    <div className="payment-icons">
-        {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
-        {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
-    </div> <hr></hr>
-    {selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição'  || selectedOption === 'PicPay' ? (
-        <div className='titular-card-pay-container'>
-        <div className="row">
-            <div className="col-md-6">
-                <label htmlFor="inputCardNumber">Número do cartão</label>
-                <InputMask 
-                   
-                   className={`form-control ${errorCard ? 'is-invalid' : ''}`}
-                    id="inputCardNumber" 
-                    mask="9999 9999 9999 9999"
-                    value={cartao} 
-                    onChange={handleCardChange } 
-                >
-                   {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
-                   </InputMask>
-                   {errorCard && <div className="invalid-feedback">{errorCard}</div>}
-            </div>
-            <div className="col-md-6">
-                <label htmlFor="inputCardHolder">Nome do titular</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    id="inputCardHolder" 
-                    value={titular} 
-                    onChange={(e) => setTitular(e.target.value)} 
-                />
-            </div>
-        </div>
-        <div className='card-date-container'>
-    <div className="row">
-        <div className="card-date-container_grid">
-        <div className=" col-sm-6">
-        <label htmlFor="inputExpiryDate">Data de vencimento</label>
-              <InputMask
-                mask="99/99"
-                placeholder='MM/AA'
-                value={vencimento}
-                onChange={(e) => setVencimento(e.target.value)}
-              >
-                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputExpiryDate" />}
-              </InputMask>
-            </div>
-            <div className=" col-sm-6">
-            <label htmlFor="inputCVC">CVC</label>
-              <InputMask
-                mask="999"
-                value={cvc}
-                onChange={(e) => setCvc(e.target.value)}
-              >
-                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCVC" />}
-              </InputMask>
-        </div>
-        </div>
-        
-    </div>
+))}
 </div>
+<div className='conteiner-check'>
+{Object.keys(formasSemTipo).map((tipo) => (
+  
+    <div key={tipo} className="form-check">
+        <input
+            className="form-check-input"
+            type="radio"
+            name="paymentOption"
+            id={`${tipo}Option`}
+            value={tipo}
+            checked={selectedOption === tipo.toLowerCase()}
+            onChange={handleOptionChange}
+        />
+        <label className="form-label-check" htmlFor={`${tipo}Option`}>
+            {tipo}
+        </label>
     </div>
-    ) : null}
-{selectedOption === 'Pix' ? (
-    <div className='titular-card-pay-conteiner'>
-        <div className="input-container">
-          <div>
-            <label htmlFor="inputPixKey" className='labelChavePix'>Chave Pix</label>
+    
+    
+))}
+</div>
+<div className="payment-icons">
+    {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+    {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
+</div> <hr></hr>
+{selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição'  || selectedOption === 'PicPay' ? (
+    <div className='titular-card-pay-container'>
+    <div className="row">
+        <div className="col-md-6">
+            <label htmlFor="inputCardNumber">Número do cartão</label>
+            <InputMask 
+               
+               className={`form-control ${errorCard ? 'is-invalid' : ''}`}
+                id="inputCardNumber" 
+                mask="9999 9999 9999 9999"
+                value={cartao} 
+                onChange={handleCardChange } 
+            >
+               {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
+               </InputMask>
+               {errorCard && <div className="invalid-feedback">{errorCard}</div>}
+        </div>
+        <div className="col-md-6">
+            <label htmlFor="inputCardHolder">Nome do titular</label>
             <input 
                 type="text" 
                 className="form-control" 
-                id="inputPixKey"
-                readOnly
-                value={pixKey}
-            /></div>
-            <CopyButton/>
+                id="inputCardHolder" 
+                value={titular} 
+                onChange={(e) => setTitular(e.target.value)} 
+            />
+        </div>
+    </div>
+    <div className='card-date-container'>
+<div className="row">
+    <div className="card-date-container_grid">
+    <div className=" col-sm-6">
+    <label htmlFor="inputExpiryDate">Data de vencimento</label>
+          <InputMask
+            mask="99/99"
+            placeholder='MM/AA'
+            value={vencimento}
+            onChange={(e) => setVencimento(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputExpiryDate" />}
+          </InputMask>
+        </div>
+        <div className=" col-sm-6">
+        <label htmlFor="inputCVC">CVC</label>
+          <InputMask
+            mask="999"
+            value={cvc}
+            onChange={(e) => setCvc(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCVC" />}
+          </InputMask>
+    </div>
+    </div>
+    
+</div>
+</div>
+</div>
+) : null}
+{selectedOption === 'Pix' ? (
+<div className='titular-card-pay-conteiner'>
+    <div className="input-container">
+      <div>
+        <label htmlFor="inputPixKey" className='labelChavePix'>Chave Pix</label>
+        <input 
+            type="text" 
+            className="form-control" 
+            id="inputPixKey"
+            readOnly
+            value={pixKey}
+        /></div>
+        <CopyButton/>
+    </div>
+</div>
+) : null}
+{selectedOption === 'Boleto' ? (
+    <div className='titular-card-pay-conteiner'>
+        <div className="col-md-4">
+            
+            <button 
+                type="button" 
+                className="btn-gerar-boleto" 
+                onClick={generateBoleto}
+                style={{backgroundColor : boletoHover.isHovered ? '#332D2D' : color}}
+                onMouseEnter={boletoHover.handleMouseEnter}
+                onMouseLeave={boletoHover.handleMouseLeave}
+            >
+                Gerar Boleto
+            </button>
         </div>
     </div>
 ) : null}
-    {selectedOption === 'Boleto' ? (
-        <div className='titular-card-pay-conteiner'>
-            <div className="col-md-4">
-                
-                <button 
-                    type="button" 
-                    className="btn-gerar-boleto" 
-                    onClick={generateBoleto}
-                    style={{backgroundColor : boletoHover.isHovered ? '#332D2D' : color}}
-                    onMouseEnter={boletoHover.handleMouseEnter}
-                    onMouseLeave={boletoHover.handleMouseLeave}
-                >
-                    Gerar Boleto
-                </button>
-            </div>
+{selectedOption === 'Dinheiro' ? (
+    <div className='titular-card-pay-conteiner'>
+        <div className="col-md-4">
+            <label htmlFor="inputChangeValue" className='labelValorTroco'>Valor para troco</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputChangeValue" 
+                value={valorTroco} 
+                onChange={(e) => setValorTroco(e.target.value)} 
+            />
         </div>
-    ) : null}
-    {selectedOption === 'Dinheiro' ? (
-        <div className='titular-card-pay-conteiner'>
-            <div className="col-md-4">
-                <label htmlFor="inputChangeValue" className='labelValorTroco'>Valor para troco</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    id="inputChangeValue" 
-                    value={valorTroco} 
-                    onChange={(e) => setValorTroco(e.target.value)} 
-                />
-            </div>
-        </div>
-    ) : null}
+    </div>
+) : null}
 {selectedOption === 'Transferência'  ? (
-        <div className='titular-card-pay-container'>
-        
-        <div className='card-date-container'>
-    <div className="row">
-        <div className="card-date-container_grid">
+    <div className='titular-card-pay-container'>
+    
+    <div className='card-date-container'>
+<div className="row">
+    <div className="card-date-container_grid">
+    <div className=" col-sm-6">
+    <label htmlFor="inputAccountNumber">Número da conta</label>
+          <InputMask
+            mask="99999 9"
+            value={accountNumber}
+            onChange={(e) => setAccountNumber(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAccountNumber" />}
+          </InputMask>
+        </div>
         <div className=" col-sm-6">
-        <label htmlFor="inputAccountNumber">Número da conta</label>
-              <InputMask
-                mask="99999 9"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
-              >
-                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAccountNumber" />}
-              </InputMask>
-            </div>
-            <div className=" col-sm-6">
-            <label htmlFor="inputAgency">Agência</label>
-              <InputMask
-                mask="9999 9"
-                value={agency}
-                onChange={(e) => setAgency(e.target.value)}
-              >
-                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAgency" />}
-              </InputMask>
-        </div>
-        <button className="btn-fazer-transferencia">Trasnferir</button>
-        </div>
+        <label htmlFor="inputAgency">Agência</label>
+          <InputMask
+            mask="9999 9"
+            value={agency}
+            onChange={(e) => setAgency(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAgency" />}
+          </InputMask>
+    </div>
+    <button className="btn-fazer-transferencia">Trasnferir</button>
     </div>
 </div>
-    </div>
-    ) : null}
 </div>
+</div>
+) : null}
+            
+          </Tab.Pane>
+          )}
+        
+      </Tab.Content>
+
+
+      <Tab.Content>
+        {activeTabCard === 'pagamentoOnline' && (
+          <Tab.Pane eventKey="pagamentoOnline">
+           
+    <h6 className='pagamento_online_title'>Crédito</h6>
+    <div className='titular-card-pay-container'>
+    <div className="row">
+        <div className="col-md-6">
+            <label htmlFor="inputCardNumber">Número do cartão</label>
+            <InputMask 
+               
+               className={`form-control ${errorCard ? 'is-invalid' : ''}`}
+                id="inputCardNumber" 
+                mask="9999 9999 9999 9999"
+                value={cartao} 
+                onChange={handleCardChange } 
+            >
+               {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
+               </InputMask>
+               {errorCard && <div className="invalid-feedback">{errorCard}</div>}
+        </div>
+        <div className="col-md-6">
+            <label htmlFor="inputCardHolder">Nome do titular</label>
+            <input 
+                type="text" 
+                className="form-control" 
+                id="inputCardHolder" 
+                value={titular} 
+                onChange={(e) => setTitular(e.target.value)} 
+            />
+        </div>
+    </div>
+    <div className='card-date-container'>
+<div className="row">
+    <div className="card-date-container_grid">
+    <div className=" col-sm-6">
+    <label htmlFor="inputExpiryDate">Data de vencimento</label>
+          <InputMask
+            mask="99/99"
+            placeholder='MM/AA'
+            value={vencimento}
+            onChange={(e) => setVencimento(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputExpiryDate" />}
+          </InputMask>
+        </div>
+        <div className=" col-sm-6">
+        <label htmlFor="inputCVC">CVC</label>
+          <InputMask
+            mask="999"
+            value={cvc}
+            onChange={(e) => setCvc(e.target.value)}
+          >
+            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCVC" />}
+          </InputMask>
+    </div>
+    </div>
+    
+</div>
+</div>
+</div>
+
+       </Tab.Pane>
+       
+  )}
+        
+    </Tab.Content>
+    </Tab.Container>
+
+  
             </form>
           </div>
           

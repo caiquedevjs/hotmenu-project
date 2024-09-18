@@ -251,7 +251,10 @@ label{
     font-size: 0.875em; /* Tamanho do texto da mensagem de erro */
     display: block; /* Exibe a mensagem de erro */
   }
-
+.pagamento_online_title{
+    text-align: left;
+    font-family: "Roboto", sans-serif; 
+}
  
  
 @media only screen and (max-width: 768px) {
