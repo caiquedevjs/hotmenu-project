@@ -78,10 +78,10 @@ const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [mensagem, setMensagem] = useState('');
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
-const handleTabSelect = (key) => setActiveTab(key);
-const handleTabCardSelect = (key) => setActiveTabCard(key);
 const [activeTab, setActiveTab] = useState('pickup');
 const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
+
+
 
 
 
@@ -201,6 +201,14 @@ const handleCardChange = (e) => {
   }, []);
 
 
+ // <------ função pra gerenciar a escolha da tab de formas de pagamento ------->
+  const handleTabSelect = (key) => setActiveTab(key);
+  const handleTabCardSelect = (key) => {
+    setActiveTabCard(key);
+    if (key === 'pagamentoOnline') {
+        setSelectedOption('credito'); // Define como 'credito' ao selecionar a aba de pagamento online
+    }
+  };
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -353,31 +361,6 @@ const totalPriceWithFrete = () => {
 };
 
 
-
-
-  //<------ função para validar os campos do formulario ------->
-  const validateForm = () => {
-    if (
-      nome &&
-      telefone &&
-      (showMesaNumberFild ? mesa : true) &&
-      (showAddressFields ? endereco && complemento && bairro && cep : true) &&
-      cartao &&
-      titular &&
-      vencimento &&
-      cvc
-    ) {
-      setIsFormValid(true);
-    } else {
-      setIsFormValid(false);
-    }
-  };
-
-// <------ effect para disprar a validação dos campos do formulario ------->
-  useEffect(() => {
-    validateForm();
-  }, [nome, telefone, endereco, complemento, bairro, cep, cartao, titular, vencimento, cvc, mesa]);
-
 // <------ função para adicionar os itens do carrinho a lista de pedido ------->
 const handleAddPedido =() =>{
   if(totalCartPrice() < valorVendaMinima){
@@ -394,49 +377,108 @@ const handleAddPedido =() =>{
 
 //<------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = () => {
-  if (isFormValid) {
-    if (list.length > 0) {
-      notify(); // Notifica sucesso ou outras ações
-      notify02(); // Notificação secundária ou ações adicionais
+  if (list.length > 0) {
+
+     // Validação dos campos obrigatórios
+     if (!nome || !telefone) {
+      toast.error("Nome e telefone são dados obrigatórios", { theme: 'dark' });
+      return;
+  }
+
+
+      // Verifica se as abas de retirada e pagamento estão selecionadas
+      if (!['pickup', 'home', 'mesa'].includes(activeTab)) {
+          toast.error("Escolha uma forma de retirada.", { theme: 'dark' });
+          sound.play(); // Toca um som de erro
+          return;
+      }
+      
+      if (!['pagamentoOnline', 'pagamentoNaRetirada'].includes(activeTabCard)) {
+          toast.error("Escolha uma forma de pagamento.", { theme: 'dark' });
+          sound.play(); // Toca um som de erro
+          return;
+      }
+
+     
+
+      // Validação para forma de retirada
+      if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
+          alert("Por favor, preencha todos os campos de entrega.");
+          return;
+      }
+
+      // Validação para pagamento online
+      if (activeTabCard === 'pagamentoOnline') {
+          if (!cartao || !titular || !vencimento || !cvc) {
+              toast.error("Por favor, preencha todos os dados do cartão", { theme: 'dark' });
+              return;
+          }
+      }
+
+      // Validação para pagamento na retirada
+      if (activeTabCard === 'pagamentoNaRetirada') {
+          if (!selectedOption) {
+              toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
+              return;
+          } else if (['Débito', 'Crédito', 'Vale Refeição', 'PicPay'].includes(selectedOption)) {
+              if (!cartao || !titular || !vencimento || !cvc) {
+                  toast.error("Por favor, preencha todos os dados.", { theme: 'dark' });
+                  return;
+              }
+          } else if (selectedOption === 'Dinheiro') {
+              if (!valorTroco) {
+                  toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
+                  return;
+              }
+          }
+      }
+
+      // Captura a forma de retirada
+      const formaRetirada = activeTab;
 
       // Mapeia os produtos para o formato desejado
       const produtos = list.map(item => ({
-        Id: item.product.Id,
-        Nome: item.product.Nome,
-        Quantidade: item.quantity,
-        Sugestão: item.suggestion,
-        Preço: item.product.PrecoDeVenda, 
+          Id: item.product.Id,
+          Nome: item.product.Nome,
+          Quantidade: item.quantity,
+          Sugestão: item.suggestion,
+          Preço: item.product.PrecoDeVenda, 
       }));
 
-      // Cria o objeto do pedido
       const pedido = {
-        DataPedido: new Date().toISOString(), 
-        Status: "Pendente", 
-        Cliente: nome,
-        Tel: telefone,
-        Endereço: (cep === '') && (endereco === '')  && (complemento === '') && (bairro === '') ? "RETIRADA NO LOCAL" : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
-        mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
-        FormaPagamento: selectedOption,
-        Produtos: produtos,
-        frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ? `R$ ${FreteFixo}` : "Sem frete",
-        preçoTotal: `R$ ${totalPriceWithFrete()}`
+          DataPedido: new Date().toISOString(),
+          Status: "Pendente",
+          Cliente: nome,
+          Tel: telefone,
+          Endereço: (cep === '' && endereco === '' && complemento === '' && bairro === '') ?
+              "RETIRADA NO LOCAL" :
+              `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
+          mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
+          FormaPagamento: selectedOption,
+          FormaRetirada: formaRetirada,
+          Produtos: produtos,
+          frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ?
+              `R$ ${FreteFixo}` :
+              "Sem frete",
+          preçoTotal: `R$ ${totalPriceWithFrete()}`
       };
+
+      // Se tudo estiver válido, prosseguir com a finalização do pedido
+      console.log('Pedido finalizado com sucesso!');
+      notify();
+      notify02();
 
       // Log do objeto pedido para verificação
       console.log(pedido);
 
       // Número do estabelecimento que gera a mensagem
-      const celularWhatsApp = celular.replace(/\D/g, ''); 
+      const celularWhatsApp = celular.replace(/\D/g, '');
 
       // Mensagem para o destinatário
       const mensagem = `Você recebeu uma nova mensagem de pedido!\n\nDetalhes do pedido:\n\n${JSON.stringify(pedido, null, 2)}`;
       const mensagemCodificada = encodeURIComponent(mensagem);
 
-      // Prepara o número de telefone do destinatário (não usado diretamente na URL do WhatsApp)
-      const telefoneDestino = telefone.replace(/\D/g, ''); 
-
       // Cria a URL do WhatsApp
-      // Nota: WhatsApp não suporta diretamente enviar para números diferentes do número do remetente
       const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
 
       // Abre o link do WhatsApp em uma nova aba
@@ -455,16 +497,11 @@ const handleFinalizarPedido = () => {
       setVencimento('');
       setCvc('');
       setMesa('');
-      
-    } else {
-      // Mensagem de erro se não houver pedidos
-      toast.error("Não há pedidos para finalizar", { theme: 'dark' });
-      sound.play(); // Toca um som de erro
-    }
+      setSelectedOption('');
+
   } else {
-    // Mensagem de erro se o formulário não for válido
-    toast.error("Por favor, preencha todos os campos obrigatórios.", { theme: 'dark' });
-    sound.play(); // Toca um som de erro
+      toast.error("Não há pedidos para finalizar", { theme: 'dark' });
+      sound.play();
   }
 };
 
@@ -878,14 +915,12 @@ const handleFinalizarPedido = () => {
         )}
         
       </Nav>
-      
+    
       <Tab.Content> 
         {activeTabCard==='pagamentoNaRetirada' &&(
           <Tab.Pane eventKey="pagamentoNaRetirada">
-          <div className='conteiner-check'>
-
+<div className='conteiner-check'>
 {Object.keys(formasPorTipo).map((tipo) => (
-  
     <div key={tipo} className="form-check">
         <input
             className="form-check-input"
@@ -905,7 +940,6 @@ const handleFinalizarPedido = () => {
 </div>
 <div className='conteiner-check'>
 {Object.keys(formasSemTipo).map((tipo) => (
-  
     <div key={tipo} className="form-check">
         <input
             className="form-check-input"
@@ -920,8 +954,6 @@ const handleFinalizarPedido = () => {
             {tipo}
         </label>
     </div>
-    
-    
 ))}
 </div>
 <div className="payment-icons">
@@ -934,7 +966,7 @@ const handleFinalizarPedido = () => {
         <div className="col-md-6">
             <label htmlFor="inputCardNumber">Número do cartão</label>
             <InputMask 
-               
+          
                className={`form-control ${errorCard ? 'is-invalid' : ''}`}
                 id="inputCardNumber" 
                 mask="9999 9999 9999 9999"
