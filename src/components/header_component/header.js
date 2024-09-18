@@ -108,6 +108,7 @@ const [selectedOption, setSelectedOption] = useState('');
 const [isFormValid, setIsFormValid] = useState(false);
 const [isValid, setIsValid] = useState(true);
 const [errorCard, setErrorCard] = useState('');
+const [checkedOptions, setCheckedOptions] = useState({});
 
 
 // <---------- Notificações ---------->
@@ -183,6 +184,13 @@ const handleCardChange = (e) => {
   }
 };
 
+const handleCheckboxChange = (nome) => {
+  setCheckedOptions((prev) => ({
+      ...prev,
+      [nome]: !prev[nome], // Alterna o valor do checkbox
+  }));
+};
+
  
 // <------ função para redimensionar o texto fretis gratis em relação a tela ------>
   useEffect(() => {
@@ -252,11 +260,20 @@ const handleCardChange = (e) => {
             {formasPorTipo[tipo].map((forma) => (
                 <div key={forma.Id} className="payment-item">
                     <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={checkedOptions[forma.Nome] || false}
+                            onChange={() => handleCheckboxChange(forma.Nome)}
+                        />
+                        {forma.Nome}
+                    </label>
                 </div>
             ))}
         </div>
     );
 };
+
 const renderFormasSemTipo = (nome) => {
     const formas = formasSemTipo[nome];
     if (!formas || !Array.isArray(formas)) return null;
@@ -264,7 +281,15 @@ const renderFormasSemTipo = (nome) => {
         <div className="payment-grid">
             {formas.map((forma) => (
                 <div key={forma.Id} className="payment-item">
-                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome}/> 
+                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={checkedOptions[forma.Nome] || false}
+                            onChange={() => handleCheckboxChange(forma.Nome)}
+                        />
+                        {forma.Nome}
+                    </label>
                 </div>
             ))}
         </div>
@@ -955,7 +980,7 @@ const handleFinalizarPedido = () => {
         </label>
     </div>
 ))}
-</div>
+</div><hr></hr>
 <div className="payment-icons">
     {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
     {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
