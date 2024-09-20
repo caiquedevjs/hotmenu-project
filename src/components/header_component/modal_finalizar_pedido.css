@@ -104,7 +104,7 @@ border-top: 1px solid #e0e0e0;
   
   /* Estilo dos itens do grid */
   .payment-item {
-    text-align: center;
+    
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 10px;
@@ -116,7 +116,12 @@ border-top: 1px solid #e0e0e0;
     max-width: 70px; /* Ajuste o tamanho máximo conforme necessário */
     object-fit: contain;
   }
- 
+  .conteiner-check {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+    grid-template-rows: repeat(3, auto); /* 3 linhas com altura automática */
+    gap: 10px; /* Espaçamento entre os itens */
+}
 .form-check-input {
     margin-right: 0.5rem; /* Ajuste o espaçamento entre o input e o label */
 }
@@ -255,8 +260,40 @@ label{
     text-align: left;
     font-family: "Roboto", sans-serif; 
 }
- 
- 
+.invisible-checkbox {
+    display: none; /* Torna o checkbox invisível */
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer; /* Indica que a imagem é clicável */
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Proporcional à imagem */
+    height: 100%; /* Proporcional à imagem */
+    display: flex;
+    justify-content: center; /* Centraliza o ícone horizontalmente */
+    align-items: center; /* Centraliza o ícone verticalmente */
+    background-color: rgba(255, 255, 255, 0.7); /* Cor de fundo semitransparente */
+    opacity: 0; /* Começa invisível */
+    transition: opacity 0.2s;
+}
+
+.checkmark.checked {
+    opacity: 1; /* Fica visível quando o checkbox está marcado */
+}
+
+.check-icon {
+    width: 50%; /* Ajuste o tamanho do ícone conforme necessário */
+    height: auto; /* Mantém a proporção do ícone */
+    fill: green; /* Cor do ícone, ajuste conforme necessário */
+}
+
 @media only screen and (max-width: 768px) {
     #inputNome4{
         width: 100%;

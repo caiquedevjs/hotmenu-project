@@ -42,9 +42,6 @@ const Header_component = ({handleCartClick}) =>{
   const cupomButtonHover = useHover();
   const finalizarButtonHover = useHover();
   const cancelarButtonHover = useHover();
-  const delliveryBgHover = useHover();
-  const boletoHover = useHover();
-  const pixButtonHover = useHover()
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
@@ -52,14 +49,11 @@ const Header_component = ({handleCartClick}) =>{
 const { cartItems, totalCartPrice, removeFromCart, isOpen} = useContext(CartContext);
 
 // <------ estados ------->
-const [formas, setFormas] = useState([]);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [estabelecimento, setEstabelecimento] = useState(null);
 const [deliveryOptions, setDeliveryOptions] = useState({ pickup: false, home: false, mesa: false})
 const [pagamentoOptions, setPagamentoOptions] = useState({pagamentoOnline : false, pagamentoNaRetirada : null})
-const [showAddressFields, setShowAddressFields] = useState(false);
-const [showMesaNumberFild, setShowMesaNumberFild] = useState(false);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
 const [color, setColor] = useState('');
@@ -72,7 +66,6 @@ const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
 const [valorTroco, setValorTroco] = useState(0);
-const [boleto, setBoleto] = useState(null);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
@@ -101,8 +94,6 @@ const [cartao, setCartao] = useState('');
 const [titular, setTitular] = useState('');
 const [vencimento, setVencimento] = useState('');
 const [cvc, setCvc] = useState('');
-const [accountNumber, setAccountNumber] = useState('');
-const [agency, setAgency] = useState('');
 const [mesa, setMesa] = useState('');
 const [selectedOption, setSelectedOption] = useState('');
 const [isFormValid, setIsFormValid] = useState(false);
@@ -117,28 +108,6 @@ const notify = () => toast.success(`Olá ${nome} 👋, seu pedido foi feito com 
 const notify02 = () => toast.success('Você receberá o status do pedido pelo WhatsApp. ⏱️ ', {theme: 'dark'});
 
 
- // <------ função para gerar boleto ------->
- const generateBoleto = () => {
-
-  // <------ obejto boleto ------->
-  const novoBoleto = {
-    chavePIX: pixKey,
-    valor: valorTroco,
-    codigoBoleto: `BOL-${Math.random().toString(36).substring(2, 15)}`, // Simulação de código de boleto
-    dataGeracao: new Date().toLocaleDateString(),
-  };
-  if (selectedOption === 'Boleto') {
-    // Exibe o código do boleto em um alerta
-    alert(`Código do Boleto: ${novoBoleto.codigoBoleto}`);
-    setBoleto(novoBoleto);
-  } else {
-    // A verificação é feita apenas se a opção selecionada não for "Boleto"
-    if (!pixKey || valorTroco <= 0) {
-      alert('Preencha todos os campos corretamente.');
-      return;
-    }
-  }
-};
 
 // <-------- algoritmo de luhn para validação de número do cartão de credito ------->
 
@@ -185,10 +154,16 @@ const handleCardChange = (e) => {
 };
 
 const handleCheckboxChange = (nome) => {
-  setCheckedOptions((prev) => ({
-      ...prev,
-      [nome]: !prev[nome], // Alterna o valor do checkbox
-  }));
+  setCheckedOptions((prev) => {
+      const newOptions = {
+          ...prev,
+          [nome]: !prev[nome], // Alterna o valor do checkbox
+      };
+
+      // Retorna a bandeira do cartão selecionada
+      const selectedBandeira = Object.keys(newOptions).find(key => newOptions[key]);
+      return { ...newOptions, bandeiraCartão: selectedBandeira || null }; // Define a bandeira do cartão
+  });
 };
 
  
@@ -255,24 +230,40 @@ const handleCheckboxChange = (nome) => {
   }, []);
   const renderFormas = (tipo) => {
     if (!formasPorTipo[tipo]) return null;
+
     return (
+      <div><p>Escolha uma bandeira de cartão.</p>
         <div className="payment-grid">
             {formasPorTipo[tipo].map((forma) => (
-                <div key={forma.Id} className="payment-item">
-                    <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                    <label>
+                <div key={forma.Id} className="payment-item" onClick={() => handleCheckboxChange(forma.Nome)}>
+                  
+                    <div className="image-container">
+                        <img
+                            src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`}
+                            alt={forma.Nome}
+                        />
                         <input
                             type="checkbox"
                             checked={checkedOptions[forma.Nome] || false}
                             onChange={() => handleCheckboxChange(forma.Nome)}
+                            className="invisible-checkbox"
                         />
-                        {forma.Nome}
-                    </label>
+                        <span className={`checkmark ${checkedOptions[forma.Nome] ? 'checked' : ''}`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" className="check-icon">
+                                <path d="M9 19l-7-7 1.41-1.41L9 16.17l11.59-11.59L22 6l-13 13z"/>
+                            </svg>
+                        </span>
+                    </div>
+                    
                 </div>
             ))}
         </div>
+        </div>
     );
 };
+
+
+
 
 const renderFormasSemTipo = (nome) => {
     const formas = formasSemTipo[nome];
@@ -282,14 +273,7 @@ const renderFormasSemTipo = (nome) => {
             {formas.map((forma) => (
                 <div key={forma.Id} className="payment-item">
                     <img src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`} alt={forma.Nome} />
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={checkedOptions[forma.Nome] || false}
-                            onChange={() => handleCheckboxChange(forma.Nome)}
-                        />
-                        {forma.Nome}
-                    </label>
+                    
                 </div>
             ))}
         </div>
@@ -360,30 +344,7 @@ const totalPriceWithFrete = () => {
 
 
 
-// <---------- Função para copiar chave pix ---------->
-  const CopyButton = () => {
-    const copyToClipboard = () => {
-        const field = document.getElementById('inputPixKey');
-        field.select();
-        document.execCommand('copy');
-    };
 
-    return (
-        <button 
-            type="button" 
-            onClick={copyToClipboard} 
-            className="btn-copy"
-            aria-label="Copiar código Pix"
-            style={{backgroundColor: pixButtonHover.isHovered ? '#332D2D' : color }}
-            onMouseEnter={pixButtonHover.handleMouseEnter}
-            onMouseLeave={pixButtonHover.handleMouseLeave}
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-copy" viewBox="0 0 16 16">
-                <path fillRule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
-            </svg>
-        </button>
-    );
-};
 
 
 // <------ função para adicionar os itens do carrinho a lista de pedido ------->
@@ -445,12 +406,8 @@ const handleFinalizarPedido = () => {
           if (!selectedOption) {
               toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
               return;
-          } else if (['Débito', 'Crédito', 'Vale Refeição', 'PicPay'].includes(selectedOption)) {
-              if (!cartao || !titular || !vencimento || !cvc) {
-                  toast.error("Por favor, preencha todos os dados.", { theme: 'dark' });
-                  return;
-              }
-          } else if (selectedOption === 'Dinheiro') {
+          } 
+           else if (selectedOption === 'Dinheiro') {
               if (!valorTroco) {
                   toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
                   return;
@@ -480,6 +437,7 @@ const handleFinalizarPedido = () => {
               `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
           mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
           FormaPagamento: selectedOption,
+          bandeiraCartão: checkedOptions.bandeiraCartão || null,
           FormaRetirada: formaRetirada,
           Produtos: produtos,
           frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ?
@@ -500,7 +458,12 @@ const handleFinalizarPedido = () => {
       const celularWhatsApp = celular.replace(/\D/g, '');
 
       // Mensagem para o destinatário
-      const mensagem = `Você recebeu uma nova mensagem de pedido!\n\nDetalhes do pedido:\n\n${JSON.stringify(pedido, null, 2)}`;
+      // Mensagem para o destinatário
+const mensagemProdutos = pedido.Produtos.map(produto => 
+  `*Nome:* ${produto.Nome}, *Quantidade:* ${produto.Quantidade}, *Sugestão:* ${produto.Sugestão}`
+).join('\n');
+
+const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:* \n${mensagemProdutos} \n*Desconto:* ${pedido.frete} \n*Preço Total:* ${pedido.preçoTotal}\n\n*Forma de Entrega:* ${pedido.FormaRetirada} \n*Forma de pagamento:* ${pedido.FormaPagamento} \n*Cartão:* ${pedido.bandeiraCartão} \n*Endereço:* ${pedido.Endereço} \n*Mesa:* ${pedido.mesa}\n\n*Nome:* ${pedido.Cliente} \n*Telefone:* ${pedido.Tel}`;
       const mensagemCodificada = encodeURIComponent(mensagem);
 
       // Cria a URL do WhatsApp
@@ -883,7 +846,8 @@ const handleFinalizarPedido = () => {
       <Tab.Content>
         {activeTab === 'pickup' && (
           <Tab.Pane eventKey="pickup">
-            {/* Campos relacionados a retirada no estabelecimento (se houver) */}
+            <h3>Retirada No Local</h3>
+            <p>{estabelecimento ? estabelecimento.Endereco : "Endereço"}</p>
           </Tab.Pane>
         )}
         {activeTab === 'home' && (
@@ -985,97 +949,9 @@ const handleFinalizarPedido = () => {
     {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
     {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
 </div> <hr></hr>
-{selectedOption === 'Débito' || selectedOption === 'Crédito' || selectedOption === 'Vale Refeição'  || selectedOption === 'PicPay' ? (
-    <div className='titular-card-pay-container'>
-    <div className="row">
-        <div className="col-md-6">
-            <label htmlFor="inputCardNumber">Número do cartão</label>
-            <InputMask 
-          
-               className={`form-control ${errorCard ? 'is-invalid' : ''}`}
-                id="inputCardNumber" 
-                mask="9999 9999 9999 9999"
-                value={cartao} 
-                onChange={handleCardChange } 
-            >
-               {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCardNumber" />}
-               </InputMask>
-               {errorCard && <div className="invalid-feedback">{errorCard}</div>}
-        </div>
-        <div className="col-md-6">
-            <label htmlFor="inputCardHolder">Nome do titular</label>
-            <input 
-                type="text" 
-                className="form-control" 
-                id="inputCardHolder" 
-                value={titular} 
-                onChange={(e) => setTitular(e.target.value)} 
-            />
-        </div>
-    </div>
-    <div className='card-date-container'>
-<div className="row">
-    <div className="card-date-container_grid">
-    <div className=" col-sm-6">
-    <label htmlFor="inputExpiryDate">Data de vencimento</label>
-          <InputMask
-            mask="99/99"
-            placeholder='MM/AA'
-            value={vencimento}
-            onChange={(e) => setVencimento(e.target.value)}
-          >
-            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputExpiryDate" />}
-          </InputMask>
-        </div>
-        <div className=" col-sm-6">
-        <label htmlFor="inputCVC">CVC</label>
-          <InputMask
-            mask="999"
-            value={cvc}
-            onChange={(e) => setCvc(e.target.value)}
-          >
-            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputCVC" />}
-          </InputMask>
-    </div>
-    </div>
-    
-</div>
-</div>
-</div>
-) : null}
-{selectedOption === 'Pix' ? (
-<div className='titular-card-pay-conteiner'>
-    <div className="input-container">
-      <div>
-        <label htmlFor="inputPixKey" className='labelChavePix'>Chave Pix</label>
-        <input 
-            type="text" 
-            className="form-control" 
-            id="inputPixKey"
-            readOnly
-            value={pixKey}
-        /></div>
-        <CopyButton/>
-    </div>
-</div>
-) : null}
-{selectedOption === 'Boleto' ? (
-    <div className='titular-card-pay-conteiner'>
-        <div className="col-md-4">
-            
-            <button 
-                type="button" 
-                className="btn-gerar-boleto" 
-                onClick={generateBoleto}
-                style={{backgroundColor : boletoHover.isHovered ? '#332D2D' : color}}
-                onMouseEnter={boletoHover.handleMouseEnter}
-                onMouseLeave={boletoHover.handleMouseLeave}
-            >
-                Gerar Boleto
-            </button>
-        </div>
-    </div>
-) : null}
+
+
+
 {selectedOption === 'Dinheiro' ? (
     <div className='titular-card-pay-conteiner'>
         <div className="col-md-4">
@@ -1090,38 +966,7 @@ const handleFinalizarPedido = () => {
         </div>
     </div>
 ) : null}
-{selectedOption === 'Transferência'  ? (
-    <div className='titular-card-pay-container'>
-    
-    <div className='card-date-container'>
-<div className="row">
-    <div className="card-date-container_grid">
-    <div className=" col-sm-6">
-    <label htmlFor="inputAccountNumber">Número da conta</label>
-          <InputMask
-            mask="99999 9"
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
-          >
-            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAccountNumber" />}
-          </InputMask>
-        </div>
-        <div className=" col-sm-6">
-        <label htmlFor="inputAgency">Agência</label>
-          <InputMask
-            mask="9999 9"
-            value={agency}
-            onChange={(e) => setAgency(e.target.value)}
-          >
-            {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputAgency" />}
-          </InputMask>
-    </div>
-    <button className="btn-fazer-transferencia">Trasnferir</button>
-    </div>
-</div>
-</div>
-</div>
-) : null}
+
             
           </Tab.Pane>
           )}
