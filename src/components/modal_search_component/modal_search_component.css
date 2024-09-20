@@ -8,6 +8,7 @@
 #modal_search_icon_id{
     margin-bottom: 12px;
 }
+
 #input_search_id{
     padding: 5px;
     border-radius: 10px;
@@ -60,15 +61,15 @@
     margin-top: 40px;
 }
 
-.product-image {
-     width: 100px;
-     height: 100px;
-  }
+#product-image-id{
+    width: 60px;
+    height: 60px;
+}
   
   /* Ajustes para telas menores */
   @media (max-width: 576px) {
-    .product-image {
-        width: 100px;
-        height: 100px;
+    #product-image-id{
+        width: 60px;
+        height: 60px;
     }
   }

@@ -122,6 +122,7 @@ const ModalBusca = ({ categories = [] }) => {
                             src={`https://hotmenu.com.br/arquivos/${product.Foto}`} 
                             alt={product.Nome} 
                             className="img-fluid product-image" 
+                            id='product-image-id'
                             onClick={() => handleProductClick(product)} 
                             style={{ cursor: 'pointer' }} 
                             data-bs-dismiss="modal"
@@ -146,6 +147,7 @@ const ModalBusca = ({ categories = [] }) => {
                                   src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`} 
                                   alt={firstProduct.Nome} 
                                   className="img-fluid product-image" 
+                                  id='product-image-id'
                                 />
                               </div>
                             ) : (
