@@ -6,6 +6,10 @@
     margin-right: 10px;
     border-radius: 8px;
 }
+#card_container{
+    width: 100%;
+
+}
 #text_category{
     display: flex;
     flex-direction: row;
