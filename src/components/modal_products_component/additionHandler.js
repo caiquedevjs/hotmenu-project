@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchPerguntas } from '../service/productService'; // Importe a função que busca as perguntas
+import { fetchPerguntas } from '../service/productService';
 
 const useAdditionalState = (productId) => {
   const [additionalStates, setAdditionalStates] = useState([]);
@@ -7,9 +7,29 @@ const useAdditionalState = (productId) => {
   useEffect(() => {
     const fetchAdditionalData = async () => {
       try {
-        const response = await fetchPerguntas(productId);
-        const perguntas = response.perguntas || []; // Acesse a propriedade 'perguntas' do objeto de resposta
-        setAdditionalStates(perguntas);
+        const perguntas = await fetchPerguntas(productId);
+        
+        const transformedData = perguntas.map(pergunta => {
+          return {
+            id: pergunta.PerguntaId,
+            description: pergunta.Texto,
+            type: pergunta.Tipo,
+            required: pergunta.RespostaObrigatoria,
+            minOptions: pergunta.QtdOpcoesResPostaMin,
+            maxOptions: pergunta.QtdOpcoesResPostaMax,
+            options: pergunta.Complemento.map(complemento => ({
+              id: complemento.Id,
+              name: complemento.Nome,
+              price: complemento.PrecoVenda,
+              count: 0,
+              QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
+            })),
+            selectedCount: 0,
+            observacao: pergunta.Observacao || [] // Para armazenar observações
+          };
+        });
+
+        setAdditionalStates(transformedData);
       } catch (error) {
         console.error('Erro ao buscar adicionais:', error);
       }
@@ -21,37 +41,52 @@ const useAdditionalState = (productId) => {
   }, [productId]);
 
   const handleIncrement = (id) => {
-    setAdditionalStates((prevState) => {
-      const newState = prevState.map((additional) => {
-        if (additional.id === id) {
-          if (additional.count < 3 && totalAdditional() < 10) { // Verifica limites
-            return { ...additional, count: additional.count + 1 };
+    setAdditionalStates(prevState => {
+      return prevState.map(additional => {
+        const option = additional.options.find(option => option.id === id);
+        if (option) {
+          const totalSelected = additional.selectedCount + 1;
+          const maxAllowed = option.QtdMaximaPermitida || additional.maxOptions;
+
+          if (option.count < maxAllowed && totalSelected <= additional.maxOptions) {
+            return {
+              ...additional,
+              options: additional.options.map(opt => 
+                opt.id === id ? { ...opt, count: opt.count + 1 } : opt
+              ),
+              selectedCount: totalSelected
+            };
           }
         }
         return additional;
       });
-      return newState;
     });
   };
 
   const handleDecrement = (id) => {
-    setAdditionalStates((prevState) => {
-      const newState = prevState.map((additional) => {
-        if (additional.id === id && additional.count > 0) {
-          return { ...additional, count: additional.count - 1 };
+    setAdditionalStates(prevState => {
+      return prevState.map(additional => {
+        const option = additional.options.find(option => option.id === id);
+        if (option) {
+          const totalSelected = additional.selectedCount - 1;
+
+          if (option.count > 0) {
+            return {
+              ...additional,
+              options: additional.options.map(opt => 
+                opt.id === id ? { ...opt, count: opt.count - 1 } : opt
+              ),
+              selectedCount: totalSelected
+            };
+          }
         }
         return additional;
       });
-      return newState;
     });
   };
 
   const totalAdditional = () => {
-    let total = 0;
-    additionalStates.forEach((additional) => {
-      total += additional.count;
-    });
-    return total;
+    return additionalStates.reduce((total, additional) => total + additional.selectedCount, 0);
   };
 
   return {

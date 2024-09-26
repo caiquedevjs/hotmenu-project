@@ -1,0 +1,19 @@
+.options-description-container{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.options-icon {
+  display: flex;
+  align-items: center; /* Alinha verticalmente */
+  justify-content: space-between; /* Espaço entre texto e ícones */
+  width: 400px;
+}
+
+.options-icons-plus-dash {
+  display: flex;
+  align-items: center; /* Alinha os ícones verticalmente */
+  margin-left: 10px; /* Adiciona espaço entre o texto e os ícones */
+}
+

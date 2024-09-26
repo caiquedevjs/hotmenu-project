@@ -3,9 +3,10 @@ import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
 import { fetchEstabelecimentoData } from '../service/productService';
+import PerguntasComponent from './PerguntasComponent';
 
 const Modal_product_component = ({ id, product, onClose }) => {
-  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(id);
+  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(product.Id);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -82,29 +83,10 @@ const Modal_product_component = ({ id, product, onClose }) => {
             <p id='pruduct-description-p'>{product.Descricao}</p>
             <h5><strong>Preço:</strong> R$ {formatPrice(product.PrecoDeVenda)}</h5>
 
-            <div className='options-container'>
-              <div className='options-container-head'>
-                <h5>Adicionais</h5>
-                <h5>{totalAdditional()}/10</h5>
-              </div>
-            </div>
+           
 
-            {additionalStates.map(additional => (
-              <div key={additional.id} className='options-description-container'>
-                <div className='options-additions'>
-                  <p>{additional.description} - R$ {additional.price}</p>
-                </div>
-                <div className='options-icons-plus-dash'>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16" onClick={() => handleIncrement(additional.id)} disabled={additional.count === 3 || totalAdditional() === 10}>
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
-                  </svg>
-                  <span>{additional.count}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-dash-circle-fill" viewBox="0 0 16 16" onClick={() => handleDecrement(additional.id)} disabled={additional.count === 0}>
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
-                  </svg>
-                </div>
-              </div>
-            ))}
+            <PerguntasComponent productId={product.Id} />
+
           </div>
           <div className='options-suggestion'>
             <h5>Alguma sugestão?</h5>
