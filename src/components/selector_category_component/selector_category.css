@@ -40,3 +40,29 @@
         /* Outros estilos conforme necessário */
     }
 }
+
+@media only screen and (min-width: 1920px) {
+    .btn.dropdown-toggle {
+        margin-top: 40px;
+        width: 67%; /* Largura do botão dropdown */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+        border: none;
+        font-weight: bold;
+        font-size: 24px;
+    }
+    
+    .dropdown-menu {
+        width: 67%; /* Largura do menu suspenso */
+        /* Outros estilos conforme necessário */
+        
+    }
+    
+    .dropdown-item {
+        width: 100%; /* Largura dos itens da lista */
+        /* Outros estilos conforme necessário */
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;
+    }
+
+}

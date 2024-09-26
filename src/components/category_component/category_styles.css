@@ -76,4 +76,51 @@
     
 
   }
+
+  @media only screen and (min-device-pixel-ratio: 2), 
+       only screen and (min-resolution: 192dpi) { 
+        .category_title{
+            font-family: "Roboto", sans-serif;
+            background-color: #ce2929;
+            width: 89%;
+            
+            border-radius: 5px;
+            margin-top: 50px;
+            color: white;
+            font-weight: bold;
+        }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1366px) and 
+       (min-device-pixel-ratio: 1), 
+       only screen and (min-resolution: 96dpi) { 
+        .category_title{
+            font-family: "Roboto", sans-serif;
+            background-color: #ce2929;
+            width: 82%;
+            
+            border-radius: 5px;
+            margin-top: 50px;
+            color: white;
+            font-weight: bold;
+        }
+   
+}
+
+@media only screen and (min-width: 1920px) {
+    .category_title{
+        font-family: "Roboto", sans-serif;
+        background-color: #ce2929;
+        width: 67%;
+        
+        border-radius: 5px;
+        margin-top: 50px;
+        color: white;
+        font-weight: bold;
+    }
+}
+
+@media only screen and (min-width: 2560px) {
+    /* Estilos para monitores 2K e superiores */
+}
   
