@@ -1,3 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+.pergunta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pergunta-count, .obrigatorio, .opcional {
+  font-size: 0.9em;
+  margin-left: 10px;
+  color: gray; /* ou qualquer outra cor que preferir */
+}
+
 .perguntas-container {
   padding: 20px;
 }
@@ -11,7 +25,8 @@
 }
 
 .pergunta-title {
-  font-size: 1.5rem;
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
   margin-bottom: 10px;
 }
 
@@ -20,6 +35,7 @@
 }
 
 .observacao-label {
+  font-family: "Roboto", sans-serif;
   display: block;
   margin: 5px 0;
 }
@@ -46,6 +62,7 @@
 }
 
 .option-price {
+  font-family: "Roboto", sans-serif;
   color: #b12704; /* Cor para o preço */
 }
 

@@ -25,7 +25,8 @@ const useAdditionalState = (productId) => {
               QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
             })),
             selectedCount: 0,
-            observacao: pergunta.Observacao || [] // Para armazenar observações
+            observacao: pergunta.Observacao || [],
+            produtos: pergunta.Produto || [] // Adicionando a propriedade Produto
           };
         });
 
