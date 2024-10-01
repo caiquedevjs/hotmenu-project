@@ -11,12 +11,15 @@ const PerguntasComponent = ({ productId }) => {
       {additionalStates.map(additional => (
         <div key={additional.id} className="pergunta-card">
           <div className="pergunta-header">
+            <div className='pergunta-title-conteiner'>
             <h3 className="pergunta-title">{additional.description}</h3>
-            <span className="pergunta-count">
-              {additional.selectedCount} / {additional.maxOptions}
+            <p className='max-option-text'>{`Escolha até ${additional.maxOptions} opções.`}</p>
+            </div>
+            
+            <span className="pergunta-info">
+              {additional.selectedCount} / {additional.maxOptions} 
+              {additional.required ? " (Obrigatório)" : " (Opcional)"}
             </span>
-            {additional.required && <span className="obrigatorio">(Obrigatório)</span>}
-            {!additional.required && <span className="opcional">(Opcional)</span>}
           </div>
 
           {/* Renderiza opções de observações como botões de rádio se for do tipo 1 */}

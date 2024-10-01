@@ -1,19 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-
-.pergunta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pergunta-count, .obrigatorio, .opcional {
-  font-size: 0.9em;
-  margin-left: 10px;
-  color: gray; /* ou qualquer outra cor que preferir */
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
 .perguntas-container {
-  padding: 20px;
+  padding: 15px;
 }
 
 .pergunta-card {
@@ -24,10 +12,29 @@
   background-color: #f9f9f9;
 }
 
+.pergunta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+
 .pergunta-title {
   font-family: "Roboto", sans-serif;
-  font-size: 1rem;
-  margin-bottom: 10px;
+  font-size: 1rem; /* Mantém tamanho de fonte padrão */
+  margin-bottom: 5px;
+}
+
+.pergunta-info, .pergunta-count, .obrigatorio, .opcional {
+  font-size: 0.9em; /* Tamanho reduzido */
+  margin-left: 10px;
+  color: gray;
+}
+
+.max-option-text {
+  font-family: "Roboto", sans-serif;
+  color: gray;
+  margin-left: 10px;
 }
 
 .observacoes {
@@ -59,11 +66,16 @@
 
 .option-name {
   font-weight: bold;
+  font-size: 0.9rem; /* Tamanho reduzido */
+  white-space: nowrap; /* Impede quebras de linha */
+  overflow: hidden; /* Esconde texto excessivo */
+  text-overflow: ellipsis; /* Adiciona reticências */
 }
 
 .option-price {
   font-family: "Roboto", sans-serif;
   color: #b12704; /* Cor para o preço */
+  font-size: 0.9rem; /* Tamanho reduzido */
 }
 
 .options-icons {
@@ -83,4 +95,55 @@
 
 .option-count {
   margin: 0 10px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .pergunta-card {
+    padding: 10px; /* Menos padding em telas menores */
+  }
+
+  .pergunta-title {
+    max-width: 100px;
+    font-size: 0.95rem; /* Levemente menor */
+    text-align: left;
+  }
+  .max-option-text{
+   text-align: left;
+   font-size: 13px;
+  }
+
+  .pergunta-info, .pergunta-count, .obrigatorio, .opcional {
+    font-size: 13px; /* Menor ainda */
+  }
+
+  .option-name {
+    font-size: 0.85rem; /* Ajusta o tamanho do nome da opção */
+  }
+
+  .option-price {
+    font-size: 0.85rem; /* Ajusta o tamanho do preço */
+  }
+
+  .option-item {
+    flex-direction: row; /* Mantém alinhamento em linha */
+  }
+
+  .options-icons {
+    justify-content: flex-end; /* Alinha ícones à direita */
+  }
+}
+
+@media (max-width: 480px) {
+  .pergunta-title {
+    font-size: 0.85rem; /* Menor ainda para telas pequenas */
+  }
+
+  .option-item {
+    padding: 8px 0; /* Reduz o padding das opções */
+  }
+
+  .option-price {
+    font-size: 0.75rem; /* Ajusta o tamanho do preço */
+  }
 }
