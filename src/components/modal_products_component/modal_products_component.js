@@ -43,38 +43,41 @@ const Modal_product_component = ({ id, product, onClose }) => {
     }
   }, [product]);
 
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice());
+  }, [additionalStates, quantity]); // Adicione quantity aqui
+
+
   const calculateTotalPrice = () => {
     if (!product || !product.PrecoDeVenda) {
-      return "0.00";
+        return "0.00";
     }
 
     let totalPrice = parseFloat(product.PrecoDeVenda);
 
     additionalStates.forEach(additional => {
-      // Adiciona o preço dos complementos
-      additional.options.forEach(option => {
-        if (option.count > 0) { // Verifica se a contagem é maior que zero
-          console.log(`Adicionando complemento: ${option.name}, Preço: ${option.price}, Contagem: ${option.count}`);
-          totalPrice += option.count * parseFloat(option.price);
-        }
-      });
-      // Adiciona o preço dos produtos
-      additional.produtos.forEach(produto => {
-        if (produto.count > 0) { // Verifica se a contagem é maior que zero
-          console.log(`Adicionando produto: ${produto.Nome}, Preço: ${produto.PrecoDeVenda}, Contagem: ${produto.count}`);
-          totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
-        }
-      });
+        // Adiciona o preço dos complementos
+        additional.options.forEach(option => {
+            if (option.count > 0) {
+                console.log(`Adicionando complemento: ${option.name}, Preço: ${option.price}, Contagem: ${option.count}`);
+                totalPrice += option.count * parseFloat(option.price);
+            }
+        });
+        // Adiciona o preço dos produtos
+        additional.produtos.forEach(produto => {
+            if (produto.count > 0) {
+                console.log(`Adicionando produto: ${produto.Nome}, Preço: ${produto.PrecoDeVenda}, Contagem: ${produto.count}`);
+                totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
+            }
+        });
     });
 
     totalPrice *= quantity; // Multiplicando pela quantidade total do produto
     console.log(`Preço total calculado: ${totalPrice.toFixed(2)}`);
     return totalPrice.toFixed(2);
-  };
+};
 
-  useEffect(() => {
-    setTotalPrice(calculateTotalPrice());
-  }, [additionalStates, quantity]); // Adicione quantity aqui
+
 
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ',');
@@ -100,6 +103,8 @@ const Modal_product_component = ({ id, product, onClose }) => {
             </div>
             <p id='pruduct-description-p'>{product.Descricao}</p>
             <h5><strong>Preço:</strong> R$ {formatPrice(product.PrecoDeVenda)}</h5>
+
+           
 
             <PerguntasComponent productId={product.Id} />
 
