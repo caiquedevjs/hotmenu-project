@@ -1,10 +1,14 @@
 import React from 'react';
+import { useEffect } from 'react';
 import useAdditionalState from './additionHandler';
 import '../modal_products_component/PerguntasComponent.css';
 
 const PerguntasComponent = ({ productId }) => {
   const { additionalStates, handleIncrement, handleDecrement } = useAdditionalState(productId);
-  console.log('Dados das perguntas:', additionalStates);
+  useEffect(() => {
+    
+}, [additionalStates]); // Isso irá disparar sempre que additionalStates mudar
+
 
   return (
     <div className="perguntas-container">
@@ -46,7 +50,7 @@ const PerguntasComponent = ({ productId }) => {
                   <div className='option-info'>
                     <p className="option-name">{option.name}</p>
                     <p className="option-price">
-                      R$ {option.PrecoPromo ? option.PrecoPromo.toFixed(2).replace('.', ',') : option.price.toFixed(2).replace('.', ',')}
+                    R$ {option.PrecoPromo ? option.PrecoPromo.toFixed(2).replace('.', ',') : option.price.toFixed(2).replace('.', ',')}
                     </p>
                   </div>
 
@@ -82,6 +86,7 @@ const PerguntasComponent = ({ productId }) => {
             </div>
           )}
 
+          
           {/* Renderiza produtos com incremento e decremento */}
           {additional.produtos && additional.produtos.length > 0 && (
             <div className='options-container'>
@@ -102,7 +107,7 @@ const PerguntasComponent = ({ productId }) => {
                       fill="currentColor"
                       className="bi bi-plus-circle-fill"
                       viewBox="0 0 16 16"
-                      onClick={() => handleIncrement(produto.Id)}
+                      onClick={() => handleIncrement(produto.Id, true)} // Passando true para indicar que é um produto
                       disabled={produto.count === produto.QtdMaximaPermitida}
                     >
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
@@ -115,7 +120,7 @@ const PerguntasComponent = ({ productId }) => {
                       fill="currentColor"
                       className="bi bi-dash-circle-fill"
                       viewBox="0 0 16 16"
-                      onClick={() => handleDecrement(produto.Id)}
+                      onClick={() => handleDecrement(produto.Id, true)} // Passando true para indicar que é um produto
                       disabled={produto.count === 0}
                     >
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>

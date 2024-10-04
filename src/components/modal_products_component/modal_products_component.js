@@ -51,12 +51,30 @@ const Modal_product_component = ({ id, product, onClose }) => {
     let totalPrice = parseFloat(product.PrecoDeVenda);
 
     additionalStates.forEach(additional => {
-      totalPrice += additional.count * parseFloat(additional.price);
+      // Adiciona o preço dos complementos
+      additional.options.forEach(option => {
+        if (option.count > 0) { // Verifica se a contagem é maior que zero
+          console.log(`Adicionando complemento: ${option.name}, Preço: ${option.price}, Contagem: ${option.count}`);
+          totalPrice += option.count * parseFloat(option.price);
+        }
+      });
+      // Adiciona o preço dos produtos
+      additional.produtos.forEach(produto => {
+        if (produto.count > 0) { // Verifica se a contagem é maior que zero
+          console.log(`Adicionando produto: ${produto.Nome}, Preço: ${produto.PrecoDeVenda}, Contagem: ${produto.count}`);
+          totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
+        }
+      });
     });
 
-    totalPrice *= quantity;
+    totalPrice *= quantity; // Multiplicando pela quantidade total do produto
+    console.log(`Preço total calculado: ${totalPrice.toFixed(2)}`);
     return totalPrice.toFixed(2);
   };
+
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice());
+  }, [additionalStates, quantity]); // Adicione quantity aqui
 
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ',');
@@ -82,8 +100,6 @@ const Modal_product_component = ({ id, product, onClose }) => {
             </div>
             <p id='pruduct-description-p'>{product.Descricao}</p>
             <h5><strong>Preço:</strong> R$ {formatPrice(product.PrecoDeVenda)}</h5>
-
-           
 
             <PerguntasComponent productId={product.Id} />
 

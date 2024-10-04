@@ -26,7 +26,13 @@ const useAdditionalState = (productId) => {
             })),
             selectedCount: 0,
             observacao: pergunta.Observacao || [],
-            produtos: pergunta.Produto || [] // Adicionando a propriedade Produto
+            produtos: pergunta.Produto.map(produto => ({
+              Id: produto.Id,
+              Nome: produto.Nome,
+              PrecoDeVenda: produto.PrecoDeVenda,
+              count: 0,
+              QtdMaximaPermitida: produto.QtdMaximaPermitida || null
+            })) // Transformando produtos da mesma forma
           };
         });
 
@@ -41,41 +47,64 @@ const useAdditionalState = (productId) => {
     }
   }, [productId]);
 
-  const handleIncrement = (id) => {
+  const handleIncrement = (id, isProduto = false) => {
     setAdditionalStates(prevState => {
       return prevState.map(additional => {
-        const option = additional.options.find(option => option.id === id);
-        if (option) {
-          const totalSelected = additional.selectedCount + 1;
-          const maxAllowed = option.QtdMaximaPermitida || additional.maxOptions;
-
-          if (option.count < maxAllowed && totalSelected <= additional.maxOptions) {
+        if (additional.type === 1) { // Para observações
+          const item = additional.observacao.find(obs => obs.Id === id);
+          if (item) {
+            // Desmarcar todas as observações
+            const updatedObservacoes = additional.observacao.map(obs => ({
+              ...obs,
+              selected: obs.Id === id // Marca a observação selecionada
+            }));
             return {
               ...additional,
-              options: additional.options.map(opt => 
-                opt.id === id ? { ...opt, count: opt.count + 1 } : opt
-              ),
-              selectedCount: totalSelected
+              observacao: updatedObservacoes,
+              selectedCount: 1 // Apenas uma pode ser selecionada
             };
+          }
+        } else {
+          const item = isProduto
+            ? additional.produtos.find(produto => produto.Id === id)
+            : additional.options.find(option => option.id === id);
+  
+          if (item) {
+            const totalSelected = additional.selectedCount + 1;
+            const maxAllowed = item.QtdMaximaPermitida || additional.maxOptions;
+  
+            if (item.count < maxAllowed && totalSelected <= additional.maxOptions) {
+              return {
+                ...additional,
+                [isProduto ? 'produtos' : 'options']: additional[isProduto ? 'produtos' : 'options'].map(it =>
+                  it[isProduto ? 'Id' : 'id'] === id ? { ...it, count: it.count + 1 } : it
+                ),
+                selectedCount: totalSelected
+              };
+            }
           }
         }
         return additional;
       });
     });
   };
+  
 
-  const handleDecrement = (id) => {
+  const handleDecrement = (id, isProduto = false) => {
     setAdditionalStates(prevState => {
       return prevState.map(additional => {
-        const option = additional.options.find(option => option.id === id);
-        if (option) {
+        const item = isProduto
+          ? additional.produtos.find(produto => produto.Id === id)
+          : additional.options.find(option => option.id === id);
+
+        if (item) {
           const totalSelected = additional.selectedCount - 1;
 
-          if (option.count > 0) {
+          if (item.count > 0) {
             return {
               ...additional,
-              options: additional.options.map(opt => 
-                opt.id === id ? { ...opt, count: opt.count - 1 } : opt
+              [isProduto ? 'produtos' : 'options']: additional[isProduto ? 'produtos' : 'options'].map(it =>
+                it[isProduto ? 'Id' : 'id'] === id ? { ...it, count: it.count - 1 } : it
               ),
               selectedCount: totalSelected
             };
