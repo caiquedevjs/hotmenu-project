@@ -652,7 +652,27 @@ const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:
                     </div>
                     <div className="cart-item-details">
                       <p className='text-cart-name'>{item.quantity}x {item.product.Nome}</p>
-                      <p className='text-cart-description'>{truncate_Text(item.product.Descricao)}</p>
+                      <p className='text-cart-description'>
+                      {item.additionalStates.map((additional, additionalIndex) => (
+                        <p key={additionalIndex} className='text-cart-description'>
+                          {additional.observacao.map(obs => (
+                            obs.selected ? (
+                              <span key={obs.Id}>{obs.Nome}, </span>
+                            ) : null
+                          ))}
+                          {additional.options.map(option => (
+                            option.count > 0 ? (
+                              <span key={option.id}>{option.count}x {truncateText(option.name)}, </span>
+                            ) : null
+                          ))}
+                          {additional.produtos.map(produto => (
+                            produto.count > 0 ? (
+                              <span key={produto.Id}>{produto.count}x {truncateText(produto.Nome)}, </span>
+                            ) : null
+                          ))}
+                        </p>
+                      ))}
+                      </p>
                       <p className='text-cart-price'><strong>Preço:</strong> R$ {formatPrice(item.totalPrice)}</p>
                     </div>
                   </div>
