@@ -36,6 +36,21 @@
     text-align: left;
    
 }
+.text-cart-description {
+    margin: 0; /* Remove margens do parágrafo */
+    padding: 0; /* Remove padding se houver */
+    
+}
+
+.text-cart-description span {
+    margin: 0; /* Remove margens entre spans */
+    padding: 0; /* Remove padding se houver */
+    display: inline; /* Garante que os spans estejam na mesma linha */
+    margin-left: 3px;
+   
+    
+}
+
 
 /* Estilo para o rodapé do modal */
 .modal-footer {
@@ -182,10 +197,27 @@
 }
 
 .cart-item-details {
-    flex: 1;
-    margin-top: 20px;
-    text-align: left;
-   
+    display: flex;
+    flex-direction: column; /* Alinha os itens em coluna */
+}
+.text-cart-name, .text-cart-description, .text-cart-price {
+    margin: 0; /* Remove margens */
+    padding: 0; /* Remove padding */
+    
+}
+.text-cart-description {
+    margin: 0; /* Remove margens do parágrafo */
+    padding: 0; /* Remove padding se houver */
+    display: flex; /* Alinha os elementos dentro como flex */
+    flex-wrap: wrap; /* Permite que o texto quebre se necessário */
+}
+
+.text-cart-description span {
+    margin: 0; /* Remove margens entre spans */
+    padding: 0; /* Remove padding se houver */
+    display: inline; /* Garante que os spans estejam na mesma linha */
+    margin-right: 2px; /* Ajusta o espaçamento entre os spans */
+    margin-left: 2px; /* Ajusta o espaçamento entre os spans */
 }
 
 /* Estilo para o rodapé do modal */

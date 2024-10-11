@@ -3,7 +3,7 @@ import '../modal_products_component/modal_products_styles.css';
 import useAdditionalState from './additionHandler';
 import { CartContext } from '../modal_cart_itens/CartContext';
 import { fetchEstabelecimentoData } from '../service/productService';
-import PerguntasComponent from './PerguntasComponent';
+import '../modal_products_component/PerguntasComponent.css';
 import { Tooltip } from 'react-tooltip';
 
 const Modal_product_component = ({ id, product, onClose }) => {
@@ -61,21 +61,21 @@ const Modal_product_component = ({ id, product, onClose }) => {
         // Adiciona o preço dos complementos
         additional.options.forEach(option => {
             if (option.count > 0) {
-                console.log(`Adicionando complemento: ${option.name}, Preço: ${option.price}, Contagem: ${option.count}`);
                 totalPrice += option.count * parseFloat(option.price);
             }
         });
         // Adiciona o preço dos produtos
         additional.produtos.forEach(produto => {
-            if (produto.count > 0) {
-                console.log(`Adicionando produto: ${produto.Nome}, Preço: ${produto.PrecoDeVenda}, Contagem: ${produto.count}`);
-                totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
-            }
-        });
+          if (produto.count > 0) {
+              // Verifica se o produto é um combo
+              if (!(product.EhCombo && additional.required)) { // Ignora se for combo e obrigatório
+                  totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
+              }
+          }
+      });
     });
 
     totalPrice *= quantity; // Multiplicando pela quantidade total do produto
-    console.log(`Preço total calculado: ${totalPrice.toFixed(2)}`);
     return totalPrice.toFixed(2);
 };
 

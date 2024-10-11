@@ -17,24 +17,28 @@
   justify-content: space-between;
   align-items: center;
   white-space: nowrap;
+  line-height: 1.2; /* Ajusta a altura da linha para melhor alinhamento */
+  vertical-align: middle; /* Alinha verticalmente no meio */
+ 
 }
 
 .pergunta-title {
   font-family: "Roboto", sans-serif;
   font-size: 1rem; /* Mantém tamanho de fonte padrão */
   margin-bottom: 5px;
+  text-align: left;
 }
 
 .pergunta-info, .pergunta-count, .obrigatorio, .opcional {
   font-size: 0.9em; /* Tamanho reduzido */
-  margin-left: 10px;
   color: gray;
 }
+
 
 .max-option-text {
   font-family: "Roboto", sans-serif;
   color: gray;
-  margin-left: 10px;
+  text-align: left;
 }
 
 .observacoes {
@@ -104,9 +108,13 @@
   }
 
   .pergunta-title {
-    max-width: 100px;
     font-size: 0.95rem; /* Levemente menor */
     text-align: left;
+    max-width: 200px;
+    white-space: normal; /* Permite a quebra de linha */
+    overflow-wrap: break-word; /* Quebra palavras longas se necessário */
+    word-break: break-word; /* Garante que as palavras longas também quebrem */
+  
   }
   .max-option-text{
    text-align: left;
@@ -116,13 +124,20 @@
   .pergunta-info, .pergunta-count, .obrigatorio, .opcional {
     font-size: 13px; /* Menor ainda */
   }
-
+ 
   .option-name {
+    text-align: left;
     font-size: 0.85rem; /* Ajusta o tamanho do nome da opção */
-  }
+    max-width: 150px;
+    white-space: normal; /* Permite a quebra de linha */
+    overflow-wrap: break-word; /* Quebra palavras longas se necessário */
+    word-break: break-word; /* Garante que as palavras longas também quebrem */
+}
+
 
   .option-price {
     font-size: 0.85rem; /* Ajusta o tamanho do preço */
+    text-align: left;
   }
 
   .option-item {

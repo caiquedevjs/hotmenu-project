@@ -65,6 +65,7 @@ const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
+const [descontoAplicado, setDescontoAplicado] = useState(0);
 const [valorTroco, setValorTroco] = useState(0);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
@@ -331,17 +332,25 @@ useEffect(() => {
 // <---------- Função para calcular o preço com frete  ---------->
 const totalPriceWithFrete = () => {
   const cartTotal = parseFloat(totalCartPrice().replace(',', '.'));
+  let totalComDesconto = cartTotal;
+
+  // Aplicar desconto, se houver
+  if (descontoAplicado > 0) {
+    const descontoValor = totalComDesconto * (descontoAplicado / 100);
+    totalComDesconto -= descontoValor;
+  }
+
+  // Calcular o frete
   if (estabelecimento) {
     if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
-      return cartTotal.toFixed(2).replace('.', ','); 
+      return totalComDesconto.toFixed(2).replace('.', ','); 
     } else if (estabelecimento.FreteFixo) {
-      const totalComFrete = cartTotal + estabelecimento.ValorFreteFixo;
+      const totalComFrete = totalComDesconto + estabelecimento.ValorFreteFixo;
       return totalComFrete.toFixed(2).replace('.', ','); 
     }
   }
-  return cartTotal.toFixed(2).replace('.', ','); 
+  return totalComDesconto.toFixed(2).replace('.', ','); 
 };
-
 
 
 
@@ -424,6 +433,20 @@ const handleFinalizarPedido = () => {
           Nome: item.product.Nome,
           Quantidade: item.quantity,
           Sugestão: item.suggestion,
+          Adicionais: item.additionalStates.map(additional => ({
+            Observações: additional.observacao.filter(obs => obs.selected).map(obs => obs.Nome),
+            Opções: additional.options.filter(option => option.count > 0).map(option => ({
+              Id: option.id,
+              Nome: option.name,
+              Quantidade: option.count
+            })),
+            Produtos: additional.produtos.filter(produto => produto.count > 0).map(produto => ({
+              Id: produto.Id,
+              Nome: produto.Nome,
+              Quantidade: produto.count
+            })),
+            
+          })),
           Preço: item.product.PrecoDeVenda, 
       }));
 
@@ -459,12 +482,37 @@ const handleFinalizarPedido = () => {
 
       // Mensagem para o destinatário
       // Mensagem para o destinatário
-const mensagemProdutos = pedido.Produtos.map(produto => 
-  `*Nome:* ${produto.Nome}, *Quantidade:* ${produto.Quantidade}, *Sugestão:* ${produto.Sugestão}`
-).join('\n');
-
-const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:* \n${mensagemProdutos} \n*Desconto:* ${pedido.frete} \n*Preço Total:* ${pedido.preçoTotal}\n\n*Forma de Entrega:* ${pedido.FormaRetirada} \n*Forma de pagamento:* ${pedido.FormaPagamento} \n*Cartão:* ${pedido.bandeiraCartão} \n*Endereço:* ${pedido.Endereço} \n*Mesa:* ${pedido.mesa}\n\n*Nome:* ${pedido.Cliente} \n*Telefone:* ${pedido.Tel}`;
+      const mensagemProdutos = pedido.Produtos.map(produto => 
+        `*Nome:* ${produto.Nome}  
+        *Quantidade:* ${produto.Quantidade}  
+        *Sugestão:* ${produto.Sugestão}  
+        *Adicionais:*  
+        ${produto.Adicionais.map(addicional => 
+          `${addicional.Observações.length > 0 ? `Observações: ${addicional.Observações.join(', ')}\n` : ''}
+           ${addicional.Opções.length > 0 ? `Opções: ${addicional.Opções.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}
+           ${addicional.Produtos.length > 0 ? `Produtos: ${addicional.Produtos.map(produto => `${produto.Nome} (${produto.Quantidade})`).join(', ')}` : ''}`
+        ).join('\n')}`
+      ).join('\n\n');
+      
+      const mensagem = `*Olá, acabei de fazer um pedido*  
+      
+      *Os itens escolhidos são:*  
+      ${mensagemProdutos}  
+      
+      *Desconto:*  ${pedido.frete}  
+      *Preço Total:*  ${pedido.preçoTotal}  
+      
+      *Forma de Entrega:* ${pedido.FormaRetirada}  
+      *Forma de pagamento:* ${pedido.FormaPagamento}  
+      *Cartão:* ${pedido.bandeiraCartão}  
+      *Endereço:* ${pedido.Endereço}  
+      *Mesa:* ${pedido.mesa}  
+      
+      *Nome:* ${pedido.Cliente}  
+      *Telefone:* ${pedido.Tel}`;
+      
       const mensagemCodificada = encodeURIComponent(mensagem);
+      
 
       // Cria a URL do WhatsApp
       const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
@@ -516,31 +564,51 @@ const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:
 
   const handleBuscarCupom = async () => {
     if (!estabelecimento) {
-      console.error('Dados do estabelecimento não carregados');
-      return;
+        console.error('Dados do estabelecimento não carregados');
+        return;
+    }
+
+    const totalSemFrete = parseFloat(totalCartPrice().replace(',', '.'));
+    
+    if (totalSemFrete < 20) {
+        setMensagem('O valor mínimo para aplicar o cupom é R$ 20,00.');
+        return;
     }
 
     try {
-      const response = await axios.post('https://hotmenu.com.br/webhook/BuscarCupom', {
-        Id: estebelecimentoId, // Passa o ID do estabelecimento
-        Cupom: cupom,
-        Celular: celular,
-      });
+        const response = await fetch('https://hotmenu.com.br/webhook/BuscarCupom', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Id: estebelecimentoId,
+                Cupom: cupom,
+                Celular: celular,
+            })
+        });
 
-      const { CupomId, Valido, MsgErro } = response.data;
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-      if (Valido) {
-        setMensagem('Cupom válido!');
-        console.log(mensagem)
-      } else {
-        setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
-        console.log(mensagem)
-      }
+        const data = await response.json();
+        const { Valido, MsgErro, Regras } = data;
+
+        if (Valido) {
+            setMensagem('Cupom válido!');
+            const desconto = parseFloat(Regras.match(/Desconto de: (\d+,\d+)/)[1].replace(',', '.'));
+            setDescontoAplicado(desconto);
+        } else {
+            setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
+        }
     } catch (error) {
-      console.error('Erro ao buscar o cupom:', error);
-      setMensagem('Erro ao buscar o cupom');
+        console.error('Erro ao buscar o cupom:', error);
+        setMensagem('Erro ao buscar o cupom');
     }
-  };
+};
+
+console.log('cupom',cupom);
 
 
     return (
@@ -716,6 +784,11 @@ const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
                       </p>
                     )}
+                     {descontoAplicado > 0 && (
+                                <p className='Total-price-cart'>
+                                    Desconto de: {descontoAplicado}% 
+                                </p>
+                            )}
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
@@ -815,7 +888,29 @@ const mensagem = `*Olá, acabei de fazer um pedido* \n*Os itens escolhidos são:
                 {list.map((item, index) => (
                   <div key={index} className="finalize-item">
                     <img src={`https://hotmenu.com.br/arquivos/${item.product.Foto}`} alt={item.product.Nome} className="cart-item-img" />
-                    <p className='pedido-desccao'>{item.product.Nome}<br></br>Quantidade: {item.quantity}</p>
+                    <p className='pedido-desccao'>{item.product.Nome}<br></br>Quantidade: {item.quantity}
+                    
+                      {item.additionalStates.map((additional, additionalIndex) => (
+                        <p key={additionalIndex}>
+                          {additional.observacao.map(obs => (
+                            obs.selected ? (
+                              <span key={obs.Id}>{obs.Nome}, </span>
+                            ) : null
+                          ))}
+                          {additional.options.map(option => (
+                            option.count > 0 ? (
+                              <span key={option.id}>{option.count}x {truncateText(option.name)}, </span>
+                            ) : null
+                          ))}
+                          {additional.produtos.map(produto => (
+                            produto.count > 0 ? (
+                              <span key={produto.Id}>{produto.count}x {truncateText(produto.Nome)}, </span>
+                            ) : null
+                          ))}
+                        </p>
+                      ))}
+                      </p>
+                      
                   </div>
                 ))}
               </div>

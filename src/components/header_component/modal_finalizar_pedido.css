@@ -67,7 +67,18 @@
     text-align: left;
     color: #666;
     font-family: "Roboto", sans-serif; 
+    font-size: 14px;
+    margin: 0; /* Remove margens do parágrafo */
+    padding: 0; /* Remove padding se houver */
 }
+
+.pedido-desccao span {
+    margin: 0; /* Remove margens entre spans */
+    padding: 0; /* Remove padding se houver */
+    display: inline; /* Mantém os spans na mesma linha */
+}
+
+
 .total-valor-pedido-p{
         
     color: #332D2D;

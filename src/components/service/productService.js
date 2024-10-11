@@ -26,7 +26,6 @@ export const fetchPerguntas = async (productId) => {
 
     // Em vez de usar response.text(), use response.json() para obter um objeto
     const jsonData = await response.json();
-    console.log('Resposta da API:', jsonData); // Mostra a resposta no console
     return jsonData; // Retorna o objeto JSON
   } catch (error) {
     console.error('Erro ao buscar perguntas:', error);

@@ -38,6 +38,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "https://hotmenu.com.br",
+  
   "eslintConfig": {
     "extends": [
       "react-app",
