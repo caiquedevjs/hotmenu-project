@@ -8,16 +8,19 @@ import Modal_infos_component from '../modal_infos_component/modal_info_component
 import { States_hover } from './states_hover'; 
 import { Size_device } from './size_device'; 
 import {  fetchEstabelecimentoData } from '../service/productService';
+import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
+
 
 const Infos_icons_component = () => {
     const [estabelecimento, setEstabelecimento] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [color, setColor] = useState("");
+    const { storeName } = useParams();
     useEffect(() => {
         const fetchDataEstabelecimento = async () => {
           try {
-            const data = await fetchEstabelecimentoData();
+            const data = await fetchEstabelecimentoData(storeName);
             if (data && data.CorPadrao) {
               setEstabelecimento(data);
               setColor(data.CorPadrao);
@@ -33,7 +36,7 @@ const Infos_icons_component = () => {
         };
     
         fetchDataEstabelecimento();
-      }, []);
+      }, [storeName]);
     
     // <------- estados do efeito hover e tamanho dos icons para dispostivos moveis ------->
     const { isCreditCardHovered, setIsCreditCardHovered, isClockHovered, setIsClockHovered, isInfoHovered, setIsInfoHovered } = States_hover();

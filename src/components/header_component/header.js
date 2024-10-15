@@ -21,6 +21,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
 import { Nav, Tab } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 
 // <------- import utils------->
 import { fetchFormaPagamentos,fetchEstabelecimentoData } from '../service/productService';
@@ -47,6 +48,7 @@ const Header_component = ({handleCartClick}) =>{
 
 // <------- contexto do carrinho ------->
 const { cartItems, totalCartPrice, removeFromCart, isOpen} = useContext(CartContext);
+const { storeName } = useParams();
 
 // <------ estados ------->
 const [formasPorTipo, setFormasPorTipo] = useState({});
@@ -65,6 +67,7 @@ const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
+const [Fretefuncao, setFreteFuncao] = useState('');
 const [descontoAplicado, setDescontoAplicado] = useState(0);
 const [valorTroco, setValorTroco] = useState(0);
 const [cupom, setCupom] = useState('');
@@ -284,8 +287,12 @@ const renderFormasSemTipo = (nome) => {
 useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
-      const response = await fetchEstabelecimentoData();
-      if (response && response.CorPadrao && response.Logomarca && response.FotoCard1 && response.FotoCard2 && response.FotoCard3 && response.FotoCard4 && response.FotoCard5 && response.Id && response.TelContato) {
+      const response = await fetchEstabelecimentoData(storeName);
+      console.log('Resposta da API:', response); // Verifique se os dados estão completos
+      if (response) {
+        // Confirme se os campos realmente existem
+        console.log('Logomarca:', response.Logomarca);
+        console.log('Nome:', response.Nome);
         setEstabelecimento(response);
         setColor(response.CorPadrao);
         setLogoMarca(response.Logomarca);
@@ -296,17 +303,17 @@ useEffect(() => {
         setFotoCard5(response.FotoCard5);
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
-        setFreteFixo(response.ValorFreteFixo)
+        setFreteFixo(response.ValorFreteFixo);
+        setFreteFuncao(response.FreteFixo); 
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
           pagamentoNaRetirada : response.PgtoRetiradaLocal
-        })
+        });
         setDeliveryOptions({
           pickup: response.RetiradaNaLoja,
           home: response.Delivery,
           mesa : response.Mesa
         });
-
         setPixKey(response.ChavePix);
         setValorVendaMinima(response.LimiteVendaMinima);
       } else {
@@ -314,15 +321,18 @@ useEffect(() => {
       }
     } catch (error) {
       setError('Erro ao buscar dados do estabelecimento');
-      console.error('Erro na busca: ', error);
+      console.error('Erro na busca:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  fetchDataEstabelecimento();
-}, []);
+  if (storeName) {
+    fetchDataEstabelecimento();
+  }
+}, [storeName]);
 
+console.log(logoMarca);
 
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
@@ -455,6 +465,8 @@ const handleFinalizarPedido = () => {
           Status: "Pendente",
           Cliente: nome,
           Tel: telefone,
+          Numero_cartao: cartao,
+          Cvc: cvc,
           Endereço: (cep === '' && endereco === '' && complemento === '' && bairro === '') ?
               "RETIRADA NO LOCAL" :
               `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
@@ -468,6 +480,26 @@ const handleFinalizarPedido = () => {
               "Sem frete",
           preçoTotal: `R$ ${totalPriceWithFrete()}`
       };
+
+      // Transformar o objeto em JSON
+const pedidoJson = JSON.stringify(pedido);
+
+// Exemplo de como fazer a requisição POST usando fetch
+fetch('URL_DA_API', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: pedidoJson
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Sucesso:', data);
+})
+.catch((error) => {
+    console.error('Erro:', error);
+});
+
 
       // Se tudo estiver válido, prosseguir com a finalização do pedido
       console.log('Pedido finalizado com sucesso!');
@@ -609,6 +641,8 @@ const handleFinalizarPedido = () => {
 };
 
 console.log('cupom',cupom);
+console.log(`https://hotmenu.com.br/arquivos/${logoMarca}`);
+
 
 
     return (
@@ -675,7 +709,12 @@ console.log('cupom',cupom);
         )}
   </div>
   <div className='logo_conteiner_class'>
-  <img src={`https://hotmenu.com.br/arquivos/${logoMarca}`} class="img-fluid" alt="Logo"/>
+  {logoMarca ? (
+  <img src={`https://hotmenu.com.br/arquivos/${logoMarca}`} className="img-fluid" alt="Logo" />
+) : (
+  <p>Logo não disponível</p>
+)}
+
   </div>
   <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
   <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Pizza de qualidade"}</h6> 
@@ -781,7 +820,7 @@ console.log('cupom',cupom);
                           Frete grátis 
                         </p> ) :(
                       <p className='Total-price-cart' style={{'color' : '#228B22'}}>
-                      {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+                      {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'consultar'}
                       </p>
                     )}
                      {descontoAplicado > 0 && (

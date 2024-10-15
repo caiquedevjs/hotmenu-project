@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch } from "react-icons/fa";
 import './modal_search_component.css';
 import { fetchEstabelecimentoData, fetchProducts } from '../service/productService';
+import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
 
 const ModalBusca = ({ categories = [] }) => {
+  const { storeName } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [color, setColor] = useState("");
   const [estabelecimento, setEstabelecimento] = useState(null);
@@ -16,7 +18,7 @@ const ModalBusca = ({ categories = [] }) => {
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -32,13 +34,13 @@ const ModalBusca = ({ categories = [] }) => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
+  }, [storeName]);
 
   // Carregar produtos da API
   useEffect(() => {
     const fetchDataProducts = async () => {
       try {
-        const data = await fetchProducts();
+        const data = await fetchProducts(storeName);
         setProducts(data);
       } catch (error) {
         setError('Erro ao buscar produtos');
@@ -47,7 +49,7 @@ const ModalBusca = ({ categories = [] }) => {
     };
 
     fetchDataProducts();
-  }, []);
+  }, [storeName]);
 
   // Função para lidar com a mudança no termo de busca
   const handleSearchChange = (e) => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './modal_credit.css';
 import { fetchFormaPagamentos, fetchEstabelecimentoData  } from "../service/productService";
+import { useParams } from 'react-router-dom';
 
 
 const Modal_credit_component = () => {
@@ -10,11 +11,12 @@ const Modal_credit_component = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [color, setColor] = useState("");
+    const { storeName } = useParams();
 
     useEffect(() => {
         const fetchDataEstabelecimento = async () => {
           try {
-            const data = await fetchEstabelecimentoData();
+            const data = await fetchEstabelecimentoData(storeName);
             if (data && data.CorPadrao) {
               setEstabelecimento(data);
               setColor(data.CorPadrao);
@@ -29,13 +31,15 @@ const Modal_credit_component = () => {
           }
         };
     
-        fetchDataEstabelecimento();
-      }, []);
+        if (storeName) {
+            fetchDataEstabelecimento();
+          }
+      }, [storeName]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetchFormaPagamentos();
+                const response = await fetchFormaPagamentos(storeName);
                 if (response && response.FormasDePagamento) {
                     // Organize formas by tipo and handle formas without tipo
                     const formasByTipo = {};
@@ -64,8 +68,10 @@ const Modal_credit_component = () => {
             }
         };
 
-        fetchData();
-    }, []);
+        if (storeName) {
+           fetchData();
+          }
+    }, [storeName]);
 
     // Function to render formas by tipo
     const renderFormas = (tipo) => {

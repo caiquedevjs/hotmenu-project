@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FcAlarmClock } from 'react-icons/fc';
+import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome do estabelecimento
 import './modal_hours.css';
 import { fetchHorarioFuncionamento, fetchEstabelecimentoData } from '../service/productService'; // Ajuste o caminho conforme necessário
 
 const Modal_hours_component = () => {
+  const { storeName } = useParams(); // Captura o nome do estabelecimento da URL
   const [hoursData, setHoursData] = useState({ status: '', horarios: [] });
   const [estabelecimento, setEstabelecimento] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,21 +14,24 @@ const Modal_hours_component = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchHorarioFuncionamento();
-      if (data && data.horarios) {
-        setHoursData(data);
+      try {
+        const data = await fetchHorarioFuncionamento(storeName); // Passa o nome do estabelecimento para a função
+        if (data && data.horarios) {
+          setHoursData(data);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar horários de funcionamento:', err);
+        setError('Erro ao buscar horários');
       }
     };
 
     fetchData();
-  }, []);
-
- 
+  }, [storeName]); // Refaz a busca sempre que o nome do estabelecimento mudar
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName); // Passa o nome do estabelecimento para a função
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -42,8 +47,7 @@ const Modal_hours_component = () => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
-
+  }, [storeName]); // Refaz a busca sempre que o nome do estabelecimento mudar
 
   // Obter o dia da semana atual (0 para Domingo, 1 para Segunda-feira, ..., 6 para Sábado)
   const currentDay = new Date().getDay() + 1; // Adiciona 1 para alinhar com o formato da API

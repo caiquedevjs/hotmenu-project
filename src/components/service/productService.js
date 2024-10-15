@@ -1,8 +1,8 @@
 
 // <------- Função para buscar todos os produtos ------->
-export const fetchProducts = async () => {
+export const fetchProducts = async (storeName) => {
   try {
-    const response = await fetch('https://hotmenu.com.br/webhook/Produtos/hotmenu');
+    const response = await fetch(`https://hotmenu.com.br/webhook/Produtos/${storeName}`);
     if (!response.ok) {
       throw new Error('Erro ao buscar produtos');
     }
@@ -38,9 +38,9 @@ export const fetchPerguntas = async (productId) => {
 
 
 // <------- Função para buscar todas as categorias ------->
-export const fetchCategories = async () => {
+export const fetchCategories = async (storeName) => {
   try {
-    const response = await fetch('https://hotmenu.com.br/webhook/Categorias/hotmenu');
+    const response = await fetch(`https://hotmenu.com.br/webhook/Categorias/${storeName}`);
     if (!response.ok) {
       throw new Error('Erro ao buscar categorias');
     }
@@ -53,9 +53,9 @@ export const fetchCategories = async () => {
 };
 
 // <------- Função para buscar horarios de funcionamentos ------->
-export const fetchHorarioFuncionamento = async () => {
+export const fetchHorarioFuncionamento = async (storeName) => {
   try {
-    const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/hotmenu');
+    const response = await fetch(`https://hotmenu.com.br/webhook/HorarioAtendimento/${storeName}`);
     if (!response.ok) {
       throw new Error('Erro ao buscar horário de funcionamento');
     }
@@ -68,9 +68,9 @@ export const fetchHorarioFuncionamento = async () => {
 };
 
 // <------- Função para buscar formas de pagamentos ------->
-export const fetchFormaPagamentos = async () => {
+export const fetchFormaPagamentos = async (storeName) => {
   try {
-    const response = await fetch('https://hotmenu.com.br/webhook/FormaDePagamento/hotmenu');
+    const response = await fetch(`https://hotmenu.com.br/webhook/FormaDePagamento/${storeName}`);  
     if (!response.ok) {
       throw new Error('Erro ao forma de pagamentos');
     }
@@ -83,9 +83,9 @@ export const fetchFormaPagamentos = async () => {
 };
 
 
- export const fetchEstabelecimentoData = async () =>{
+ export const fetchEstabelecimentoData = async (storeName) =>{
   try{
-    const response = await fetch('https://hotmenu.com.br/webhook/Cliente/hotmenu');
+    const response = await fetch(`https://hotmenu.com.br/webhook/Cliente/${storeName}`);
     if(!response.ok){
       throw new Error('Erro ao buscar dados do estabelecimento');
     }

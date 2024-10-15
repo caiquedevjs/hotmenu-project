@@ -2,6 +2,7 @@ import React,{useEffect, useState} from 'react';
 import {fetchEstabelecimentoData } from '../service/productService';
 import  useHover  from '../../utils/headerHoverHandlers';
 import './selector_category.css';
+import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
 
 const SelectorCategoryComponent = ({ categories }) => {
   const [estabelecimento, setEstabelecimento] = useState(null);
@@ -9,6 +10,7 @@ const SelectorCategoryComponent = ({ categories }) => {
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
   const categoriaHover = useHover();
+  const { storeName } = useParams();
 
   
   useEffect(() => {
@@ -16,7 +18,7 @@ const SelectorCategoryComponent = ({ categories }) => {
 
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -32,7 +34,7 @@ const SelectorCategoryComponent = ({ categories }) => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
+  }, [storeName]);
 
 
   if (!categories || categories.length === 0) {

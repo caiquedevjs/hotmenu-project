@@ -5,14 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CartProvider } from './components/modal_cart_itens/CartContext';
-
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Importando o Router e o Routes
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <CartProvider>
-    <App />
+      {/* Envolvemos o App com Router e definimos uma rota dinâmica */}
+      <Router>
+        <Routes>
+          <Route path="/:storeName" element={<App />} /> {/* Capturando o nome do estabelecimento da URL */}
+        </Routes>
+      </Router>
     </CartProvider>
   </React.StrictMode>
 );

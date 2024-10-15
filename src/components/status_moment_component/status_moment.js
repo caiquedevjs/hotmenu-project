@@ -1,34 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome da URL
 import '../status_moment_component/status_moment_styles.css';
-
-// Função para buscar horários de funcionamento da API
-const fetchHorarioFuncionamento = async () => {
-    try {
-        const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/hotmenu');
-        if (!response.ok) {
-            throw new Error('Erro ao buscar horário de funcionamento');
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Erro ao buscar horário de funcionamento', error);
-        return { status: 'Erro ao carregar horários', horarios: [] }; // Valor padrão caso ocorra erro
-    }
-};
+import { fetchHorarioFuncionamento } from '../service/productService';
 
 const StatusMomentComponent = () => {
+    const { storeName } = useParams(); // Captura o nome do estabelecimento da URL
     const [horarios, setHorarios] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const fetchAndSetHorarios = async () => {
-            const data = await fetchHorarioFuncionamento();
-            setHorarios(data.horarios);
-            updateStatus(data.horarios);
+            try {
+                const data = await fetchHorarioFuncionamento(storeName); // Passando storeName para a função de fetch
+                setHorarios(data.horarios); // Supondo que a resposta tenha um campo 'horarios'
+                updateStatus(data.horarios);
+            } catch (error) {
+                console.error('Erro ao buscar e definir horários', error);
+            }
         };
 
         fetchAndSetHorarios();
-    }, []);
+    }, [storeName]); // Adicionamos storeName como dependência para refazer a chamada sempre que a URL mudar
 
     // Atualiza o status com base nos horários de funcionamento
     const updateStatus = (horarios) => {

@@ -4,6 +4,7 @@ import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
+import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome da URL
 
 const Grid_component = ({ categoryId, categoryName }) => {
   // <---------- Variaveis de estados ---------->
@@ -15,12 +16,13 @@ const Grid_component = ({ categoryId, categoryName }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
+  const { storeName } = useParams(); 
 
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -36,12 +38,12 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
+  }, [storeName]);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const productsData = await fetchProducts(); // Busca todos os produtos
+        const productsData = await fetchProducts(storeName); // Busca todos os produtos
         const filteredProducts = productsData.filter(product => product.CategoriaId === categoryId);
         setProducts(filteredProducts);
 
@@ -66,7 +68,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
 
     fetchAllProducts();
-  }, [categoryId]);
+  }, [categoryId,storeName]);
 
   useEffect(() => {
     const handleResize = () => {

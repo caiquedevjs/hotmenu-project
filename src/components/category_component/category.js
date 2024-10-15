@@ -5,8 +5,11 @@ import Grid_component from '../Grid_component/Grid_component';
 import { fetchCategories, fetchEstabelecimentoData } from '../service/productService';
 import SelectorCategoryComponent from '../selector_category_component/selector_category';
 import ModalBusca from '../modal_search_component/modal_search_component';
+import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome do estabelecimento
 
 const Category_component = () => {
+  const { storeName } = useParams(); // Captura o nome do estabelecimento da URL
+
   // Estados das categorias
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +22,7 @@ const Category_component = () => {
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        const fetchedCategories = await fetchCategories(); // Busca as categorias da API
+        const fetchedCategories = await fetchCategories(storeName); // Passa o nome do estabelecimento para a função
         // Filtra e ordena categorias
         const filteredCategories = fetchedCategories
           .filter(category => !category.Removido)
@@ -32,14 +35,16 @@ const Category_component = () => {
       }
     };
 
-    fetchCategoriesData();
-  }, []);
+    if(storeName){
+      fetchCategoriesData();
+    }
+  }, [storeName]); // Dependência de storeName para refazer a busca ao mudar o nome do estabelecimento
 
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName); // Passa o nome do estabelecimento para a função
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -55,7 +60,7 @@ const Category_component = () => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
+  }, [storeName]); // Dependência de storeName para refazer a busca ao mudar o nome do estabelecimento
 
 
   if (isLoading) {

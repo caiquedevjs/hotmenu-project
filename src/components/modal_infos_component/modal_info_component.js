@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchEstabelecimentoData } from '../service/productService';
 import './modal_info.css';
+import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
 
 const Modal_infos_component = () => {
   const [estabelecimento, setEstabelecimento] = useState(null);
@@ -10,16 +11,18 @@ const Modal_infos_component = () => {
   const [color, setColor] = useState("");
   const [logoMarca, setLogoMarca] = useState('');
   const [celular, setCelular] = useState('');
+  const { storeName } = useParams();
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData();
+        const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao && data.Logomarca && data.TelContato) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
           setLogoMarca(data.Logomarca);
           setCelular(data.TelContato);
+          console.log(data);
         } else {
           setError('Nenhum dado recebido da API');
         }
@@ -32,7 +35,7 @@ const Modal_infos_component = () => {
     };
 
     fetchDataEstabelecimento();
-  }, []);
+  }, [storeName]);
 
 const handlerClick = () =>{
   const telefoneWhatsApp = celular.replace(/\D/g, ''); 

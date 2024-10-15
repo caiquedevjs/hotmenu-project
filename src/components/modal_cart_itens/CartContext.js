@@ -12,7 +12,7 @@ export const CartProvider = ({ children }) => {
   // Função para buscar horários de funcionamento e Agendamento de Pedidos da API
   const fetchHorarioFuncionamento = async () => {
     try {
-      const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/hotmenu');
+      const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/LojadedocesInaBoenoGaribaldi');
       if (!response.ok) {
         throw new Error('Erro ao buscar horário de funcionamento');
       }
@@ -26,7 +26,7 @@ export const CartProvider = ({ children }) => {
 
   const fetchEstabelecimentoData = async () => {
     try {
-      const response = await fetch('https://hotmenu.com.br/webhook/Cliente/hotmenu');
+      const response = await fetch('https://hotmenu.com.br/webhook/Cliente/LojadedocesInaBoenoGaribaldi');
       if (!response.ok) {
         throw new Error('Erro ao buscar dados do estabelecimento');
       }
