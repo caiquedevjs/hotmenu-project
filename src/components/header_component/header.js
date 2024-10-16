@@ -205,7 +205,7 @@ const handleCheckboxChange = (nome) => {
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await fetchFormaPagamentos();
+              const response = await fetchFormaPagamentos(storeName);
               if (response && response.FormasDePagamento) {
                   const formasByTipo = {};
                   const formasSemTipo = {};
@@ -231,7 +231,7 @@ const handleCheckboxChange = (nome) => {
       };
 
       fetchData();
-  }, []);
+  }, [storeName]);
   const renderFormas = (tipo) => {
     if (!formasPorTipo[tipo]) return null;
 
@@ -608,40 +608,49 @@ fetch('URL_DA_API', {
     }
 
     try {
-        const response = await fetch('https://hotmenu.com.br/webhook/BuscarCupom', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                Id: estebelecimentoId,
-                Cupom: cupom,
-                Celular: celular,
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        const { Valido, MsgErro, Regras } = data;
-
-        if (Valido) {
-            setMensagem('Cupom válido!');
-            const desconto = parseFloat(Regras.match(/Desconto de: (\d+,\d+)/)[1].replace(',', '.'));
-            setDescontoAplicado(desconto);
-        } else {
-            setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
-        }
-    } catch (error) {
-        console.error('Erro ao buscar o cupom:', error);
-        setMensagem('Erro ao buscar o cupom');
-    }
+      const response = await fetch('https://cors-anywhere.herokuapp.com/https://hotmenu.com.br/webhook/BuscarCupom', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              Id: estebelecimentoId,
+              Cupom: cupom,
+              Celular: "5571999991179",
+          })
+      });
+  
+      // Verifique o tipo da resposta (content-type)
+      const contentType = response.headers.get('content-type');
+      console.log('Tipo de conteúdo:', contentType);
+      if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          console.log('Resposta JSON:', data);
+  
+          const { Valido, MsgErro, Regras } = data;
+  
+          if (Valido) {
+              setMensagem('Cupom válido!');
+              const desconto = parseFloat(Regras.match(/Desconto de: (\d+,\d+)/)[1].replace(',', '.'));
+              setDescontoAplicado(desconto);
+          } else {
+              setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
+          }
+      } else {
+          // Se não for JSON, logue o conteúdo como texto para entender o que está sendo retornado
+          const text = await response.text();
+          console.error('Resposta inesperada:', text);
+          setMensagem('Erro ao buscar o cupom');
+      }
+  } catch (error) {
+      console.error('Erro ao buscar o cupom:', error);
+      setMensagem('Erro ao buscar o cupom');
+  }
+  
+  
 };
 
 console.log('cupom',cupom);
-console.log(`https://hotmenu.com.br/arquivos/${logoMarca}`);
 
 
 
