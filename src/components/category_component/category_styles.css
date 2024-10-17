@@ -18,6 +18,7 @@
     font-family: "Roboto", sans-serif;
     background-color: #ce2929;
     width: 80%;
+    padding: 10px;
     
     border-radius: 5px;
     margin-top: 50px;
@@ -57,12 +58,14 @@
 }
 
 @media only screen and (max-width: 768px) {
-    #category_title{
+    .category_title{
         font-family: "Roboto", sans-serif;
         background-color: #fa6b18;
         width: 100%;
         border-radius: 5px;
         margin-top: 50px;
+        font-size: 14px;
+        
     }
     #category_label_title{
         width: 97%;
@@ -71,6 +74,7 @@
         align-items: center;
         text-align: center;
         margin-left: 5.5px;
+        
     }
    
     

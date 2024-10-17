@@ -145,7 +145,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
                           <input 
                             type="radio" 
                             name={`observacao_${additional.id}`} 
-                            onChange={() => handleIncrement(obs.Id)} 
+                            onChange={() => handleIncrement(obs.Id, additional.id)} 
                           />
                           {obs.Nome}
                         </label>
@@ -154,48 +154,50 @@ const Modal_product_component = ({ id, product, onClose }) => {
                   )}
 
                   {/* Renderiza opções de complemento */}
-                  {additional.options.length > 0 && (
-                    <div className='options-container'>
-                      {additional.options.map(option => (
-                        <div className='option-item' key={option.id}>
-                          <div className='option-info'>
-                            <p className="option-name">{option.name}</p>
-                            <p className="option-price">
-                            R$ {option.PrecoPromo ? option.PrecoPromo.toFixed(2).replace('.', ',') : option.price.toFixed(2).replace('.', ',')}
-                            </p>
-                          </div>
+                  
+{additional.options.length > 0 && (
+  <div className='options-container'>
+    {additional.options.map(option => (
+      <div className='option-item' key={option.id}>
+        <div className='option-info'>
+          <p className="option-name">{option.name}</p>
+          <p className="option-price">
+            R$ {option.PrecoPromo ? option.PrecoPromo.toFixed(2).replace('.', ',') : option.price.toFixed(2).replace('.', ',')}
+          </p>
+        </div>
 
-                          <div className='options-icons'>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-plus-circle-fill"
-                              viewBox="0 0 16 16"
-                              onClick={() => handleIncrement(option.id)}
-                              disabled={option.count === option.QtdMaximaPermitida}
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
-                            </svg>
-                            <span className="option-count">{option.count}</span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              fill="currentColor"
-                              className="bi bi-dash-circle-fill"
-                              viewBox="0 0 16 16"
-                              onClick={() => handleDecrement(option.id)}
-                              disabled={option.count === 0}
-                            >
-                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
-                            </svg>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+        <div className='options-icons'>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="currentColor"
+            className="bi bi-plus-circle-fill"
+            viewBox="0 0 16 16"
+            onClick={() => handleIncrement(option.id, additional.id)} // Passando o id da pergunta
+            disabled={option.count === option.QtdMaximaPermitida}
+          >
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+          </svg>
+          <span className="option-count">{option.count}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="currentColor"
+            className="bi bi-dash-circle-fill"
+            viewBox="0 0 16 16"
+            onClick={() => handleDecrement(option.id, additional.id)} // Passando o id da pergunta
+            disabled={option.count === 0}
+          >
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>
+          </svg>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
                   
                   {/* Renderiza produtos com incremento e decremento */}
                   {additional.produtos && additional.produtos.length > 0 && (
@@ -217,7 +219,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
                               fill="currentColor"
                               className="bi bi-plus-circle-fill"
                               viewBox="0 0 16 16"
-                              onClick={() => handleIncrement(produto.Id, true)} 
+                              onClick={() => handleIncrement(produto.Id, additional.id, true)} 
                               disabled={produto.count === produto.QtdMaximaPermitida}
                             >
                               <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
@@ -230,7 +232,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
                               fill="currentColor"
                               className="bi bi-dash-circle-fill"
                               viewBox="0 0 16 16"
-                              onClick={() => handleDecrement(produto.Id, true)} 
+                              onClick={() => handleDecrement(produto.Id, additional.id, true)} 
                               disabled={produto.count === 0}
                             >
                               <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z"/>

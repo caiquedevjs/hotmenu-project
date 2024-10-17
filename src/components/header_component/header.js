@@ -755,7 +755,7 @@ console.log('cupom',cupom);
             <div class="overflow-y-auto">
             <div className="modal-body" id='modal-body-cartItens'>
               {cartItems.length === 0 ? (
-                <p id='span-carrinho-vazio'>Seu carrinho está vazio 😞</p>
+                <p id='span-carrinho-vazio'>Seu carrinho está vazio. 😞</p>
               ) : (
                 cartItems.map((item, index) => (
                   <div key={index} className="cart-item">

@@ -4,7 +4,7 @@
     width: 90px;
     height: 90px;
     margin-right: 10px;
-    border-radius: 8px;
+    border-radius: 100%;
 }
 #card_container{
     width: 100%;
@@ -74,6 +74,7 @@
         font-size: 13px;
         font-weight: bold;
         text-align: left;
+        max-width: 150px;
         
         
     }
@@ -110,8 +111,8 @@
 
     }
     .product-img{
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     margin-right: 10px;
     border-radius: 8px;
     

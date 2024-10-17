@@ -8,33 +8,30 @@ const useAdditionalState = (productId) => {
     const fetchAdditionalData = async () => {
       try {
         const perguntas = await fetchPerguntas(productId);
-        
-        const transformedData = perguntas.map(pergunta => {
-          return {
-            id: pergunta.PerguntaId,
-            description: pergunta.Texto,
-            type: pergunta.Tipo,
-            required: pergunta.RespostaObrigatoria,
-            minOptions: pergunta.QtdOpcoesResPostaMin,
-            maxOptions: pergunta.QtdOpcoesResPostaMax,
-            options: pergunta.Complemento.map(complemento => ({
-              id: complemento.Id,
-              name: complemento.Nome,
-              price: complemento.PrecoVenda,
-              count: 0,
-              QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
-            })),
-            selectedCount: 0,
-            observacao: pergunta.Observacao || [],
-            produtos: pergunta.Produto.map(produto => ({
-              Id: produto.Id,
-              Nome: produto.Nome,
-              PrecoDeVenda: produto.PrecoDeVenda,
-              count: 0,
-              QtdMaximaPermitida: produto.QtdMaximaPermitida || null
-            })) // Transformando produtos da mesma forma
-          };
-        });
+        const transformedData = perguntas.map(pergunta => ({
+          id: pergunta.PerguntaId,
+          description: pergunta.Texto,
+          type: pergunta.Tipo,
+          required: pergunta.RespostaObrigatoria,
+          minOptions: pergunta.QtdOpcoesResPostaMin,
+          maxOptions: pergunta.QtdOpcoesResPostaMax,
+          options: pergunta.Complemento.map(complemento => ({
+            id: complemento.Id,
+            name: complemento.Nome,
+            price: complemento.PrecoVenda,
+            count: 0,
+            QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
+          })),
+          selectedCount: 0,
+          produtos: pergunta.Produto.map(produto => ({
+            Id: produto.Id,
+            Nome: produto.Nome,
+            PrecoDeVenda: produto.PrecoDeVenda,
+            count: 0,
+            QtdMaximaPermitida: produto.QtdMaximaPermitida || null
+          })),
+          observacao: pergunta.Observacao || []
+        }));
 
         setAdditionalStates(transformedData);
       } catch (error) {
@@ -47,52 +44,62 @@ const useAdditionalState = (productId) => {
     }
   }, [productId]);
 
-  const handleIncrement = (id, isProduto = false) => {
-    setAdditionalStates(prevState => {
-      return prevState.map(additional => {
-        if (additional.type === 1) { // Para observações
+  const handleIncrement = (id, perguntaId, isProduto = false) => {
+    setAdditionalStates(prevState => prevState.map(additional => {
+      if (additional.id === perguntaId) {
+        if (additional.type === 1) {
           const item = additional.observacao.find(obs => obs.Id === id);
           if (item) {
-            // Desmarcar todas as observações
             const updatedObservacoes = additional.observacao.map(obs => ({
               ...obs,
-              selected: obs.Id === id // Marca a observação selecionada
+              selected: obs.Id === id
             }));
             return {
               ...additional,
               observacao: updatedObservacoes,
-              selectedCount: 1 // Apenas uma pode ser selecionada
+              selectedCount: 1
             };
           }
         } else {
           const item = isProduto
             ? additional.produtos.find(produto => produto.Id === id)
             : additional.options.find(option => option.id === id);
-  
+
           if (item) {
             const totalSelected = additional.selectedCount + 1;
             const maxAllowed = item.QtdMaximaPermitida || additional.maxOptions;
-  
+
             if (item.count < maxAllowed && totalSelected <= additional.maxOptions) {
-              return {
-                ...additional,
-                [isProduto ? 'produtos' : 'options']: additional[isProduto ? 'produtos' : 'options'].map(it =>
-                  it[isProduto ? 'Id' : 'id'] === id ? { ...it, count: it.count + 1 } : it
-                ),
-                selectedCount: totalSelected
-              };
+              if (isProduto) {
+                const updatedProdutos = additional.produtos.map(prod => ({
+                  ...prod,
+                  count: prod.Id === id ? 1 : 0
+                }));
+                return {
+                  ...additional,
+                  produtos: updatedProdutos,
+                  selectedCount: 1
+                };
+              } else {
+                return {
+                  ...additional,
+                  options: additional.options.map(it =>
+                    it.id === id ? { ...it, count: it.count + 1 } : it
+                  ),
+                  selectedCount: totalSelected
+                };
+              }
             }
           }
         }
-        return additional;
-      });
-    });
+      }
+      return additional;
+    }));
   };
-  
 
-  const handleDecrement = (id, isProduto = false) => {
-    setAdditionalStates(prevState => {
-      return prevState.map(additional => {
+  const handleDecrement = (id, perguntaId, isProduto = false) => {
+    setAdditionalStates(prevState => prevState.map(additional => {
+      if (additional.id === perguntaId) {
         const item = isProduto
           ? additional.produtos.find(produto => produto.Id === id)
           : additional.options.find(option => option.id === id);
@@ -104,15 +111,15 @@ const useAdditionalState = (productId) => {
             return {
               ...additional,
               [isProduto ? 'produtos' : 'options']: additional[isProduto ? 'produtos' : 'options'].map(it =>
-                it[isProduto ? 'Id' : 'id'] === id ? { ...it, count: it.count - 1 } : it
+                it.id === id ? { ...it, count: it.count - 1 } : it
               ),
               selectedCount: totalSelected
             };
           }
         }
-        return additional;
-      });
-    });
+      }
+      return additional;
+    }));
   };
 
   const totalAdditional = () => {
