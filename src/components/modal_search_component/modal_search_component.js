@@ -110,13 +110,15 @@ const ModalBusca = ({ categories = [], onProductSelect }) => {
                       filteredProducts.map((product, index) => (
                         <div className="col-6 col-md-4 mb-4" key={index}>
                           <div className="product-container">
-                            <p className="product-name" style={{ color: color }}>
+                            <p className="product-name" style={{ color: color }} 
+                               data-bs-toggle={product.EstoqueAtual > 0 ? 'modal' : ''}
+                               data-bs-target={product.EstoqueAtual > 0 ? `#product-modal-${product.Id}` : ''}
+                               onClick={() => handleProductClick(product)}>
                                {product.Nome}
                             </p>
+                              
+                            
                             <img
-                              data-bs-toggle={product.EstoqueAtual > 0 ? 'modal' : ''}
-                              data-bs-target={product.EstoqueAtual > 0 ? `#product-modal-${product.Id}` : ''}
-                              onClick={() => handleProductClick(product)}
                               src={`https://hotmenu.com.br/arquivos/${product.Foto}`}
                               alt={product.Nome}
                               className="img_category"

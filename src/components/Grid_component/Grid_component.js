@@ -98,7 +98,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
       bootstrapModal.show(); // Mostra o modal
     } 
     // Se o produto controlar estoque e o estoque atual for menor ou igual ao estoque mínimo, abre o modal de indisponível
-    else if (product.EstoqueAtual === 0 || product.EstoqueAtual < product.EstoqueMinimo) {
+    else if (product.EstoqueAtual === 0) {
       setShowUnavailableModal(true);
     } 
     // Se o produto controlar estoque e o estoque atual for maior ou igual ao estoque mínimo, o modal do produto é aberto
