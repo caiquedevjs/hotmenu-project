@@ -1,68 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-.btn.dropdown-toggle {
-    margin-top: 40px;
-    width: 80%; /* Largura do botão dropdown */
-    /* Outros estilos conforme necessário */
-    font-family: "Roboto", sans-serif;
-    border: none;
-    font-weight: bold;
-    font-size: 24px;
-}
-
-.dropdown-menu {
-    width: 70%; /* Largura do menu suspenso */
-    /* Outros estilos conforme necessário */
-    
-}
-
-.dropdown-item {
-    width: 100%; /* Largura dos itens da lista */
-    /* Outros estilos conforme necessário */
-    font-family: "Roboto", sans-serif;
-    font-weight: bold;
-}
-@media (max-width: 768px) {
-
-    .btn.dropdown-toggle {
-        width: 300px; /* Largura do botão dropdown */
-        /* Outros estilos conforme necessário */
-        font-family: "Roboto", sans-serif;
-    }
-    
-    .dropdown-menu {
-        width: 300px; /* Largura do menu suspenso */
-        /* Outros estilos conforme necessário */
-        font-family: "Roboto", sans-serif;
-    }
-    
-    .dropdown-item {
-        width: 100%; /* Largura dos itens da lista */
-        /* Outros estilos conforme necessário */
-    }
-}
-
-@media only screen and (min-width: 1920px) {
-    .btn.dropdown-toggle {
-        margin-top: 40px;
-        width: 67%; /* Largura do botão dropdown */
-        /* Outros estilos conforme necessário */
-        font-family: "Roboto", sans-serif;
-        border: none;
-        font-weight: bold;
-        font-size: 24px;
-    }
-    
-    .dropdown-menu {
-        width: 67%; /* Largura do menu suspenso */
-        /* Outros estilos conforme necessário */
-        
-    }
-    
-    .dropdown-item {
-        width: 100%; /* Largura dos itens da lista */
-        /* Outros estilos conforme necessário */
-        font-family: "Roboto", sans-serif;
-        font-weight: bold;
-    }
-
-}
+.selector_category_component {
+    max-width: 800px; /* Define uma largura máxima para o contêiner */
+    margin: 0 auto; /* Centraliza o contêiner na página */
+    overflow: hidden; /* Para evitar rolagem no eixo Y */
+  }
+  
+  .category-scroll-container {
+    display: flex;
+    flex-direction: row; /* Exibe categorias em linha */
+    overflow-x: auto; /* Permite a rolagem horizontal */
+    padding: 10px; /* Espaçamento interno */
+    white-space: nowrap; /* Evita quebra de linha */
+  }
+  
+  .category {
+    flex: 0 0 auto; /* Não permite que os itens encolham */
+    margin-right: 10px; /* Espaçamento entre as categorias */
+    text-align: center; /* Centraliza o texto */
+  }
+  
+  .category-item {
+    cursor: pointer; /* Indica que a imagem é clicável */
+  }
+  
+  .category-image {
+    width: 80px;
+    height: 80px;
+    display: block; /* Para que a imagem fique centralizada */
+    margin: 0 auto; /* Centraliza a imagem */
+  }
+  

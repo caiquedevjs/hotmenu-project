@@ -1,33 +1,29 @@
-import React,{useEffect, useState} from 'react';
-import {fetchEstabelecimentoData } from '../service/productService';
-import  useHover  from '../../utils/headerHoverHandlers';
+import React, { useEffect, useState } from 'react';
+import { fetchEstabelecimentoData } from '../service/productService';
+import useHover from '../../utils/headerHoverHandlers';
 import './selector_category.css';
-import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
+import { useParams } from 'react-router-dom';
+import ModalProductComponent from '../modal_products_component/modal_products_component';
 
-const SelectorCategoryComponent = ({ categories }) => {
+const SelectorCategoryComponent = ({ categories, products }) => {
+  const { storeName } = useParams();
   const [estabelecimento, setEstabelecimento] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [color, setColor] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const categoriaHover = useHover();
-  const { storeName } = useParams();
 
-  
   useEffect(() => {
-   
-
     const fetchDataEstabelecimento = async () => {
       try {
         const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
-        } else {
-          setError('Nenhum dado recebido da API');
         }
       } catch (error) {
-        setError('Erro ao buscar dados do estabelecimento');
-        console.error('Erro na busca: ', error);
+        console.error('Erro ao buscar dados do estabelecimento:', error);
       } finally {
         setLoading(false);
       }
@@ -36,27 +32,75 @@ const SelectorCategoryComponent = ({ categories }) => {
     fetchDataEstabelecimento();
   }, [storeName]);
 
+  const handleProductClick = (product) => {
+    if (!product.ControlarEstoque || product.EstoqueAtual > 0) {
+      setSelectedProduct(product);
+      window.history.pushState(null, '', `/#product-modal-${product.Id}`);
+    } else {
+      setShowUnavailableModal(true);
+    }
+  };
+
+  if (loading) {
+    return <p>Carregando categorias...</p>;
+  }
 
   if (!categories || categories.length === 0) {
-    return null; // <-----------Retorna null ou algum componente de carregamento se não houver categorias ainda----------->
+    return <p>Sem categorias disponíveis.</p>;
   }
 
   return (
     <div className='selector_category_component'>
-      <div className="dropdown">
-        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" 
-        style={{backgroundColor : categoriaHover.isHovered ? '#332D2D' : color}}
-        onMouseEnter={categoriaHover.handleMouseEnter}
-        onMouseLeave={categoriaHover.handleMouseLeave}
-        >
-          Categorias
-        </button>
-        <ul className="dropdown-menu">
-          {categories.map((category, index) => (
-            <li key={index}><a className="dropdown-item" href={`#category-${category.Id}`}>{category.Nome}</a></li>
-          ))}
-        </ul>
+      <div className="category-scroll-container">
+        {categories.map((category) => {
+          const firstProduct = products.find(product => product.CategoriaId === category.Id);
+          return (
+            <div className="category" key={category.Id}>
+              {firstProduct ? (
+                <div className="category-item" onClick={() => handleProductClick(firstProduct)}>
+                  <img
+                    src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`}
+                    alt={firstProduct.Nome}
+                    className="category-image"
+                  />
+                  <h4>{category.Nome}</h4>
+                </div>
+              ) : (
+                <p>Sem produtos disponíveis</p>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      {/* Modal para o Produto Selecionado */}
+      {selectedProduct && (
+        <ModalProductComponent
+          id={`product-modal-${selectedProduct.Id}`}
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          categoryName={selectedProduct.CategoriaId}
+        />
+      )}
+
+      {/* Modal para Produto Indisponível */}
+      {showUnavailableModal && (
+        <div className="modal fade show" id="unavailable-modal" tabIndex="-1" aria-labelledby="unavailable-modalLabel" aria-hidden="true" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3 style={{ color }}>
+                  {/* SVG de informação */}
+                </h3>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowUnavailableModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Este produto está indisponível no momento. 😞</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

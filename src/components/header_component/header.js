@@ -2,8 +2,9 @@
 
 // <------- import hooks and context------->
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import { CartContext } from '../modal_cart_itens/CartContext';
+
+
 
 // <------- import css------->
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -608,7 +609,7 @@ fetch('URL_DA_API', {
     }
 
     try {
-      const response = await fetch('https://cors-anywhere.herokuapp.com/https://hotmenu.com.br/webhook/BuscarCupom', {
+      const response = await fetch('https://hotmenu.com.br/webhook/BuscarCupom', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -616,7 +617,7 @@ fetch('URL_DA_API', {
           body: JSON.stringify({
               Id: estebelecimentoId,
               Cupom: cupom,
-              Celular: "5571999991179",
+              Celular: celular,
           })
       });
   
@@ -887,7 +888,7 @@ console.log('cupom',cupom);
 
 
               {/* <------------ Modal carrinho de cupom de desconto ------------>*/}
-      <div class="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
@@ -902,12 +903,11 @@ console.log('cupom',cupom);
             <input className='cupom-desconto-input' placeholder='digite seu cupom'
             value={cupom}
             onChange={(e) => setCupom(e.target.value)}
-            onClick={handleBuscarCupom}
              data-tooltip-id="tooltip-bsucar-cupom"
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
              ></input> 
-            <button className='btn-buscar-cupom' style={{backgroundColor: color}}>buscar</button>
+            <button className='btn-buscar-cupom' style={{backgroundColor: color}} onClick={handleBuscarCupom}>buscar</button>
           </div>
         </div>
       </div>

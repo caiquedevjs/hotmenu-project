@@ -4,18 +4,19 @@ import './modal_search_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import { useParams } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa";
+import { Modal } from 'bootstrap'; // Importando a API do Bootstrap
 
-const ModalBusca = ({ categories = [], onProductSelect }) => {
+const ModalBusca = ({ categories = [] }) => {
   const { storeName } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [color, setColor] = useState("");
   const [estabelecimento, setEstabelecimento] = useState(null);
   const [products, setProducts] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showUnavailableModal, setShowUnavailableModal] = useState(false); // Estado para controlar o modal de produto indisponível
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
@@ -60,15 +61,23 @@ const ModalBusca = ({ categories = [], onProductSelect }) => {
     product.Nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleProductClick = (product) => {
-    setSelectedCategoryId(product.CategoriaId);
 
-    // Verifica se o produto está disponível ou não
-    if (product.EstoqueAtual > 0) {
+  const openModal = (product) => {
+   
+    if (!product.ControlarEstoque || product.EstoqueAtual > 0) {
       setSelectedProduct(product);
+      window.history.pushState(null, '', `/#product-modal-${product.Id}`);
+
+      const modalElement = document.getElementById(`product-modal-${product.Id}`);
+      const bootstrapModal = new Modal(modalElement);
+      bootstrapModal.show();
     } else {
-      setShowUnavailableModal(true); // Exibe o modal de produto indisponível
+      setShowUnavailableModal(true);
     }
+  };
+
+  const handleProductClick = (product) => {
+    openModal(product);
   };
 
   const handleSearchIconClick = () => {
@@ -81,7 +90,7 @@ const ModalBusca = ({ categories = [], onProductSelect }) => {
 
   return (
     <div>
-      <div className="modal fade" id="modal_search_id" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className={`modal fade ${isModalOpen ? 'show' : ''}`} id="modal_search_id" style={{ display: isModalOpen ? 'block' : 'none' }}>
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -110,14 +119,10 @@ const ModalBusca = ({ categories = [], onProductSelect }) => {
                       filteredProducts.map((product, index) => (
                         <div className="col-6 col-md-4 mb-4" key={index}>
                           <div className="product-container">
-                            <p className="product-name" style={{ color: color }} 
-                               data-bs-toggle={product.EstoqueAtual > 0 ? 'modal' : ''}
-                               data-bs-target={product.EstoqueAtual > 0 ? `#product-modal-${product.Id}` : ''}
-                               onClick={() => handleProductClick(product)}>
+                            <p className="product-name" style={{ color: color }} data-bs-dismiss="modal" aria-label="Close"
+                               onClick={() => { handleProductClick(product)}}>
                                {product.Nome}
                             </p>
-                              
-                            
                             <img
                               src={`https://hotmenu.com.br/arquivos/${product.Foto}`}
                               alt={product.Nome}
@@ -141,15 +146,13 @@ const ModalBusca = ({ categories = [], onProductSelect }) => {
 
       {/* Renderização dos modais dinâmico */}
       {products.map((product, index) => (
-        product.EstoqueAtual > 0 ? (
-          <Modal_product_component
-            key={`modal-${index}`}
-            id={`product-modal-${product.Id}`}
-            product={product}
-            onClose={() => setSelectedProduct(null)}
-            categoryName={categories.find(cat => cat.Id === product.CategoriaId)?.Nome}
-          />
-        ) : null
+        <Modal_product_component
+          key={`modal-${index}`}
+          id={`product-modal-${product.Id}`}
+          product={product}
+          onClose={() => setSelectedProduct(null)}
+          categoryName={categories.find(cat => cat.Id === product.CategoriaId)?.Nome}
+        />
       ))}
 
       {/* Modal para Produto Indisponível */}

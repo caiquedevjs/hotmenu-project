@@ -1,50 +1,46 @@
-/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import './category_styles.css';
 import Grid_component from '../Grid_component/Grid_component';
-import { fetchCategories, fetchEstabelecimentoData } from '../service/productService';
+import { fetchCategories, fetchEstabelecimentoData, fetchProducts } from '../service/productService';
 import SelectorCategoryComponent from '../selector_category_component/selector_category';
 import ModalBusca from '../modal_search_component/modal_search_component';
-import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome do estabelecimento
+import { useParams } from 'react-router-dom';
 
 const Category_component = () => {
-  const { storeName } = useParams(); // Captura o nome do estabelecimento da URL
+  const { storeName } = useParams();
 
-  // Estados das categorias
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]); // Estado para produtos
   const [isLoading, setIsLoading] = useState(true);
   const [estabelecimento, setEstabelecimento] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
 
-  // Lógica da busca por categorias na API
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        const fetchedCategories = await fetchCategories(storeName); // Passa o nome do estabelecimento para a função
-        // Filtra e ordena categorias
+        const fetchedCategories = await fetchCategories(storeName);
         const filteredCategories = fetchedCategories
           .filter(category => !category.Removido)
           .sort((a, b) => a.Ordem - b.Ordem);
         setCategories(filteredCategories);
-        setIsLoading(false); // Marca o carregamento como completo
+        setIsLoading(false);
       } catch (error) {
         console.error('Erro ao buscar categorias:', error);
-        setIsLoading(false); // Marca o carregamento como completo mesmo em caso de erro
+        setIsLoading(false);
       }
     };
 
-    if(storeName){
+    if(storeName) {
       fetchCategoriesData();
     }
-  }, [storeName]); // Dependência de storeName para refazer a busca ao mudar o nome do estabelecimento
-
+  }, [storeName]);
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
       try {
-        const data = await fetchEstabelecimentoData(storeName); // Passa o nome do estabelecimento para a função
+        const data = await fetchEstabelecimentoData(storeName);
         if (data && data.CorPadrao) {
           setEstabelecimento(data);
           setColor(data.CorPadrao);
@@ -60,8 +56,23 @@ const Category_component = () => {
     };
 
     fetchDataEstabelecimento();
-  }, [storeName]); // Dependência de storeName para refazer a busca ao mudar o nome do estabelecimento
+  }, [storeName]);
 
+  // Novo useEffect para buscar produtos
+  useEffect(() => {
+    const fetchProductsData = async () => {
+      try {
+        const fetchedProducts = await fetchProducts(storeName); // Função para buscar produtos
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error('Erro ao buscar produtos:', error);
+      }
+    };
+
+    if (storeName) {
+      fetchProductsData();
+    }
+  }, [storeName]);
 
   if (isLoading) {
     return (
@@ -75,20 +86,18 @@ const Category_component = () => {
 
   return (
     <div className='category_component'>
-      {categories.length > 0 && <SelectorCategoryComponent categories={categories} />}
+      {categories.length > 0 && <SelectorCategoryComponent categories={categories} products={products} />}
       <div id='category_container'>
         {categories.map((category, index) => (
           <div key={index}>
             <div id='category_label_title'>
               <h4 className='category_title' id={`category-${category.Id}`} style={{ backgroundColor: color }}>{category.Nome}</h4>
             </div>
-            {/* Renderiza o grid de categorias e passa as categoria.Id e categoria.Nome como propriedade */}
             <Grid_component categoryId={category.Id} categoryName={category.Nome} />
           </div>
         ))}
       </div>
-      {/* Renderiza o ModalBusca e passa as categorias como propriedade */}
-      <ModalBusca categories={categories} /> 
+      <ModalBusca categories={categories} />
     </div>
   );
 };
