@@ -39,7 +39,7 @@ const SelectorCategoryComponent = ({ categories, products }) => {
   }
 
   if (!categories || categories.length === 0) {
-    return <p>Sem categorias disponíveis.</p>;
+    return ;
   }
 
   return (

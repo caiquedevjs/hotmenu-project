@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom'; // Importando useParams para pegar
 import { Modal } from 'bootstrap'; // Importando a API do Bootstrap
 
 const Grid_component = ({ categoryId, categoryName }) => {
-  // <---------- Variáveis de estados ---------->
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -17,7 +16,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
-  const [showUnavailableModal, setShowUnavailableModal] = useState(false); // Estado para controlar o modal de produto indisponível
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const { storeName } = useParams(); 
 
   useEffect(() => {
@@ -44,40 +43,53 @@ const Grid_component = ({ categoryId, categoryName }) => {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const productsData = await fetchProducts(storeName); // Busca todos os produtos
+        const productsData = await fetchProducts(storeName);
         const filteredProducts = productsData.filter(product => product.CategoriaId === categoryId);
         setProducts(filteredProducts);
-
-        // Verificar a URL após carregar os produtos
-        const hash = window.location.hash.substring(1);
+  
+        // Captura o hash da URL, por exemplo: #product-modal-123
+        const hash = window.location.hash.substring(1); // Remove o #
         if (hash) {
-          const productId = hash.split('-')[2]; // Obtém o ID do produto do hash
+          const productId = hash.split('-')[2]; // Extrai o ID do produto
           const product = filteredProducts.find(p => p.Id === parseInt(productId, 10));
           if (product && product.EstoqueAtual > 0) {
-            setSelectedProduct(product);
-            setTimeout(() => {
-              const modalElement = document.getElementById(hash);
-              if (modalElement) {
-                modalElement.style.display = 'block'; // Exibe o modal
-              }
-            }, 100);
+            openModal(product); // Aciona a função openModal para abrir o modal do produto
           }
         }
       } catch (error) {
         console.error('Erro ao buscar os produtos:', error);
       }
     };
-
+  
     fetchAllProducts();
   }, [categoryId, storeName]);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        const productId = hash.split('-')[2];
+        const product = products.find(p => p.Id === parseInt(productId, 10));
+        if (product && product.EstoqueAtual > 0) {
+          openModal(product);
+        }
+      }
+    };
+  
+    window.addEventListener('hashchange', handleHashChange);
+  
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [products]);
+  
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
       setMaxLength(isMobile ? 38 : 60);
     };
 
-    handleResize(); // Inicializa o estado com o valor correto
+    handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -85,35 +97,26 @@ const Grid_component = ({ categoryId, categoryName }) => {
     };
   }, []);
 
-  // <---------- Lógica de controle de estoque ---------->
   const openModal = (product) => {
-    // Se o produto NÃO controlar estoque, o modal do produto é aberto independentemente do estoque
     if (!product.ControlarEstoque) {
       setSelectedProduct(product);
-      window.history.pushState(null, '', `/#product-modal-${product.Id}`);
-
-      // Inicializando e mostrando o modal manualmente
+      window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
+  
       const modalElement = document.getElementById(`product-modal-${product.Id}`);
-      const bootstrapModal = new Modal(modalElement); // Inicializa o modal
-      bootstrapModal.show(); // Mostra o modal
-    } 
-    // Se o produto controlar estoque e o estoque atual for menor ou igual ao estoque mínimo, abre o modal de indisponível
-    else if (product.EstoqueAtual === 0) {
+      const bootstrapModal = new Modal(modalElement);
+      bootstrapModal.show();
+    } else if (product.EstoqueAtual === 0) {
       setShowUnavailableModal(true);
-    } 
-    // Se o produto controlar estoque e o estoque atual for maior ou igual ao estoque mínimo, o modal do produto é aberto
-    else {
+    } else {
       setSelectedProduct(product);
-      window.history.pushState(null, '', `/#product-modal-${product.Id}`);
-
-      // Inicializando e mostrando o modal manualmente
+      window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
+  
       const modalElement = document.getElementById(`product-modal-${product.Id}`);
-      const bootstrapModal = new Modal(modalElement); // Inicializa o modal
-      bootstrapModal.show(); // Mostra o modal
+      const bootstrapModal = new Modal(modalElement);
+      bootstrapModal.show();
     }
   };
-
-  // <----------  Função para dividir o array de produtos em subarrays de 2 produtos ---------->
+  
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
     const arrayLength = arr.length;
@@ -127,10 +130,8 @@ const Grid_component = ({ categoryId, categoryName }) => {
     return tempArray;
   };
 
-  // <---------- Divide os produtos em linhas de 2 colunas ---------- >
   const productsChunks = chunkArray(products, 2);
 
-  // <---------- Função para truncar o texto ---------->
   const truncateText = (text) => {
     if (text.length <= maxLength) {
       return text;
@@ -138,12 +139,10 @@ const Grid_component = ({ categoryId, categoryName }) => {
     return `${text.substring(0, maxLength)}...`;
   };
 
-  // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
-    return price.toFixed(2).replace('.', ','); // Formata o preço para ter duas casas decimais e substitui o ponto por vírgula (opcional)
+    return price.toFixed(2).replace('.', ',');
   };
 
-  // Função para fechar o modal de produto indisponível
   const closeUnavailableModal = () => {
     setShowUnavailableModal(false);
   };
@@ -197,7 +196,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
         </div>
       ))}
 
-      {/* Renderiza todos os modais, mas apenas o modal relevante é exibido */}
+      {/* Renderiza todos os modais */}
       {products.map((product, index) => (
         <Modal_product_component
           key={`modal-${index}`}
@@ -219,13 +218,18 @@ const Grid_component = ({ categoryId, categoryName }) => {
               <div className="modal-header">
                 <h3 id='info_text'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: color }}>
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 4.905a.905.905 0 1 1 0-1.81.905.905 0 0 1 0 1.81z"/>
                   </svg>
+                  &nbsp;Produto Indisponível!
                 </h3>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={closeUnavailableModal}></button>
               </div>
               <div className="modal-body">
-                <p>Este produto está indisponível no momento. 😞</p>
+                Este produto está indisponível no momento. Tente novamente mais tarde.
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeUnavailableModal}>
+                  Fechar
+                </button>
               </div>
             </div>
           </div>
