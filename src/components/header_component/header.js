@@ -105,6 +105,8 @@ const [isFormValid, setIsFormValid] = useState(false);
 const [isValid, setIsValid] = useState(true);
 const [errorCard, setErrorCard] = useState('');
 const [checkedOptions, setCheckedOptions] = useState({});
+const [showCupomModal, setShowCupomModal] = useState(false);
+const [showFinalizarModal, setShowFinalizarModal] = useState(false);
 
 
 // <---------- Notificações ---------->
@@ -339,6 +341,16 @@ console.log(logoMarca);
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ',');
   };
+
+const handleCloseModal = () => {
+  setShowFinalizarModal(false);
+  document.body.classList.remove('modal-open'); // Remove a classe que impede o scroll
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (backdrop) {
+    backdrop.remove(); // Remove o backdrop manualmente
+  }
+};
+
 
 // <---------- Função para calcular o preço com frete  ---------->
 const totalPriceWithFrete = () => {
@@ -742,7 +754,7 @@ console.log('cupom',cupom);
 
 
     {/* Modal carrinho de compras */}
-    <div className="modal fade" id="modal_shoppingCart_id" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div className="modal fade" id="modal_shoppingCart_id"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
         <div className="modal-dialog modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
@@ -888,7 +900,7 @@ console.log('cupom',cupom);
 
 
               {/* <------------ Modal carrinho de cupom de desconto ------------>*/}
-      <div className="modal fade" id="modal_cupom_desconto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal fade" id="modal_cupom_desconto"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
@@ -896,7 +908,7 @@ console.log('cupom',cupom);
             <RiDiscountPercentFill  id='cupom-icon-modal-title' style={{color : color}}/>
            Cupom
         </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={handleCloseModal}></button>
           </div>
           <div class="modal-body" id='modal-body-cupom-desconto'>
           <Tooltip id='tooltip-bsucar-cupom'></Tooltip>
@@ -928,7 +940,7 @@ console.log('cupom',cupom);
               </svg>
               Resumo
             </h3>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={handleCloseModal}></button>
           </div>
           <div className="modal-body">
           <div className='cart-finalize-list'>

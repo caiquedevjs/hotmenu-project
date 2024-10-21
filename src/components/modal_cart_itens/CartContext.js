@@ -76,6 +76,7 @@ export const CartProvider = ({ children }) => {
       // Ajustar o horário de fechamento que é '00:00' para o próximo dia
       const isOpenNow = horaFim === 0 ? currentHour >= horaIni : (currentHour >= horaIni && currentHour < horaFim);
       setIsOpen(isOpenNow);
+      console.log('Estabelecimento está aberto?', isOpenNow);
     } else {
       console.log('Horário de funcionamento não encontrado para hoje.');
       setIsOpen(false);

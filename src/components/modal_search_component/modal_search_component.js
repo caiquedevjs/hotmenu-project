@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import { fetchProducts, fetchEstabelecimentoData } from '../service/productService';
 import './modal_search_component.css';
@@ -88,9 +89,9 @@ const ModalBusca = ({ categories = [] }) => {
     }
   };
 
-  return (
+  return ( 
     <div>
-      <div className={`modal fade ${isModalOpen ? 'show' : ''}`} id="modal_search_id" style={{ display: isModalOpen ? 'block' : 'none' }}>
+      <div className="modal fade" id="modal_search_id"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -119,14 +120,16 @@ const ModalBusca = ({ categories = [] }) => {
                       filteredProducts.map((product, index) => (
                         <div className="col-6 col-md-4 mb-4" key={index}>
                           <div className="product-container">
-                            <p className="product-name" style={{ color: color }} data-bs-dismiss="modal" aria-label="Close"
-                               onClick={() => { handleProductClick(product)}}>
+                            <p className="product-name" style={{ color: color }} 
+                               >
                                {product.Nome}
                             </p>
                             <img
                               src={`https://hotmenu.com.br/arquivos/${product.Foto}`}
                               alt={product.Nome}
                               className="img_category"
+                              onClick={() => { handleProductClick(product)}}
+                              data-bs-dismiss="modal" aria-label="Close"
                             />
                           </div>
                         </div>

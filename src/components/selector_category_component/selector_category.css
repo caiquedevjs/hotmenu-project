@@ -1,31 +1,72 @@
 .selector_category_component {
-    max-width: 800px; /* Define uma largura máxima para o contêiner */
-    margin: 0 auto; /* Centraliza o contêiner na página */
+  max-width: 1000px; /* Define uma largura máxima para o contêiner */
+  margin: 50px auto; /* Adiciona margem em cima e embaixo */
+  overflow: hidden; /* Para evitar rolagem no eixo Y */
+}
+
+.category-scroll-container {
+  display: flex;
+  flex-direction: row; /* Exibe categorias em linha */
+  overflow-x: auto; /* Permite a rolagem horizontal */
+  padding: 10px; /* Espaçamento interno */
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+.category {
+  flex: 0 0 auto; /* Não permite que os itens encolham */
+  text-align: center; /* Centraliza o texto */
+}
+
+.category-item {
+  cursor: pointer; /* Indica que a imagem é clicável */
+  margin-right: 10px; /* Espaçamento entre as categorias */
+  flex-shrink: 0; /* Não permite que os itens encolham em dispositivos móveis */
+}
+
+.category-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 100%; /* Bordas arredondadas */
+  display: block; /* Para que a imagem fique centralizada */
+  margin: 0 auto; /* Centraliza a imagem */
+}
+.category-image:hover{
+  transform: scale(1.1);
+  transition: transform 0.5s;
+}
+
+.category-title {
+  font-size: 20px; /* Título maior */
+  margin-top: 5px; /* Espaço acima do título */
+}
+
+/* Estilos para dispositivos móveis */
+@media (max-width: 768px) {
+  .selector_category_component {
+    max-width: 100%; /* Aumenta a largura máxima para ocupar mais espaço */
+    margin: 30px auto; /* Adiciona margem em cima e embaixo */
     overflow: hidden; /* Para evitar rolagem no eixo Y */
-  }
-  
-  .category-scroll-container {
-    display: flex;
-    flex-direction: row; /* Exibe categorias em linha */
-    overflow-x: auto; /* Permite a rolagem horizontal */
-    padding: 10px; /* Espaçamento interno */
-    white-space: nowrap; /* Evita quebra de linha */
-  }
-  
-  .category {
-    flex: 0 0 auto; /* Não permite que os itens encolham */
-    margin-right: 10px; /* Espaçamento entre as categorias */
-    text-align: center; /* Centraliza o texto */
-  }
-  
-  .category-item {
-    cursor: pointer; /* Indica que a imagem é clicável */
   }
   
   .category-image {
     width: 80px;
     height: 80px;
+    border-radius: 100px; /* Bordas arredondadas */
     display: block; /* Para que a imagem fique centralizada */
     margin: 0 auto; /* Centraliza a imagem */
   }
   
+  .category-title {
+    font-size: 12px; /* Título menor */
+    margin-top: 5px; /* Espaço acima do título */
+  }
+  
+  .category-scroll-container {
+    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+  }
+  
+  .category-item {
+    margin: 0 5px; /* Ajusta o espaçamento em dispositivos móveis */
+    flex: 0 0 auto; /* Não permite que os itens encolham */
+  }
+}
