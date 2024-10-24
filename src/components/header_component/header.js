@@ -342,15 +342,21 @@ console.log(logoMarca);
     return price.toFixed(2).replace('.', ',');
   };
 
-const handleCloseModal = () => {
-  setShowFinalizarModal(false);
-  document.body.classList.remove('modal-open'); // Remove a classe que impede o scroll
-  const backdrop = document.querySelector('.modal-backdrop');
-  if (backdrop) {
-    backdrop.remove(); // Remove o backdrop manualmente
-  }
-};
-
+  const handleCloseModal = () => {
+    setShowFinalizarModal(false);
+    
+    // Verifica se ainda há outros modais abertos antes de remover a classe 'modal-open'
+    const openModals = document.querySelectorAll('.modal.show');
+    if (openModals.length === 0) {
+      document.body.classList.remove('modal-open'); // Remove a classe que impede o scroll
+    }
+  
+    // Remove o backdrop apenas se não houver outros modais abertos
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop && openModals.length === 0) {
+      backdrop.remove(); // Remove o backdrop manualmente
+    }
+  };
 
 // <---------- Função para calcular o preço com frete  ---------->
 const totalPriceWithFrete = () => {
