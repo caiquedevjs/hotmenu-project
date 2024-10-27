@@ -18,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { Tooltip } from 'react-tooltip';
+import { Offcanvas} from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
@@ -35,7 +36,7 @@ import truncateText from '../../utils/truncateText';
 
 
 
-const Header_component = ({handleCartClick}) =>{
+const Header_component = () =>{
 
  // <------ constantes utils ------->
   const cartHover = useHover();
@@ -48,7 +49,7 @@ const Header_component = ({handleCartClick}) =>{
   const truncate_Text = (text) => truncateText(text, 40)
 
 // <------- contexto do carrinho ------->
-const { cartItems, totalCartPrice, removeFromCart, isOpen} = useContext(CartContext);
+const { cartItems, totalCartPrice, removeFromCart, isOpen, toggleOffcanvas} = useContext(CartContext);
 const { storeName } = useParams();
 
 // <------ estados ------->
@@ -335,7 +336,6 @@ useEffect(() => {
   }
 }, [storeName]);
 
-console.log(logoMarca);
 
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
@@ -669,7 +669,25 @@ fetch('URL_DA_API', {
   
 };
 
-console.log('cupom',cupom);
+const [show, setShow] = useState(false);
+
+const handleClose = () => setShow(false);
+const handleShow = () => setShow(true);
+const [showOffCanvas, setShowOffCanvas] = useState(false);
+
+const handleOpenOffCanvas = () => {
+  if (isOpen) {
+    setShowOffCanvas(true);
+  } else {
+    alert("O estabelecimento está fechado no momento.");
+  }
+};
+
+const handleCloseOffCanvas = () => {
+  setShowOffCanvas(false);
+};
+
+
 
 
 
@@ -714,7 +732,12 @@ console.log('cupom',cupom);
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
              onMouseLeave={searchHover.handleMouseLeave}
-             style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  data-bs-toggle="modal" data-bs-target="#modal_shoppingCart_id" />
+             onClick={()=>{
+              if(isOpen){
+                handleShow()
+              }
+             }}
+             style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>
@@ -722,7 +745,11 @@ console.log('cupom',cupom);
      <FaShoppingCart
             onMouseEnter={searchHover.handleMouseEnter}
             onMouseLeave={searchHover.handleMouseLeave}
-            onClick={isOpen ? handleCartClick : undefined}
+            onClick={()=>{
+              if(isOpen){
+                handleShow()
+              }
+             }}
             style={{
               color: isOpen ? (searchHover.isHovered ? '#332D2D' : color) : 'gray', // Cor alterada quando fechado
               marginTop: '10px',
@@ -730,8 +757,7 @@ console.log('cupom',cupom);
               transition: 'color 0.5s ease',
               width: '35px'
             }}
-            data-bs-toggle={isOpen ? 'modal' : ''}
-            data-bs-target={isOpen ? '#modal_shoppingCart_id' : ''}
+            
           />
          </div>   
         )}
@@ -758,20 +784,19 @@ console.log('cupom',cupom);
 
 
 
+<Offcanvas show={show} onHide={handleClose} placement="end">
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-bag-fill" viewBox="0 0 16 16" style={{ color }}>
+              <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z" />
+            </svg>
+            
 
-    {/* Modal carrinho de compras */}
-    <div className="modal fade" id="modal_shoppingCart_id"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
-        <div className="modal-dialog modal-dialog-scrollable">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-bag-fill" viewBox="0 0 16 16" style={{ color: color }}>
-                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z" />
-                </svg>
-              </h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="overflow-y-auto">
+        
+          </Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+        <div class="overflow-y-auto">
             <div className="modal-body" id='modal-body-cartItens'>
               {cartItems.length === 0 ? (
                 <p id='span-carrinho-vazio'>Seu carrinho está vazio. 😞</p>
@@ -813,10 +838,8 @@ console.log('cupom',cupom);
                   </div>
                 ))
               )}
-            </div>
-            </div>
-            <div className="modal-footer" id='add-footer'>
-             <Tooltip id='tooltip-cupom-btn'/>
+
+<Tooltip id='tooltip-cupom-btn'/>
               <div id='mdfCart'>
                 <div className='modal-footer-conteiner'>
                   <div className='prices-labels'>
@@ -866,7 +889,10 @@ console.log('cupom',cupom);
                   disabled={cartItems.length === 0 || parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima} // Verifica se o carrinho está vazio ou o valor é menor que o mínimo
                   data-bs-toggle={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'modal' : undefined} // Verifica se o total atende ao valor mínimo
                   data-bs-target={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? '#modal-finalizar-compra' : undefined} // Modal aberto somente se o total for maior que o mínimo
-                  onClick={handleAddPedido}
+                  onClick={()=>{
+                    handleAddPedido()
+                    handleClose()
+                  }}
                   data-tooltip-id="carrinho-vazio-id"
                   data-tooltip-content={
                     cartItems.length === 0 
@@ -882,6 +908,8 @@ console.log('cupom',cupom);
                   }}
                   onMouseEnter={comprarButtonHover.handleMouseEnter}
                   onMouseLeave={comprarButtonHover.handleMouseLeave}
+                  
+                  
                 >
                   Finalizar Compra
                 </button>
@@ -892,14 +920,16 @@ console.log('cupom',cupom);
              data-tooltip-place="top-start"
              style={{backgroundColor : cupomButtonHover.isHovered ? '#332D2D' : color}}
              onMouseEnter={cupomButtonHover.handleMouseEnter}
-             onMouseLeave={cupomButtonHover.handleMouseLeave}>Adicionar cupom
+             onMouseLeave={cupomButtonHover.handleMouseLeave}
+             onClick={handleClose}
+             >Adicionar cupom
               </button>
                 </div>
                </div>
             </div>
-          </div>
-        </div>
-      </div>
+            </div>
+        </Offcanvas.Body>
+        </Offcanvas>
 
 {/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
 
@@ -914,7 +944,7 @@ console.log('cupom',cupom);
             <RiDiscountPercentFill  id='cupom-icon-modal-title' style={{color : color}}/>
            Cupom
         </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={handleCloseModal}></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id='modal-body-cupom-desconto'>
           <Tooltip id='tooltip-bsucar-cupom'></Tooltip>

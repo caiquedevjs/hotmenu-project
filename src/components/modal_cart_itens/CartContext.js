@@ -1,60 +1,60 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 // Criar o contexto do carrinho
 export const CartContext = createContext();
 
 // Fornecer o contexto do carrinho
 export const CartProvider = ({ children }) => {
+  const { storeName } = useParams(); // Obter o nome do estabelecimento da URL
   const [cartItems, setCartItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [agendamentoDePedidos, setAgendamentoDePedidos] = useState(false);
 
-  // Função para buscar horários de funcionamento e Agendamento de Pedidos da API
-  const fetchHorarioFuncionamento = async () => {
+  // Função para buscar horários de funcionamento e agendamento de pedidos da API
+  const fetchHorarioFuncionamento = async (storeName) => {
     try {
-      const response = await fetch('https://hotmenu.com.br/webhook/HorarioAtendimento/LojadedocesInaBoenoGaribaldi');
+      const response = await fetch(`https://hotmenu.com.br/webhook/HorarioAtendimento/${storeName}`);
       if (!response.ok) {
         throw new Error('Erro ao buscar horário de funcionamento');
       }
       const data = await response.json();
-      return data.horarios; // Retorna os horários para serem usados depois
+      return data.horarios;
     } catch (error) {
       console.error('Erro ao buscar horário de funcionamento', error);
-      return []; // Retorna um array vazio em caso de erro
+      return [];
     }
   };
 
-  const fetchEstabelecimentoData = async () => {
+  const fetchEstabelecimentoData = async (storeName) => {
     try {
-      const response = await fetch('https://hotmenu.com.br/webhook/Cliente/LojadedocesInaBoenoGaribaldi');
+      const response = await fetch(`https://hotmenu.com.br/webhook/Cliente/${storeName}`);
       if (!response.ok) {
         throw new Error('Erro ao buscar dados do estabelecimento');
       }
       const data = await response.json();
-      return data.cliente.FechadoLiberarPedido; // Retorna FechadoLiberarPedido
+      return data.cliente.FechadoLiberarPedido;
     } catch (error) {
       console.error('Erro ao buscar dados do estabelecimento:', error);
-      return false; // Retorna false em caso de erro
+      return false;
     }
   };
 
   // Função para verificar se o estabelecimento está aberto ou fechado
   const checkIfOpen = async () => {
+    if (!storeName) return; // Verifica se o storeName foi definido
+
     try {
-      // Buscando ambos os dados simultaneamente
       const [horarios, fechadoLiberarPedido] = await Promise.all([
-        fetchHorarioFuncionamento(),
-        fetchEstabelecimentoData()
+        fetchHorarioFuncionamento(storeName),
+        fetchEstabelecimentoData(storeName),
       ]);
 
-      // Atualizar o estado de agendamento de pedidos
       setAgendamentoDePedidos(fechadoLiberarPedido);
 
-      // Verificação com base no valor de FechadoLiberarPedido
       if (fechadoLiberarPedido) {
         setIsOpen(true);
       } else {
-        // Se não tiver agendamento, verificar com base nos horários de funcionamento
         updateStatus(horarios);
       }
     } catch (error) {
@@ -63,30 +63,41 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Atualiza o status com base nos horários de funcionamento
   const updateStatus = (horarios) => {
-    const currentHour = new Date().getHours();
-    const currentDay = new Date().getDay() + 1; // getDay() retorna 0 para Domingo, 1 para Segunda, etc.
-
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const currentTime = currentHour * 60 + currentMinutes; // Convertendo para minutos
+    const currentDay = now.getDay() + 1; // Dia da semana, começando de domingo (1=Domingo, 7=Sábado)
+  
     const hojeHorario = horarios.find(h => h.DiaDaSemana === currentDay);
+    
     if (hojeHorario) {
-      const [horaIni] = hojeHorario.HoraIni.split(':').map(Number);
-      const [horaFim] = hojeHorario.HoraFim.split(':').map(Number);
-
-      // Ajustar o horário de fechamento que é '00:00' para o próximo dia
-      const isOpenNow = horaFim === 0 ? currentHour >= horaIni : (currentHour >= horaIni && currentHour < horaFim);
+      const [horaIni, minIni] = hojeHorario.HoraIni.split(':').map(Number);
+      const [horaFim, minFim] = hojeHorario.HoraFim.split(':').map(Number);
+      
+      const startTime = horaIni * 60 + minIni;
+      const endTime = (horaFim === 0 && minFim === 0) ? 1440 : horaFim * 60 + minFim; // 1440 é 24h em minutos
+  
+      const isOpenNow = currentTime >= startTime && currentTime < endTime;
+      
+      console.log("Horário Atual:", currentHour + ':' + currentMinutes);
+      console.log("Horário de Abertura:", hojeHorario.HoraIni);
+      console.log("Horário de Fechamento:", hojeHorario.HoraFim);
+      console.log("Estabelecimento está aberto?", isOpenNow);
+  
       setIsOpen(isOpenNow);
-      console.log('Estabelecimento está aberto?', isOpenNow);
     } else {
-      console.log('Horário de funcionamento não encontrado para hoje.');
+      console.log("Nenhum horário definido para hoje.");
       setIsOpen(false);
     }
   };
 
   useEffect(() => {
-    // Chama a função que busca os dados e verifica o status de abertura
+    console.log("Store Name:", storeName); // Verifique o valor de storeName
     checkIfOpen();
-  }, []);
+  }, [storeName]);
+  
 
   const addToCart = (product, additionalStates, totalPrice, quantity, suggestion) => {
     const existingItem = cartItems.find(item => item.product.Id === product.Id && JSON.stringify(item.additionalStates) === JSON.stringify(additionalStates));
@@ -123,7 +134,7 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen, }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen,  }}>
       {children}
     </CartContext.Provider>
   );

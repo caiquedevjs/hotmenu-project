@@ -211,6 +211,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
       ))}
 
       {/* Modal para Produto Indisponível */}
+      {/* Modal para Produto Indisponível */}
       {showUnavailableModal && (
         <div className="modal fade show" id="unavailable-modal" tabIndex="-1" aria-labelledby="unavailable-modalLabel" aria-hidden="true" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog">
@@ -218,18 +219,13 @@ const Grid_component = ({ categoryId, categoryName }) => {
               <div className="modal-header">
                 <h3 id='info_text'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-info-circle-fill" viewBox="0 0 16 16" style={{ color: color }}>
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 4.905a.905.905 0 1 1 0-1.81.905.905 0 0 1 0 1.81z"/>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
                   </svg>
-                  &nbsp;Produto Indisponível!
                 </h3>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={() => setShowUnavailableModal(false)}></button>
               </div>
               <div className="modal-body">
-                Este produto está indisponível no momento. Tente novamente mais tarde.
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={closeUnavailableModal}>
-                  Fechar
-                </button>
+                <p>Este produto está indisponível no momento. 😞</p>
               </div>
             </div>
           </div>

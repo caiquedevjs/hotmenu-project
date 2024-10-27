@@ -77,11 +77,13 @@ function App() {
       behavior: 'smooth'
     });
   };
+  
+  
 
   return (
     <div className="App">
       <PrimeReactProvider>
-        <Header_component />
+        <Header_component/>
         <Status_moment_component />
         <Infos_component />
         <Infos_icons_component />

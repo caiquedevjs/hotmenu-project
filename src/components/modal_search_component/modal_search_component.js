@@ -4,7 +4,6 @@ import { fetchProducts, fetchEstabelecimentoData } from '../service/productServi
 import './modal_search_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import { useParams } from 'react-router-dom';
-import { FaSearch } from "react-icons/fa";
 import { Modal } from 'bootstrap'; // Importando a API do Bootstrap
 
 const ModalBusca = ({ categories = [] }) => {
@@ -105,11 +104,6 @@ const ModalBusca = ({ categories = [] }) => {
                   id='input_search_id'
                   value={searchTerm}
                   onChange={handleSearchChange}
-                />
-                <FaSearch
-                  id='modal_search_icon_id'
-                  onClick={handleSearchIconClick}
-                  style={{ width: '20px', height: '20px', color: color, marginTop: '10px', cursor: 'pointer' }}
                 />
               </div>
 

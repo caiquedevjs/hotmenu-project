@@ -10,14 +10,16 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Im
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <CartProvider>
-      {/* Envolvemos o App com Router e definimos uma rota dinâmica */}
-      <Router>
-        <Routes>
-          <Route path="/:storeName" element={<App />} /> {/* Capturando o nome do estabelecimento da URL */}
-        </Routes>
-      </Router>
-    </CartProvider>
+    
+      {/* Envolvemos o CartProvider ao redor das rotas */}
+      <React.StrictMode>
+        <Router>
+            <Routes>
+                <Route path="/:storeName" element={<CartProvider><App /></CartProvider>} />
+            </Routes>
+        </Router>
+    </React.StrictMode>
+    
   </React.StrictMode>
 );
 
