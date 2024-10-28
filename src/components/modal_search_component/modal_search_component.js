@@ -100,7 +100,7 @@ const ModalBusca = ({ categories = [] }) => {
               <div id='body_search_conteiner_id'>
                 <input
                   type='text'
-                  placeholder='O que deseja procurar?'
+                  placeholder='O que deseja procurar? 🍔🍟'
                   id='input_search_id'
                   value={searchTerm}
                   onChange={handleSearchChange}

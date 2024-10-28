@@ -737,7 +737,7 @@ const handleCloseOffCanvas = () => {
                 handleShow()
               }
              }}
-             style={{ color: searchHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  />
+             style={{color: isOpen ? (searchHover.isHovered ? '#332D2D' : color) : 'gray', marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease', }}  />
               </div>   
         ) :(
           <div className='amount_order_conteiner'>

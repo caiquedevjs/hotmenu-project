@@ -251,7 +251,7 @@ const Modal_product_component = ({ id, product, onClose }) => {
             <h5>Alguma sugestão?</h5>
             <textarea
               className='suggestion-input'
-              placeholder='alguma sugestão?'
+              placeholder='alguma sugestão? 😋'
               value={suggestion}
               onChange={(e) => setSuggestion(e.target.value)}
             />
