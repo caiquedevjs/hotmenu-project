@@ -481,7 +481,7 @@ const handleFinalizarPedido = () => {
 
       const pedido = {
           DataPedido: new Date().toISOString(),
-          Status: "Pendente",
+          Status: "Novo",
           Cliente: nome,
           Tel: telefone,
           Numero_cartao: cartao,
@@ -491,12 +491,12 @@ const handleFinalizarPedido = () => {
               `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
           mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
           FormaPagamento: selectedOption,
-          bandeiraCartão: checkedOptions.bandeiraCartão || null,
+          bandeiraCartão: checkedOptions.bandeiraCartão || "Sem cartão",
           FormaRetirada: formaRetirada,
           Produtos: produtos,
           frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ?
-              `R$ ${FreteFixo}` :
-              "Sem frete",
+          "Frete grátis" :`R$ ${FreteFixo}`,
+          troco: valorTroco ? `R$ ${(parseFloat(valorTroco) - parseFloat(totalPriceWithFrete())).toFixed(2).replace('.', ',')  }` : `R$ 00,00`,
           preçoTotal: `R$ ${totalPriceWithFrete()}`
       };
 
@@ -534,7 +534,9 @@ fetch('URL_DA_API', {
       // Mensagem para o destinatário
       // Mensagem para o destinatário
       const mensagemProdutos = pedido.Produtos.map(produto => 
-        `*Nome:* ${produto.Nome}  
+        `
+       
+        *Nome:* ${produto.Nome}  
         *Quantidade:* ${produto.Quantidade}  
         *Sugestão:* ${produto.Sugestão}  
         *Adicionais:*  
@@ -545,20 +547,22 @@ fetch('URL_DA_API', {
         ).join('\n')}`
       ).join('\n\n');
       
-      const mensagem = `*Olá, acabei de fazer um pedido*  
-      
+      const mensagem = `*Olá 👋, acabei de fazer um pedido 🧾*  
+      * Status:* ${pedido.Status}
+      ---------------------------
       *Os itens escolhidos são:*  
       ${mensagemProdutos}  
-      
-      *Desconto:*  ${pedido.frete}  
+      ---------------------------
+      *Frete:*  ${pedido.frete}  
       *Preço Total:*  ${pedido.preçoTotal}  
-      
+      *Troco:* ${pedido.troco}
+      ---------------------------
       *Forma de Entrega:* ${pedido.FormaRetirada}  
       *Forma de pagamento:* ${pedido.FormaPagamento}  
       *Cartão:* ${pedido.bandeiraCartão}  
       *Endereço:* ${pedido.Endereço}  
       *Mesa:* ${pedido.mesa}  
-      
+      ---------------------------
       *Nome:* ${pedido.Cliente}  
       *Telefone:* ${pedido.Tel}`;
       
@@ -673,19 +677,7 @@ const [show, setShow] = useState(false);
 
 const handleClose = () => setShow(false);
 const handleShow = () => setShow(true);
-const [showOffCanvas, setShowOffCanvas] = useState(false);
 
-const handleOpenOffCanvas = () => {
-  if (isOpen) {
-    setShowOffCanvas(true);
-  } else {
-    alert("O estabelecimento está fechado no momento.");
-  }
-};
-
-const handleCloseOffCanvas = () => {
-  setShowOffCanvas(false);
-};
 
 
 
@@ -1175,6 +1167,32 @@ const handleCloseOffCanvas = () => {
                 onChange={(e) => setValorTroco(e.target.value)} 
             />
         </div>
+    </div>
+) : null}
+
+{selectedOption === 'Pix' ? (
+    <div className='titular-card-pay-conteiner'>
+        <div className="col-md-4">
+            <label htmlFor="inputChangeValue" className='labelValorTroco'>Chave pix</label>
+            <input 
+              readOnly
+                type="text" 
+                className="form-control" 
+                id="inputChangeValue" 
+                value={estabelecimento.ChavePix || ''}
+                onChange={() => {}} 
+            />
+              <button 
+              className="btn btn-secondary ms-2" 
+              onClick={() => {
+                  navigator.clipboard.writeText(estabelecimento.ChavePix || '');
+                  alert('Chave Pix copiada!');
+              }}
+            >
+              Copiar
+            </button>
+        </div>
+      
     </div>
 ) : null}
 
