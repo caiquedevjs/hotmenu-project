@@ -341,7 +341,10 @@ useEffect(() => {
   const formatPrice = (price) => {
     return price.toFixed(2).replace('.', ',');
   };
-
+   // <---------- Função para formatar o texto de adcionais  ---------->
+  const formatarTexto = (texto) => {
+    return texto.toLowerCase(); // Converte o texto para minúsculas
+  };
   const handleCloseModal = () => {
     setShowFinalizarModal(false);
     
@@ -809,17 +812,17 @@ const handleShow = () => setShow(true);
                         <p key={additionalIndex} className='text-cart-description'>
                           {additional.observacao.map(obs => (
                             obs.selected ? (
-                              <span key={obs.Id}>{obs.Nome}, </span>
+                              <span key={obs.Id}>{formatarTexto(obs.Nome)}, </span>
                             ) : null
                           ))}
                           {additional.options.map(option => (
                             option.count > 0 ? (
-                              <span key={option.id}>{option.count}x {truncateText(option.name)}, </span>
+                              <span key={option.id}>{option.count}x {truncateText(formatarTexto(option.name))}, </span>
                             ) : null
                           ))}
                           {additional.produtos.map(produto => (
                             produto.count > 0 ? (
-                              <span key={produto.Id}>{produto.count}x {truncateText(produto.Nome)}, </span>
+                              <span key={produto.Id}>{produto.count}x {truncateText(formatarTexto(produto.Nome))}, </span>
                             ) : null
                           ))}
                         </p>
@@ -979,20 +982,20 @@ const handleShow = () => setShow(true);
                     <p className='pedido-desccao'>{item.product.Nome}<br></br>Quantidade: {item.quantity}
                     
                       {item.additionalStates.map((additional, additionalIndex) => (
-                        <p key={additionalIndex}>
+                        <p key={additionalIndex} className='pedido-desccao-detalis'>
                           {additional.observacao.map(obs => (
                             obs.selected ? (
-                              <span key={obs.Id}>{obs.Nome}, </span>
+                              <span key={obs.Id}>{formatarTexto(obs.Nome)}, </span>
                             ) : null
                           ))}
                           {additional.options.map(option => (
                             option.count > 0 ? (
-                              <span key={option.id}>{option.count}x {truncateText(option.name)}, </span>
+                              <span key={option.id}>{option.count}x {truncateText(formatarTexto(option.name))}, </span>
                             ) : null
                           ))}
                           {additional.produtos.map(produto => (
                             produto.count > 0 ? (
-                              <span key={produto.Id}>{produto.count}x {truncateText(produto.Nome)}, </span>
+                              <span key={produto.Id}>{produto.count}x {truncateText(formatarTexto(produto.Nome))}, </span>
                             ) : null
                           ))}
                         </p>

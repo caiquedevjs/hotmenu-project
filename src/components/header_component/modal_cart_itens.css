@@ -67,7 +67,7 @@
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    gap: 100px;
+    gap: 150px;
     
 }
 
@@ -137,13 +137,17 @@
 .text-cart-name {
     font-size: 14px;
     font-weight: bold;
+    max-width: 150px;
 }
 
 .text-cart-description {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     text-align: left;
     margin-inline: -2px;
+    max-width: 100%; /* Garante que não exceda a largura do contêiner */
+    white-space: pre-line;
+   
 }
 
 .text-cart-price {
@@ -322,10 +326,13 @@
 }
 
 .text-cart-description {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     text-align: left;
     margin-inline: -2px;
+    max-width: 100%; /* Garante que não exceda a largura do contêiner */
+    text-overflow: ellipsis; /* Adiciona reticências se o texto for muito longo */
+    white-space: nowrap; /* Evita quebra de linha */
 }
 
 .text-cart-price {

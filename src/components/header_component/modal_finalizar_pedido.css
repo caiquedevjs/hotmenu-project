@@ -70,6 +70,25 @@
     font-size: 14px;
     margin: 0; /* Remove margens do parágrafo */
     padding: 0; /* Remove padding se houver */
+    max-width: 100%; /* Garante que não exceda a largura do contêiner */
+    overflow: hidden; /* Oculta qualquer conteúdo que transborde */
+    
+    
+    
+}
+.pedido-desccao-detalis{
+    font-size: 14px;
+    color: #666;
+    text-align: left;
+    margin-inline: -2px;
+    white-space: pre-line;
+    max-width: 100%; /* Garante que não exceda a largura do contêiner */
+    margin: 0; /* Remove margens do parágrafo */
+    padding: 0; /* Remove padding se houver */
+    display: flex; /* Alinha os elementos dentro como flex */
+    flex-wrap: wrap; /* Permite que o texto quebre se necessário */
+   
+    
 }
 
 .pedido-desccao span {

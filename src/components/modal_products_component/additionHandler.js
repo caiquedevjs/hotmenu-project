@@ -47,7 +47,22 @@ const useAdditionalState = (productId) => {
   const handleIncrement = (id, perguntaId, isProduto = false) => {
     setAdditionalStates(prevState => prevState.map(additional => {
       if (additional.id === perguntaId) {
-        if (additional.type === 1) {
+        if (isProduto) {
+          const item = additional.produtos.find(produto => produto.Id === id);
+          if (item) {
+            const maxAllowed = item.QtdMaximaPermitida || additional.maxOptions;
+            if (item.count < maxAllowed && additional.selectedCount < additional.maxOptions) {
+              return {
+                ...additional,
+                produtos: additional.produtos.map(prod =>
+                  prod.Id === id ? { ...prod, count: prod.count + 1 } : prod
+                ),
+                selectedCount: additional.selectedCount + 1
+              };
+            }
+          }
+        } else if (additional.type === 1) {
+          // Lógica para observações
           const item = additional.observacao.find(obs => obs.Id === id);
           if (item) {
             const updatedObservacoes = additional.observacao.map(obs => ({
@@ -57,38 +72,21 @@ const useAdditionalState = (productId) => {
             return {
               ...additional,
               observacao: updatedObservacoes,
-              selectedCount: 1
+              selectedCount: Math.min(additional.maxOptions, additional.selectedCount + 1)
             };
           }
         } else {
-          const item = isProduto
-            ? additional.produtos.find(produto => produto.Id === id)
-            : additional.options.find(option => option.id === id);
-
+          const item = additional.options.find(option => option.id === id);
           if (item) {
-            const totalSelected = additional.selectedCount + 1;
-            const maxAllowed = item.QtdMaximaPermitida || additional.maxOptions;
-
-            if (item.count < maxAllowed && totalSelected <= additional.maxOptions) {
-              if (isProduto) {
-                const updatedProdutos = additional.produtos.map(prod => ({
-                  ...prod,
-                  count: prod.Id === id ? 1 : 0
-                }));
-                return {
-                  ...additional,
-                  produtos: updatedProdutos,
-                  selectedCount: 1
-                };
-              } else {
-                return {
-                  ...additional,
-                  options: additional.options.map(it =>
-                    it.id === id ? { ...it, count: it.count + 1 } : it
-                  ),
-                  selectedCount: totalSelected
-                };
-              }
+            const maxAllowed = additional.maxOptions;
+            if (item.count < maxAllowed && additional.selectedCount < maxAllowed) {
+              return {
+                ...additional,
+                options: additional.options.map(it =>
+                  it.id === id ? { ...it, count: it.count + 1 } : it
+                ),
+                selectedCount: additional.selectedCount + 1
+              };
             }
           }
         }
@@ -100,20 +98,40 @@ const useAdditionalState = (productId) => {
   const handleDecrement = (id, perguntaId, isProduto = false) => {
     setAdditionalStates(prevState => prevState.map(additional => {
       if (additional.id === perguntaId) {
-        const item = isProduto
-          ? additional.produtos.find(produto => produto.Id === id)
-          : additional.options.find(option => option.id === id);
-
-        if (item) {
-          const totalSelected = additional.selectedCount - 1;
-
-          if (item.count > 0) {
+        if (isProduto) {
+          const item = additional.produtos.find(produto => produto.Id === id);
+          if (item && item.count > 0) {
             return {
               ...additional,
-              [isProduto ? 'produtos' : 'options']: additional[isProduto ? 'produtos' : 'options'].map(it =>
+              produtos: additional.produtos.map(prod =>
+                prod.Id === id ? { ...prod, count: prod.count - 1 } : prod
+              ),
+              selectedCount: Math.max(0, additional.selectedCount - 1)
+            };
+          }
+        } else if (additional.type === 1) {
+          // Lógica para observações
+          const item = additional.observacao.find(obs => obs.Id === id);
+          if (item && item.selected) {
+            const updatedObservacoes = additional.observacao.map(obs => ({
+              ...obs,
+              selected: obs.Id === id ? false : obs.selected
+            }));
+            return {
+              ...additional,
+              observacao: updatedObservacoes,
+              selectedCount: Math.max(0, additional.selectedCount - 1)
+            };
+          }
+        } else {
+          const item = additional.options.find(option => option.id === id);
+          if (item && item.count > 0) {
+            return {
+              ...additional,
+              options: additional.options.map(it =>
                 it.id === id ? { ...it, count: it.count - 1 } : it
               ),
-              selectedCount: totalSelected
+              selectedCount: Math.max(0, additional.selectedCount - 1)
             };
           }
         }
