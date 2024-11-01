@@ -384,6 +384,11 @@ const totalPriceWithFrete = () => {
   return totalComDesconto.toFixed(2).replace('.', ','); 
 };
 
+const calcularTroco = () => {
+  const total = parseFloat(totalPriceWithFrete().replace(',', '.'));
+  const troco = valorTroco ? parseFloat(valorTroco.replace(',', '.')) - total : 0;
+  return troco.toFixed(2).replace('.', ',');
+};
 
 
 
@@ -499,10 +504,10 @@ const handleFinalizarPedido = () => {
           Produtos: produtos,
           frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ?
           "Frete grátis" :`R$ ${FreteFixo}`,
-          troco: valorTroco ? `R$ ${(parseFloat(valorTroco) - parseFloat(totalPriceWithFrete())).toFixed(2).replace('.', ',')  }` : `R$ 00,00`,
+          troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
           preçoTotal: `R$ ${totalPriceWithFrete()}`
       };
-
+     
       // Transformar o objeto em JSON
 const pedidoJson = JSON.stringify(pedido);
 
