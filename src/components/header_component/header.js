@@ -45,6 +45,7 @@ const Header_component = () =>{
   const cupomButtonHover = useHover();
   const finalizarButtonHover = useHover();
   const cancelarButtonHover = useHover();
+  const pixButtonHover = useHover();
   const { isIconsFixed} = useScrollToTopButton();
   const truncate_Text = (text) => truncateText(text, 40)
 
@@ -1180,10 +1181,12 @@ const handleShow = () => setShow(true);
 
 {selectedOption === 'Pix' ? (
     <div className='titular-card-pay-conteiner'>
-        <div className="col-md-4">
+        <div className="col-md-4" >
             <label htmlFor="inputChangeValue" className='labelValorTroco'>Chave pix</label>
+            <div style={{display : 'flex'}}>
             <input 
               readOnly
+              style={{width : '200px'}}
                 type="text" 
                 className="form-control" 
                 id="inputChangeValue" 
@@ -1191,14 +1194,19 @@ const handleShow = () => setShow(true);
                 onChange={() => {}} 
             />
               <button 
+              style={{backgroundColor:pixButtonHover.isHovered ?  '#332D2D' : color }}
+              onMouseEnter={pixButtonHover.handleMouseEnter}
+             onMouseLeave={pixButtonHover.handleMouseLeave}
+              type='button'
               className="btn btn-secondary ms-2" 
               onClick={() => {
                   navigator.clipboard.writeText(estabelecimento.ChavePix || '');
-                  alert('Chave Pix copiada!');
+                 
               }}
             >
               Copiar
             </button>
+            </div>
         </div>
       
     </div>

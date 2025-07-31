@@ -1,49 +1,73 @@
 import { useState, useEffect } from 'react';
-import { fetchPerguntas } from '../service/productService';
+import { fetchPerguntas, fetchProductById } from '../service/productService';
 
 const useAdditionalState = (productId) => {
   const [additionalStates, setAdditionalStates] = useState([]);
 
-  useEffect(() => {
-    const fetchAdditionalData = async () => {
-      try {
-        const perguntas = await fetchPerguntas(productId);
-        const transformedData = perguntas.map(pergunta => ({
-          id: pergunta.PerguntaId,
-          description: pergunta.Texto,
-          type: pergunta.Tipo,
-          required: pergunta.RespostaObrigatoria,
-          minOptions: pergunta.QtdOpcoesResPostaMin,
-          maxOptions: pergunta.QtdOpcoesResPostaMax,
-          options: pergunta.Complemento.map(complemento => ({
-            id: complemento.Id,
-            name: complemento.Nome,
-            price: complemento.PrecoVenda,
-            count: 0,
-            QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
-          })),
+useEffect(() => {
+  const fetchAdditionalData = async () => {
+    try {
+      const perguntas = await fetchPerguntas(productId);
+      const productData = await fetchProductById(productId); // nova função abaixo
+
+      const transformedData = perguntas.map(pergunta => ({
+        id: pergunta.PerguntaId,
+        description: pergunta.Texto,
+        type: pergunta.Tipo,
+        required: pergunta.RespostaObrigatoria,
+        minOptions: pergunta.QtdOpcoesResPostaMin,
+        maxOptions: pergunta.QtdOpcoesResPostaMax,
+        options: pergunta.Complemento.map(complemento => ({
+          id: complemento.Id,
+          name: complemento.Nome,
+          price: complemento.PrecoVenda,
+          count: 0,
+          QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
+        })),
+        selectedCount: 0,
+        produtos: pergunta.Produto.map(produto => ({
+          Id: produto.Id,
+          Nome: produto.Nome,
+          PrecoDeVenda: produto.PrecoDeVenda,
+          count: 0,
+          QtdMaximaPermitida: produto.QtdMaximaPermitida || null
+        })),
+        observacao: pergunta.Observacao || []
+      }));
+
+      // 👇 Insere os tamanhos como uma "pergunta fake"
+      if (productData?.Tamanhos?.length > 0) {
+        const tamanhosPergunta = {
+          id: 'tamanhos', // ID fictício
+          description: 'Escolha um tamanho',
+          type: 1, // assume que é tipo observação (radio)
+          required: true,
+          minOptions: 1,
+          maxOptions: 1,
           selectedCount: 0,
-          produtos: pergunta.Produto.map(produto => ({
-            Id: produto.Id,
-            Nome: produto.Nome,
-            PrecoDeVenda: produto.PrecoDeVenda,
-            count: 0,
-            QtdMaximaPermitida: produto.QtdMaximaPermitida || null
-          })),
-          observacao: pergunta.Observacao || []
-        }));
+          produtos: [],
+          options: [],
+          observacao: productData.Tamanhos.map(tamanho => ({
+            Id: tamanho.Id,
+            Nome: tamanho.Nome,
+            PrecoDeVenda: tamanho.PrecoDeVenda,
+            selected: false
+          }))
+        };
 
-        setAdditionalStates(transformedData);
-      } catch (error) {
-        console.error('Erro ao buscar adicionais:', error);
+        transformedData.unshift(tamanhosPergunta); // coloca no topo
       }
-    };
 
-    if (productId) {
-      fetchAdditionalData();
+      setAdditionalStates(transformedData);
+    } catch (error) {
+      console.error('Erro ao buscar dados adicionais:', error);
     }
-  }, [productId]);
+  };
 
+  if (productId) {
+    fetchAdditionalData();
+  }
+}, [productId]);
   const handleIncrement = (id, perguntaId, isProduto = false) => {
     setAdditionalStates(prevState => prevState.map(additional => {
       if (additional.id === perguntaId) {
@@ -140,6 +164,14 @@ const useAdditionalState = (productId) => {
     }));
   };
 
+  const getSelectedTamanho = () => {
+  const tamanhoPergunta = additionalStates.find(item => item.id === 'tamanhos');
+  if (!tamanhoPergunta || !tamanhoPergunta.observacao) return null;
+  const selecionado = tamanhoPergunta.observacao.find(obs => obs.selected);
+  return selecionado || null;
+};
+
+
   const totalAdditional = () => {
     return additionalStates.reduce((total, additional) => total + additional.selectedCount, 0);
   };
@@ -148,7 +180,8 @@ const useAdditionalState = (productId) => {
     totalAdditional,
     additionalStates,
     handleIncrement,
-    handleDecrement
+    handleDecrement,
+    getSelectedTamanho,
   };
 };
 

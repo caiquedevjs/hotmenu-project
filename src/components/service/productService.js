@@ -98,6 +98,19 @@ export const fetchFormaPagamentos = async (storeName) => {
   }
  }
 
+ export const fetchProductById = async (productId) => {
+  try {
+    const response = await fetch(`https://hotmenu.com.br/webhook/ObterDadosProduto/${productId}`);
+    if (!response.ok) throw new Error('Erro ao buscar dados do produto');
+    const data = await response.json();
+    return data.produto;
+  } catch (error) {
+    console.error('Erro ao buscar dados do produto:', error);
+    return null;
+  }
+};
+
+
  // https://hotmenu.com.br/webhook/Cliente/hotmenu
  
 // https://hotmenu.com.br/webhook/ObterDadosProduto/78

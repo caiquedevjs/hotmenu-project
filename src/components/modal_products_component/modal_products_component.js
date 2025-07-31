@@ -8,7 +8,7 @@ import { Tooltip } from 'react-tooltip';
 import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
 
 const Modal_product_component = ({ id, product, onClose }) => {
-  const { totalAdditional, additionalStates, handleIncrement, handleDecrement } = useAdditionalState(product.Id);
+  const { totalAdditional, additionalStates, handleIncrement, handleDecrement, getSelectedTamanho  } = useAdditionalState(product.Id);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -53,33 +53,33 @@ const Modal_product_component = ({ id, product, onClose }) => {
     setTotalPrice(calculateTotalPrice());
   }, [additionalStates, quantity]);
 
-  const calculateTotalPrice = () => {
-    if (!product || !product.PrecoDeVenda) {
-      return "0.00";
-    }
+ const calculateTotalPrice = () => {
+  const selectedTamanho = getSelectedTamanho();
+  let basePrice = selectedTamanho
+    ? parseFloat(selectedTamanho.PrecoDeVenda)
+    : parseFloat(product.PrecoDeVenda);
 
-    let totalPrice = parseFloat(product.PrecoDeVenda);
+  let totalPrice = basePrice;
 
-    additionalStates.forEach(additional => {
-      additional.options.forEach(option => {
-        if (option.count > 0) {
-          totalPrice += option.count * parseFloat(option.price);
-        }
-      });
-
-      additional.produtos.forEach(produto => {
-        if (produto.count > 0) {
-          if (!(product.EhCombo && additional.required)) {
-            totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
-          }
-        }
-      });
+  additionalStates.forEach(additional => {
+    additional.options.forEach(option => {
+      if (option.count > 0) {
+        totalPrice += option.count * parseFloat(option.price);
+      }
     });
 
-    totalPrice *= quantity;
-    return totalPrice.toFixed(2);
-  };
+    additional.produtos.forEach(produto => {
+      if (produto.count > 0) {
+        if (!(product.EhCombo && additional.required)) {
+          totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
+        }
+      }
+    });
+  });
 
+  totalPrice *= quantity;
+  return totalPrice.toFixed(2);
+};
   const validateRequiredAdditions = () => {
     const allRequiredMet = additionalStates.every(additional => {
       if (additional.required) {
@@ -140,16 +140,23 @@ const Modal_product_component = ({ id, product, onClose }) => {
                   {/* Renderiza opções de observações como botões de rádio se for do tipo 1 */}
                   {additional.type === 1 && additional.observacao.length > 0 && (
                     <div className='observacoes'>
-                      {additional.observacao.map(obs => (
-                        <label key={obs.Id} className="observacao-label">
-                          <input 
-                            type="radio" 
-                            name={`observacao_${additional.id}`} 
-                            onChange={() => handleIncrement(obs.Id, additional.id)} 
-                          />
-                          {obs.Nome}
+                        {additional.observacao.map(obs => (
+                        <label key={obs.Id} className="observacao-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <input 
+                              type="radio" 
+                              name={`observacao_${additional.id}`} 
+                              onChange={() => handleIncrement(obs.Id, additional.id)} 
+                              checked={obs.selected || false}
+                            />
+                            <span style={{ marginLeft: '8px' }}>{obs.Nome}</span>
+                          </div>
+                          <div>
+                            R$ {obs.PrecoDeVenda ? obs.PrecoDeVenda.toFixed(2).replace('.', ',') : '0,00'}
+                          </div>
                         </label>
                       ))}
+
                     </div>
                   )}
 
