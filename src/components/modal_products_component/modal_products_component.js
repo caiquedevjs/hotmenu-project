@@ -8,7 +8,7 @@ import { Tooltip } from 'react-tooltip';
 import { useParams } from 'react-router-dom'; // Importando useParams para capturar o nome do estabelecimento
 
 const Modal_product_component = ({ id, product, onClose }) => {
-  const { totalAdditional, additionalStates, handleIncrement, handleDecrement, getSelectedTamanho  } = useAdditionalState(product.Id);
+  const { totalAdditional, additionalStates, handleIncrement, handleDecrement, getSelectedTamanho, calcularPrecoAdicionais  } = useAdditionalState(product.Id);
   const { addToCart } = useContext(CartContext);
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -53,32 +53,17 @@ const Modal_product_component = ({ id, product, onClose }) => {
     setTotalPrice(calculateTotalPrice());
   }, [additionalStates, quantity]);
 
- const calculateTotalPrice = () => {
+const calculateTotalPrice = () => {
   const selectedTamanho = getSelectedTamanho();
-  let basePrice = selectedTamanho
+  const basePrice = selectedTamanho
     ? parseFloat(selectedTamanho.PrecoDeVenda)
     : parseFloat(product.PrecoDeVenda);
 
-  let totalPrice = basePrice;
+  const adicionaisPreco = calcularPrecoAdicionais();
 
-  additionalStates.forEach(additional => {
-    additional.options.forEach(option => {
-      if (option.count > 0) {
-        totalPrice += option.count * parseFloat(option.price);
-      }
-    });
+  const total = (basePrice + adicionaisPreco) * quantity;
 
-    additional.produtos.forEach(produto => {
-      if (produto.count > 0) {
-        if (!(product.EhCombo && additional.required)) {
-          totalPrice += produto.count * parseFloat(produto.PrecoDeVenda);
-        }
-      }
-    });
-  });
-
-  totalPrice *= quantity;
-  return totalPrice.toFixed(2);
+  return total.toFixed(2);
 };
   const validateRequiredAdditions = () => {
     const allRequiredMet = additionalStates.every(additional => {
