@@ -493,8 +493,6 @@ const handleFinalizarPedido = () => {
           Status: "Novo",
           Cliente: nome,
           Tel: telefone,
-          Numero_cartao: cartao,
-          Cvc: cvc,
           Endereço: (cep === '' && endereco === '' && complemento === '' && bairro === '') ?
               "RETIRADA NO LOCAL" :
               `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
@@ -511,6 +509,7 @@ const handleFinalizarPedido = () => {
      
       // Transformar o objeto em JSON
 const pedidoJson = JSON.stringify(pedido);
+console.log(pedido)
 
 // Exemplo de como fazer a requisição POST usando fetch
 fetch('URL_DA_API', {
