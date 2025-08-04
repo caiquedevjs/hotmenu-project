@@ -26,10 +26,11 @@ import { Nav, Tab } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 
 // <------- import utils------->
-import { fetchFormaPagamentos,fetchEstabelecimentoData } from '../service/productService';
+import { fetchFormaPagamentos,fetchEstabelecimentoData, fetchFretePorCep } from '../service/productService';
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
 import truncateText from '../../utils/truncateText';
+
 
 
 
@@ -70,6 +71,7 @@ const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
+const [fretePorCep, setFretePorCep] = useState(null);
 const [Fretefuncao, setFreteFuncao] = useState('');
 const [descontoAplicado, setDescontoAplicado] = useState(0);
 const [valorTroco, setValorTroco] = useState(0);
@@ -201,6 +203,33 @@ const handleCheckboxChange = (nome) => {
         setSelectedOption('credito'); // Define como 'credito' ao selecionar a aba de pagamento online
     }
   };
+
+// <------ função para buscar o frete por bairro ------>
+useEffect(() => {
+  const verificarFretePorCep = async () => {
+    if (cep.length === 8 && storeName) {
+      console.log('🔍 Buscando frete por CEP...');
+      console.log('Payload enviado:', { Id: storeName, cep });
+
+      const resposta = await fetchFretePorCep(storeName, cep);
+
+      console.log('📦 Resposta da API frete por CEP:', resposta);
+
+      if (resposta?.frete) {
+        const valorFrete = parseFloat(resposta.frete.replace(',', '.'));
+        setFretePorCep(valorFrete);
+        setBairro(resposta.bairro || '');
+      } else {
+        console.log('❌ CEP não encontrado ou sem frete configurado.');
+        setFretePorCep(null);
+      }
+    }
+  };
+
+  verificarFretePorCep();
+}, [cep, storeName]);
+
+
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -367,22 +396,28 @@ const totalPriceWithFrete = () => {
   const cartTotal = parseFloat(totalCartPrice().replace(',', '.'));
   let totalComDesconto = cartTotal;
 
-  // Aplicar desconto, se houver
   if (descontoAplicado > 0) {
     const descontoValor = totalComDesconto * (descontoAplicado / 100);
     totalComDesconto -= descontoValor;
   }
 
-  // Calcular o frete
-  if (estabelecimento) {
-    if (estabelecimento.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
-      return totalComDesconto.toFixed(2).replace('.', ','); 
-    } else if (estabelecimento.FreteFixo) {
-      const totalComFrete = totalComDesconto + estabelecimento.ValorFreteFixo;
-      return totalComFrete.toFixed(2).replace('.', ','); 
-    }
+  // ✅ Prioridade 1: frete por CEP
+  if (fretePorCep !== null) {
+    return (totalComDesconto + fretePorCep).toFixed(2).replace('.', ',');
   }
-  return totalComDesconto.toFixed(2).replace('.', ','); 
+
+  // ✅ Prioridade 2: frete grátis
+  if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
+    return totalComDesconto.toFixed(2).replace('.', ',');
+  }
+
+  // ✅ Prioridade 3: frete fixo
+  if (estabelecimento?.FreteFixo) {
+    return (totalComDesconto + estabelecimento.ValorFreteFixo).toFixed(2).replace('.', ',');
+  }
+
+  // ✅ Sem frete
+  return totalComDesconto.toFixed(2).replace('.', ',');
 };
 
 const calcularTroco = () => {
@@ -869,7 +904,14 @@ const handleShow = () => setShow(true);
                     {estabelecimento && estabelecimento.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe ? (
                        <p  className='freeGratis_class' style={{ color: 'red' ,'fontSize': fontSize}}>
                           Frete grátis 
-                        </p> ) :(
+                        </p> )
+                         : fretePorCep !== null ? (
+                            // Frete por CEP
+                            <p className='Total-price-cart' style={{ color: '#228B22' }}>
+                              Frete por CEP: R$ {fretePorCep.toFixed(2).replace('.', ',')}
+                            </p>
+                          ) 
+                         :(
                       <p className='Total-price-cart' style={{'color' : '#228B22'}}>
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'consultar'}
                       </p>
@@ -1078,7 +1120,7 @@ const handleShow = () => setShow(true);
             <div className="col-md-2">
               <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
               <InputMask
-                mask="99999-999"
+                mask="99999999"
                 className="form-control"
                 id="inputZip"
                 value={cep}

@@ -13,7 +13,7 @@ export const fetchProducts = async (storeName) => {
     return [];
   }
 };
-
+// <------- Função para buscar dados das perguntas do produto ------->  
 export const fetchPerguntas = async (productId) => {
   try {
     const response = await fetch(`https://hotmenu.com.br/webhook/PerguntasProdutos/${productId}`);
@@ -82,7 +82,7 @@ export const fetchFormaPagamentos = async (storeName) => {
   }
 };
 
-
+// <------- Função para buscar dados do cliente ------->  
  export const fetchEstabelecimentoData = async (storeName) =>{
   try{
     const response = await fetch(`https://hotmenu.com.br/webhook/Cliente/${storeName}`);
@@ -97,7 +97,7 @@ export const fetchFormaPagamentos = async (storeName) => {
     return {status: 'Erro ao buscar dados do estabelecimento'}
   }
  }
-
+// <------- Função para buscar dados do produto ------->  
  export const fetchProductById = async (productId) => {
   try {
     const response = await fetch(`https://hotmenu.com.br/webhook/ObterDadosProduto/${productId}`);
@@ -109,6 +109,30 @@ export const fetchFormaPagamentos = async (storeName) => {
     return null;
   }
 };
+
+
+
+// <------- Função para buscar dados de frete via CEP com query params ------->  
+export const fetchFretePorCep = async (storeId, cep) => {
+  try {
+    const url = `https://hotmenu.com.br/Webhook/BuscarDadosFreteCep?id=${storeId}&cep=${cep}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erro ao buscar frete por CEP. Detalhes do erro:', errorText);
+      throw new Error('Erro ao buscar frete por CEP');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao buscar dados de frete por CEP:', error);
+    return { status: 'Erro ao buscar frete' };
+  }
+};
+
 
 
  // https://hotmenu.com.br/webhook/Cliente/hotmenu
