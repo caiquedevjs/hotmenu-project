@@ -212,13 +212,14 @@ useEffect(() => {
       console.log('Payload enviado:', { Id: storeName, cep });
 
       const resposta = await fetchFretePorCep(storeName, cep);
-
       console.log('📦 Resposta da API frete por CEP:', resposta);
 
-      if (resposta?.frete) {
-        const valorFrete = parseFloat(resposta.frete.replace(',', '.'));
+      const dadosCep = resposta?.cep?.Data;
+
+      if (dadosCep?.frete) {
+        const valorFrete = parseFloat(dadosCep.frete.replace(',', '.'));
         setFretePorCep(valorFrete);
-        setBairro(resposta.bairro || '');
+        setBairro(dadosCep.bairro || '');
       } else {
         console.log('❌ CEP não encontrado ou sem frete configurado.');
         setFretePorCep(null);
@@ -228,6 +229,7 @@ useEffect(() => {
 
   verificarFretePorCep();
 }, [cep, storeName]);
+
 
 
 
@@ -536,8 +538,13 @@ const handleFinalizarPedido = () => {
           bandeiraCartão: checkedOptions.bandeiraCartão || "Sem cartão",
           FormaRetirada: formaRetirada,
           Produtos: produtos,
-          frete: estabelecimento.PromocaoFreteGratis && estabelecimento.ValorFreteGratisAcimaDe ?
-          "Frete grátis" :`R$ ${FreteFixo}`,
+          frete: fretePorCep !== null
+      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
+      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
+          ? "Frete grátis"
+          : (estabelecimento?.FreteFixo
+              ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
+              : "consultar"),
           troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
           preçoTotal: `R$ ${totalPriceWithFrete()}`
       };
@@ -908,7 +915,7 @@ const handleShow = () => setShow(true);
                          : fretePorCep !== null ? (
                             // Frete por CEP
                             <p className='Total-price-cart' style={{ color: '#228B22' }}>
-                              Frete por CEP: R$ {fretePorCep.toFixed(2).replace('.', ',')}
+                              R$ {fretePorCep.toFixed(2).replace('.', ',')}
                             </p>
                           ) 
                          :(
@@ -918,7 +925,7 @@ const handleShow = () => setShow(true);
                     )}
                      {descontoAplicado > 0 && (
                                 <p className='Total-price-cart'>
-                                    Desconto de: {descontoAplicado}% 
+                                    {descontoAplicado}% 
                                 </p>
                             )}
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
