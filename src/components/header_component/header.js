@@ -667,61 +667,68 @@ fetch('URL_DA_API', {
   
   //<------ função para requisitar o dado no modal de cupom na api de cupom------->
 
-  const handleBuscarCupom = async () => {
-    if (!estabelecimento) {
-        console.error('Dados do estabelecimento não carregados');
-        return;
-    }
-
-    const totalSemFrete = parseFloat(totalCartPrice().replace(',', '.'));
-    
-    if (totalSemFrete < 20) {
-        setMensagem('O valor mínimo para aplicar o cupom é R$ 20,00.');
-        return;
-    }
-
-    try {
-      const response = await fetch('https://hotmenu.com.br/webhook/BuscarCupom', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              Id: estebelecimentoId,
-              Cupom: cupom,
-              Celular: celular,
-          })
-      });
-  
-      // Verifique o tipo da resposta (content-type)
-      const contentType = response.headers.get('content-type');
-      console.log('Tipo de conteúdo:', contentType);
-      if (contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          console.log('Resposta JSON:', data);
-  
-          const { Valido, MsgErro, Regras } = data;
-  
-          if (Valido) {
-              setMensagem('Cupom válido!');
-              const desconto = parseFloat(Regras.match(/Desconto de: (\d+,\d+)/)[1].replace(',', '.'));
-              setDescontoAplicado(desconto);
-          } else {
-              setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
-          }
-      } else {
-          // Se não for JSON, logue o conteúdo como texto para entender o que está sendo retornado
-          const text = await response.text();
-          console.error('Resposta inesperada:', text);
-          setMensagem('Erro ao buscar o cupom');
-      }
-  } catch (error) {
-      console.error('Erro ao buscar o cupom:', error);
-      setMensagem('Erro ao buscar o cupom');
+const handleBuscarCupom = async () => {
+  if (!estabelecimento) {
+    console.error('Dados do estabelecimento não carregados');
+    return;
   }
-  
-  
+
+  const totalSemFrete = parseFloat(totalCartPrice().replace(',', '.'));
+
+  if (totalSemFrete < 20) {
+    setMensagem('O valor mínimo para aplicar o cupom é R$ 20,00.');
+    return;
+  }
+
+  try {
+    const params = new URLSearchParams({
+      id: storeName,
+      cupom: cupom,
+      celular: "5571999723638",
+      ValorPedido: totalSemFrete.toString()
+    });
+
+    const url = `https://hotmenu.com.br/Webhook/BuscarCupom?${params.toString()}`;
+
+    const response = await fetch(url, { method: 'GET' });
+
+    let data;
+    try {
+      data = await response.json(); // mesmo com content-type errado, parseia
+    } catch (err) {
+      const text = await response.text();
+      console.error('Erro ao interpretar resposta como JSON:', text);
+      setMensagem('Erro ao interpretar a resposta do cupom.');
+      return;
+    }
+
+    console.log('Resposta JSON:', data);
+
+    const { Valido, MsgErro, Regras } = data?.cupom?.Data || {};
+
+    if (Valido) {
+      setMensagem('Cupom válido!');
+
+      const descontoMatch = Regras.match(/Desconto de:\s*(\d+,\d+)/);
+
+      if (descontoMatch) {
+        const descontoPercentual = parseFloat(descontoMatch[1].replace(',', '.'));
+        const descontoValor = (totalSemFrete * descontoPercentual) / 100;
+        setDescontoAplicado(descontoValor);
+      } else {
+        setMensagem('Desconto não pôde ser interpretado nas regras.');
+      }
+
+    } else {
+      setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
+    }
+
+  } catch (error) {
+    console.error('Erro ao buscar o cupom:', error);
+    setMensagem('Erro ao buscar o cupom');
+  }
 };
+
 
 const [show, setShow] = useState(false);
 
