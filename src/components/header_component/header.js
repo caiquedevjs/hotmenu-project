@@ -24,7 +24,7 @@ import SoundMessage from '../../assets/sounds/message.wav';
 import InputMask from 'react-input-mask';
 import { Nav, Tab } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-
+import { Modal } from 'bootstrap';
 // <------- import utils------->
 import { fetchFormaPagamentos,fetchEstabelecimentoData, fetchFretePorCep } from '../service/productService';
 import  useHover  from '../../utils/headerHoverHandlers';
@@ -399,26 +399,22 @@ const totalPriceWithFrete = () => {
   let totalComDesconto = cartTotal;
 
   if (descontoAplicado > 0) {
-    const descontoValor = totalComDesconto * (descontoAplicado / 100);
-    totalComDesconto -= descontoValor;
+    // descontoAplicado já é valor em R$
+    totalComDesconto -= descontoAplicado;
   }
 
-  // ✅ Prioridade 1: frete por CEP
   if (fretePorCep !== null) {
     return (totalComDesconto + fretePorCep).toFixed(2).replace('.', ',');
   }
 
-  // ✅ Prioridade 2: frete grátis
   if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
     return totalComDesconto.toFixed(2).replace('.', ',');
   }
 
-  // ✅ Prioridade 3: frete fixo
   if (estabelecimento?.FreteFixo) {
     return (totalComDesconto + estabelecimento.ValorFreteFixo).toFixed(2).replace('.', ',');
   }
 
-  // ✅ Sem frete
   return totalComDesconto.toFixed(2).replace('.', ',');
 };
 
@@ -694,7 +690,7 @@ const handleBuscarCupom = async () => {
 
     let data;
     try {
-      data = await response.json(); // mesmo com content-type errado, parseia
+      data = await response.json();
     } catch (err) {
       const text = await response.text();
       console.error('Erro ao interpretar resposta como JSON:', text);
@@ -708,14 +704,40 @@ const handleBuscarCupom = async () => {
 
     if (Valido) {
       setMensagem('Cupom válido!');
+      console.log("Total sem frete:", totalSemFrete);
 
-      const descontoMatch = Regras.match(/Desconto de:\s*(\d+,\d+)/);
+      // Remove tags HTML e normaliza espaços
+      const regrasLimpa = Regras
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
-      if (descontoMatch) {
-        const descontoPercentual = parseFloat(descontoMatch[1].replace(',', '.'));
-        const descontoValor = (totalSemFrete * descontoPercentual) / 100;
-        setDescontoAplicado(descontoValor);
+      console.log('Regras limpa:', regrasLimpa);
+
+      // Regex para desconto percentual (com %)
+      const matchPercentual = regrasLimpa.match(/Desconto de:\s*(\d{1,3},\d{2})%/);
+
+      // Regex para desconto fixo (sem %)
+      const matchFixo = !matchPercentual && regrasLimpa.match(/Desconto de:\s*(?:R\$)?\s*(\d{1,3},\d{2})/);
+
+      if (matchPercentual) {
+        const percentual = parseFloat(matchPercentual[1].replace(',', '.'));
+        const valorDesconto = (totalSemFrete * percentual) / 100;
+        console.log(`Desconto percentual de ${percentual}%: R$ ${valorDesconto.toFixed(2)}`);
+        setDescontoAplicado(valorDesconto);
+
+      } else if (matchFixo) {
+        const valorFixo = parseFloat(matchFixo[1].replace(',', '.'));
+        console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
+        setDescontoAplicado(valorFixo);
+         const modalElement = document.getElementById('modal_cupom_desconto');
+      if (modalElement) {
+        const modal = Modal.getInstance(modalElement) || new Modal(modalElement);
+        modal.hide();
+      }
+
       } else {
+        console.warn('Nenhum desconto reconhecido nas regras.');
         setMensagem('Desconto não pôde ser interpretado nas regras.');
       }
 
@@ -728,6 +750,7 @@ const handleBuscarCupom = async () => {
     setMensagem('Erro ao buscar o cupom');
   }
 };
+
 
 
 const [show, setShow] = useState(false);
@@ -833,7 +856,7 @@ const handleShow = () => setShow(true);
 
 
 
-<Offcanvas show={show} onHide={handleClose} placement="end">
+<Offcanvas show={show} onHide={handleClose} placement="end" id='offcanvas-cartshopping'>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-bag-fill" viewBox="0 0 16 16" style={{ color }}>
@@ -930,11 +953,7 @@ const handleShow = () => setShow(true);
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'consultar'}
                       </p>
                     )}
-                     {descontoAplicado > 0 && (
-                                <p className='Total-price-cart'>
-                                    {descontoAplicado}% 
-                                </p>
-                            )}
+                   
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
@@ -1011,7 +1030,7 @@ const handleShow = () => setShow(true);
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
              ></input> 
-            <button className='btn-buscar-cupom' style={{backgroundColor: color}} onClick={handleBuscarCupom}>buscar</button>
+            <button className='btn-buscar-cupom' style={{backgroundColor: color}}  data-bs-dismiss="modal" >buscar</button>
           </div>
         </div>
       </div>
