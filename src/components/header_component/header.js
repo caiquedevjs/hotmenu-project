@@ -953,57 +953,50 @@ const handleShow = () => setShow(true);
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'consultar'}
                       </p>
                     )}
-<<<<<<< HEAD
-                   
-=======
                      
->>>>>>> 78867a55ff293eef1a5bae1bd11d75f972be1767
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
-                <hr></hr>
-                <div className='btn-card'>
-                <button
-                  className="btn-compra"
-                  disabled={cartItems.length === 0 || parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima} // Verifica se o carrinho está vazio ou o valor é menor que o mínimo
-                  data-bs-toggle={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'modal' : undefined} // Verifica se o total atende ao valor mínimo
-                  data-bs-target={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? '#modal-finalizar-compra' : undefined} // Modal aberto somente se o total for maior que o mínimo
-                  onClick={()=>{
-                    handleAddPedido()
-                    handleClose()
-                  }}
-                  data-tooltip-id="carrinho-vazio-id"
-                  data-tooltip-content={
-                    cartItems.length === 0 
-                      ? "Adicione um produto para finalizar a compra." 
-                      : parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima 
-                      ? `O valor mínimo para compra é: R$ ${valorVendaMinima.toFixed(2).replace('.', ',')}` 
-                      : ""
-                  } 
-                  data-tooltip-place="top-start"
-                  style={{
-                    backgroundColor: comprarButtonHover.isHovered ? '#332D2D' : color, 
-                    cursor: cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'pointer' : 'not-allowed'
-                  }}
-                  onMouseEnter={comprarButtonHover.handleMouseEnter}
-                  onMouseLeave={comprarButtonHover.handleMouseLeave}
-                  
-                  
-                >
-                  Finalizar Compra
-                </button>
-                <Tooltip id='carrinho-vazio-id'></Tooltip>
-                 <button  data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto"  className='btn-cupom'
-              data-tooltip-id="tooltip-cupom-btn"
-             data-tooltip-content="adicione o seu cupom aqui."
-             data-tooltip-place="top-start"
-             style={{backgroundColor : cupomButtonHover.isHovered ? '#332D2D' : color}}
-             onMouseEnter={cupomButtonHover.handleMouseEnter}
-             onMouseLeave={cupomButtonHover.handleMouseLeave}
-             onClick={handleClose}
-             >Adicionar cupom
-              </button>
-                </div>
+                <><hr></hr><div className='btn-card'>
+                    <button
+                      className="btn-compra"
+                      disabled={cartItems.length === 0 || parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima} // Verifica se o carrinho está vazio ou o valor é menor que o mínimo
+                      data-bs-toggle={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'modal' : undefined} // Verifica se o total atende ao valor mínimo
+                      data-bs-target={cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? '#modal-finalizar-compra' : undefined} // Modal aberto somente se o total for maior que o mínimo
+                      onClick={() => {
+                        handleAddPedido();
+                        handleClose();
+                      } }
+                      data-tooltip-id="carrinho-vazio-id"
+                      data-tooltip-content={cartItems.length === 0
+                        ? "Adicione um produto para finalizar a compra."
+                        : parseFloat(totalCartPrice().replace(',', '.')) < valorVendaMinima
+                          ? `O valor mínimo para compra é: R$ ${valorVendaMinima.toFixed(2).replace('.', ',')}`
+                          : ""}
+                      data-tooltip-place="top-start"
+                      style={{
+                        backgroundColor: comprarButtonHover.isHovered ? '#332D2D' : color,
+                        cursor: cartItems.length > 0 && parseFloat(totalCartPrice().replace(',', '.')) >= valorVendaMinima ? 'pointer' : 'not-allowed'
+                      }}
+                      onMouseEnter={comprarButtonHover.handleMouseEnter}
+                      onMouseLeave={comprarButtonHover.handleMouseLeave}
+
+
+                    >
+                      Finalizar Compra
+                    </button>
+                    <Tooltip id='carrinho-vazio-id'></Tooltip>
+                    <button data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto" className='btn-cupom'
+                      data-tooltip-id="tooltip-cupom-btn"
+                      data-tooltip-content="adicione o seu cupom aqui."
+                      data-tooltip-place="top-start"
+                      style={{ backgroundColor: cupomButtonHover.isHovered ? '#332D2D' : color }}
+                      onMouseEnter={cupomButtonHover.handleMouseEnter}
+                      onMouseLeave={cupomButtonHover.handleMouseLeave}
+                      onClick={handleClose}
+                    >Adicionar cupom
+                    </button>
+                  </div></>
                </div>
             </div>
             </div>
