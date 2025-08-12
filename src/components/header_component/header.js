@@ -953,7 +953,11 @@ const handleShow = () => setShow(true);
                       {estabelecimento && estabelecimento.FreteFixo ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` : 'consultar'}
                       </p>
                     )}
+<<<<<<< HEAD
                    
+=======
+                     
+>>>>>>> 78867a55ff293eef1a5bae1bd11d75f972be1767
                     <strong><p className='Total-price-cart'>R$ {totalPriceWithFrete()}</p></strong>
                   </div>
                 </div>
