@@ -1027,7 +1027,7 @@ const handleShow = () => setShow(true);
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
              ></input> 
-            <button className='btn-buscar-cupom' style={{backgroundColor: color}}  data-bs-dismiss="modal" >buscar</button>
+            <button className='btn-buscar-cupom' style={{backgroundColor: color}}  data-bs-dismiss="modal"  onClick={handleBuscarCupom}>buscar</button>
           </div>
         </div>
       </div>
