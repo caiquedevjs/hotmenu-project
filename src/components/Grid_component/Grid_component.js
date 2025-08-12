@@ -4,8 +4,60 @@ import './Grid_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
-import { useParams } from 'react-router-dom'; // Importando useParams para pegar o nome da URL
-import { Modal } from 'bootstrap'; // Importando a API do Bootstrap
+import { useParams } from 'react-router-dom';
+import { Modal } from 'bootstrap';
+
+// ---------- Helpers para validar disponibilidade por dia/horário ----------
+const DAY_MAP = {
+  0: { flag: "Domingo", ini: "DomingoIni", fim: "DomingoFim" },
+  1: { flag: "Segunda", ini: "SegundaIni", fim: "SegundaFim" },
+  2: { flag: "Terca",   ini: "TercaIni",   fim: "TercaFim"   },
+  3: { flag: "Quarta",  ini: "QuartaIni",  fim: "QuartaFim"  },
+  4: { flag: "Quinta",  ini: "QuintaIni",  fim: "QuintaFim"  },
+  5: { flag: "Sexta",   ini: "SextaIni",   fim: "SextaFim"   },
+  6: { flag: "Sabado",  ini: "SabadoIni",  fim: "SabadoFim"  },
+};
+
+// Converte "YYYY-MM-DDTHH:mm:ss" -> minutos do dia (usa apenas HH:mm)
+const minutesOfDay = (dateStr) => {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  return d.getHours() * 60 + d.getMinutes();
+};
+
+// Disponível agora considerando o dia da semana e a janela de horário
+const isProductAvailableNow = (product) => {
+  const now = new Date();
+  const dow = now.getDay(); // 0..6 (Domingo..Sábado)
+  const { flag, ini, fim } = DAY_MAP[dow];
+
+  // Se o flag do dia for falso, não está disponível hoje
+  if (!product?.[flag]) return false;
+
+  const startMin = minutesOfDay(product?.[ini]);
+  const endMin   = minutesOfDay(product?.[fim]);
+
+  // Se não houver janela definida, considere o dia inteiro
+  if (startMin === null || endMin === null) return true;
+
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  // Janela que cruza a meia-noite (ex.: 22:00 → 02:00)
+  if (endMin < startMin) {
+    return nowMin >= startMin || nowMin <= endMin;
+  }
+
+  return nowMin >= startMin && nowMin <= endMin;
+};
+
+// Estoque disponível quando controla estoque
+const hasStock = (product) => {
+  if (!product?.ControlarEstoque) return true;
+  const qty = typeof product?.EstoqueAtual === "number" ? product.EstoqueAtual : 0;
+  return qty > 0;
+};
+// -------------------------------------------------------------------------
 
 const Grid_component = ({ categoryId, categoryName }) => {
   const [products, setProducts] = useState([]);
@@ -17,7 +69,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
   const [error, setError] = useState(null);
   const [color, setColor] = useState("");
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
-  const { storeName } = useParams(); 
+  const { storeName } = useParams();
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
@@ -44,45 +96,64 @@ const Grid_component = ({ categoryId, categoryName }) => {
     const fetchAllProducts = async () => {
       try {
         const productsData = await fetchProducts(storeName);
-        const filteredProducts = productsData.filter(product => product.CategoriaId === categoryId);
+
+        // Filtra por categoria E por disponibilidade no horário de HOJE
+        const filteredProducts = productsData
+          .filter(p => p.CategoriaId === categoryId)
+          .filter(p => isProductAvailableNow(p)); // <- some do grid se estiver fora do horário
+
         setProducts(filteredProducts);
-  
-        // Captura o hash da URL, por exemplo: #product-modal-123
-        const hash = window.location.hash.substring(1); // Remove o #
+
+        // Deep-link via hash (#product-modal-123) só abrirá se o produto estiver disponível agora
+        const hash = window.location.hash.substring(1);
         if (hash) {
-          const productId = hash.split('-')[2]; // Extrai o ID do produto
+          const productId = hash.split('-')[2];
           const product = filteredProducts.find(p => p.Id === parseInt(productId, 10));
-          if (product && product.EstoqueAtual > 0) {
-            openModal(product); // Aciona a função openModal para abrir o modal do produto
+          if (product && hasStock(product)) {
+            openModal(product);
+          } else if (product && !hasStock(product)) {
+            setShowUnavailableModal(true);
           }
         }
       } catch (error) {
         console.error('Erro ao buscar os produtos:', error);
       }
     };
-  
+
     fetchAllProducts();
   }, [categoryId, storeName]);
 
+  // Mantém o grid “vivo”: revalida a cada minuto (entra/sai conforme horário muda)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProducts(prev => prev.filter(p => isProductAvailableNow(p)));
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Continua suportando mudança manual do hash (só abre se ainda estiver visível)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
       if (hash) {
         const productId = hash.split('-')[2];
         const product = products.find(p => p.Id === parseInt(productId, 10));
-        if (product && product.EstoqueAtual > 0) {
-          openModal(product);
+        if (product) {
+          if (hasStock(product)) {
+            openModal(product);
+          } else {
+            setShowUnavailableModal(true);
+          }
         }
       }
     };
-  
+
     window.addEventListener('hashchange', handleHashChange);
-  
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, [products]);
-  
+
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.matchMedia('(max-width: 768px)').matches;
@@ -91,61 +162,54 @@ const Grid_component = ({ categoryId, categoryName }) => {
 
     handleResize();
     window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const openModal = (product) => {
-    if (!product.ControlarEstoque) {
-      setSelectedProduct(product);
-      window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
-  
-      const modalElement = document.getElementById(`product-modal-${product.Id}`);
-      const bootstrapModal = new Modal(modalElement);
-      bootstrapModal.show();
-    } else if (product.EstoqueAtual === 0) {
+    // Garante que só abre se estiver no horário do dia
+    if (!isProductAvailableNow(product)) {
       setShowUnavailableModal(true);
-    } else {
-      setSelectedProduct(product);
-      window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
-  
-      const modalElement = document.getElementById(`product-modal-${product.Id}`);
-      const bootstrapModal = new Modal(modalElement);
-      bootstrapModal.show();
+      return;
     }
+    // E se tiver estoque quando controla
+    if (!hasStock(product)) {
+      setShowUnavailableModal(true);
+      return;
+    }
+
+    setSelectedProduct(product);
+    window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
+
+    const modalElement = document.getElementById(`product-modal-${product.Id}`);
+    const bootstrapModal = new Modal(modalElement);
+    bootstrapModal.show();
   };
-  
+
   const chunkArray = (arr, chunkSize) => {
     let index = 0;
     const arrayLength = arr.length;
     let tempArray = [];
-
     for (index = 0; index < arrayLength; index += chunkSize) {
       const chunk = arr.slice(index, index + chunkSize);
       tempArray.push(chunk);
     }
-
     return tempArray;
   };
 
   const productsChunks = chunkArray(products, 2);
 
   const truncateText = (text) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
     return `${text.substring(0, maxLength)}...`;
   };
 
   const formatPrice = (price) => {
+    if (typeof price !== 'number') return '0,00';
     return price.toFixed(2).replace('.', ',');
   };
 
-  const closeUnavailableModal = () => {
-    setShowUnavailableModal(false);
-  };
+  const closeUnavailableModal = () => setShowUnavailableModal(false);
 
   return (
     <div className="container text-center">
@@ -157,44 +221,44 @@ const Grid_component = ({ categoryId, categoryName }) => {
                 <div id='card_container'>
                   <div id='text_category'>
                     <div className='product-description'>
-                      <p 
-                        onClick={() => openModal(product)} 
-                        id='product-title' 
-                        style={product.EstoqueAtual === 0 ? { cursor: 'not-allowed' } : {}}
+                      <p
+                        onClick={() => openModal(product)}
+                        id='product-title'
+                        style={hasStock(product) ? {} : { cursor: 'not-allowed' }}
                       >
                         {product.Nome}
                       </p>
                       <p className='product-description-title'>{truncateText(product.Descricao)}</p>
                       <div className='conteiner-price'>
                         <strong>
-                          <p 
+                          <p
                             className='product-description-price'
                             data-tooltip-id="tooltip-preço-venda"
                             data-tooltip-content="preço de venda"
                             data-tooltip-place="top"
                           >
-                            {product.EstoqueAtual === 0 ? (
-                                <span style={{ color: 'red' }}>Indisponível</span>
-                              ) : product.EhDivisivel ? (
-                                <span>por sabor</span>
-                              ) : product.PartesProduto !== null ? (
-                                <span>por tamanho</span>
-                              ) : (
-                                <>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                    className="bi bi-tag-fill"
-                                    viewBox="0 0 16 16"
-                                    style={{ color: color }}
-                                  >
-                                    <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                                  </svg> R${formatPrice(product.PrecoDeVenda)}
-                                </>
-                              )}
-
+                            {!hasStock(product) ? (
+                              <span style={{ color: 'red' }}>Indisponível</span>
+                            ) : product.EhDivisivel ? (
+                              <span>por sabor</span>
+                            ) : product.PartesProduto !== null ? (
+                              <span>por tamanho</span>
+                            ) : (
+                              <>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-tag-fill"
+                                  viewBox="0 0 16 16"
+                                  style={{ color: color }}
+                                >
+                                  <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                </svg>{' '}
+                                R${formatPrice(product.PrecoDeVenda)}
+                              </>
+                            )}
                             <Tooltip id="tooltip-preço-venda" />
                           </p>
                         </strong>
@@ -224,9 +288,15 @@ const Grid_component = ({ categoryId, categoryName }) => {
       ))}
 
       {/* Modal para Produto Indisponível */}
-      {/* Modal para Produto Indisponível */}
       {showUnavailableModal && (
-        <div className="modal fade show" id="unavailable-modal" tabIndex="-1" aria-labelledby="unavailable-modalLabel" aria-hidden="true" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <div
+          className="modal fade show"
+          id="unavailable-modal"
+          tabIndex="-1"
+          aria-labelledby="unavailable-modalLabel"
+          aria-hidden="true"
+          style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
