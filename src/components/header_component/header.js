@@ -496,7 +496,7 @@ const handleFinalizarPedido = () => {
       }
     // zerar dados do carrinho
     setList([])
-    setValorTotalPedido(0.00)
+    setValorTotalPedido("0,00")
     clearCart()
 
       // Captura a forma de retirada
@@ -654,7 +654,7 @@ fetch('URL_DA_API', {
     }
     else{
     setList([])
-    setValorTotalPedido(0)
+    setValorTotalPedido('"0,00"')
     clearCart()
     
     
