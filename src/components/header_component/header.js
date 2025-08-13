@@ -51,7 +51,7 @@ const Header_component = () =>{
   const truncate_Text = (text) => truncateText(text, 40)
 
 // <------- contexto do carrinho ------->
-const { cartItems, totalCartPrice, removeFromCart, isOpen, toggleOffcanvas} = useContext(CartContext);
+const { cartItems, totalCartPrice, removeFromCart, isOpen, toggleOffcanvas, clearCart} = useContext(CartContext);
 const { storeName } = useParams();
 
 // <------ estados ------->
@@ -494,6 +494,10 @@ const handleFinalizarPedido = () => {
               }
           }
       }
+    // zerar dados do carrinho
+    setList([])
+    setValorTotalPedido(0.00)
+    clearCart()
 
       // Captura a forma de retirada
       const formaRetirada = activeTab;
@@ -650,7 +654,10 @@ fetch('URL_DA_API', {
     }
     else{
     setList([])
-    setValorTotalPedido()
+    setValorTotalPedido(0)
+    clearCart()
+    
+    
     toast.success("Pedido excluido com sucesso. 😞",  {theme: 'dark'})
     sound.play()}
   };

@@ -132,9 +132,14 @@ export const CartProvider = ({ children }) => {
   const totalCartPrice = () => {
     return cartItems.reduce((total, item) => total + item.totalPrice, 0).toFixed(2).replace('.', ',');
   };
+const clearCart = () => {
+  setCartItems([]);
+  totalCartPrice(0)
+  
 
+};
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen,  }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen, clearCart  }}>
       {children}
     </CartContext.Provider>
   );
