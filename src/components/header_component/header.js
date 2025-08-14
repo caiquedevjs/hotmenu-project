@@ -441,163 +441,155 @@ const handleAddPedido =() =>{
 
 
 
-//<------ função para finalizar a lista de pedido ------->
-const handleFinalizarPedido = () => {
-  if (list.length > 0) {
-
-     // Validação dos campos obrigatórios
-     if (!nome || !telefone) {
-      toast.error("Nome e telefone são dados obrigatórios", { theme: 'dark' });
-      return;
+// <------ função para finalizar a lista de pedido ------->
+const handleFinalizarPedido = async () => {
+  if (list.length <= 0) {
+    toast.error("Não há pedidos para finalizar", { theme: 'dark' });
+    sound.play();
+    return;
   }
 
+  // Validação dos campos obrigatórios
+  if (!nome || !telefone) {
+    toast.error("Nome e telefone são dados obrigatórios", { theme: 'dark' });
+    return;
+  }
 
-      // Verifica se as abas de retirada e pagamento estão selecionadas
-      if (!['pickup', 'home', 'mesa'].includes(activeTab)) {
-          toast.error("Escolha uma forma de retirada.", { theme: 'dark' });
-          sound.play(); // Toca um som de erro
-          return;
-      }
-      
-      if (!['pagamentoOnline', 'pagamentoNaRetirada'].includes(activeTabCard)) {
-          toast.error("Escolha uma forma de pagamento.", { theme: 'dark' });
-          sound.play(); // Toca um som de erro
-          return;
-      }
+  // Verifica se as abas de retirada e pagamento estão selecionadas
+  if (!['pickup', 'home', 'mesa'].includes(activeTab)) {
+    toast.error("Escolha uma forma de retirada.", { theme: 'dark' });
+    sound.play();
+    return;
+  }
 
-     
+  if (!['pagamentoOnline', 'pagamentoNaRetirada'].includes(activeTabCard)) {
+    toast.error("Escolha uma forma de pagamento.", { theme: 'dark' });
+    sound.play();
+    return;
+  }
 
-      // Validação para forma de retirada
-      if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
-          alert("Por favor, preencha todos os campos de entrega.");
-          return;
-      }
+  // Validação para forma de retirada
+  if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
+    alert("Por favor, preencha todos os campos de entrega.");
+    return;
+  }
 
-      // Validação para pagamento online
-      if (activeTabCard === 'pagamentoOnline') {
-          if (!cartao || !titular || !vencimento || !cvc) {
-              toast.error("Por favor, preencha todos os dados do cartão", { theme: 'dark' });
-              return;
-          }
-      }
+  // Validação para pagamento online
+  if (activeTabCard === 'pagamentoOnline') {
+    if (!cartao || !titular || !vencimento || !cvc) {
+      toast.error("Por favor, preencha todos os dados do cartão", { theme: 'dark' });
+      return;
+    }
+  }
 
-      // Validação para pagamento na retirada
-      if (activeTabCard === 'pagamentoNaRetirada') {
-          if (!selectedOption) {
-              toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
-              return;
-          } 
-           else if (selectedOption === 'Dinheiro') {
-              if (!valorTroco) {
-                  toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
-                  return;
-              }
-          }
-      }
-    // zerar dados do carrinho
-    setList([])
-    setValorTotalPedido("0,00")
-    clearCart()
+  // Validação para pagamento na retirada
+  if (activeTabCard === 'pagamentoNaRetirada') {
+    if (!selectedOption) {
+      toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
+      return;
+    } else if (selectedOption === 'Dinheiro' && !valorTroco) {
+      toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
+      return;
+    }
+  }
 
-      // Captura a forma de retirada
-      const formaRetirada = activeTab;
+  // Captura a forma de retirada
+  const formaRetirada = activeTab;
 
-      // Mapeia os produtos para o formato desejado
-      const produtos = list.map(item => ({
-          Id: item.product.Id,
-          Nome: item.product.Nome,
-          Quantidade: item.quantity,
-          Sugestão: item.suggestion,
-          Adicionais: item.additionalStates.map(additional => ({
-            Observações: additional.observacao.filter(obs => obs.selected).map(obs => obs.Nome),
-            Opções: additional.options.filter(option => option.count > 0).map(option => ({
-              Id: option.id,
-              Nome: option.name,
-              Quantidade: option.count
-            })),
-            Produtos: additional.produtos.filter(produto => produto.count > 0).map(produto => ({
-              Id: produto.Id,
-              Nome: produto.Nome,
-              Quantidade: produto.count
-            })),
-            
-          })),
-          Preço: item.product.PrecoDeVenda, 
-      }));
+  // Mapeia os produtos para o formato desejado
+  const produtos = list.map(item => ({
+    Id: item.product.Id,
+    Nome: item.product.Nome,
+    Quantidade: item.quantity,
+    Sugestão: item.suggestion,
+    Adicionais: item.additionalStates.map(additional => ({
+      Observações: additional.observacao.filter(obs => obs.selected).map(obs => obs.Nome),
+      Opções: additional.options
+        .filter(option => option.count > 0)
+        .map(option => ({
+          Id: option.id,
+          Nome: option.name,
+          Quantidade: option.count
+        })),
+      Produtos: additional.produtos
+        .filter(produto => produto.count > 0)
+        .map(produto => ({
+          Id: produto.Id,
+          Nome: produto.Nome,
+          Quantidade: produto.count
+        })),
+    })),
+    Preço: item.product.PrecoDeVenda,
+  }));
 
-      const pedido = {
-          DataPedido: new Date().toISOString(),
-          Status: "Novo",
-          Cliente: nome,
-          Tel: telefone,
-          Endereço: (cep === '' && endereco === '' && complemento === '' && bairro === '') ?
-              "RETIRADA NO LOCAL" :
-              `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
-          mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
-          FormaPagamento: selectedOption,
-          bandeiraCartão: checkedOptions.bandeiraCartão || "Sem cartão",
-          FormaRetirada: formaRetirada,
-          Produtos: produtos,
-          frete: fretePorCep !== null
+  const pedido = {
+    DataPedido: new Date().toISOString(),
+    Status: "Novo",
+    Cliente: nome,
+    Tel: telefone,
+    Endereço:
+      (cep === '' && endereco === '' && complemento === '' && bairro === '')
+        ? "RETIRADA NO LOCAL"
+        : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
+    mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
+    FormaPagamento: selectedOption,
+    bandeiraCartão: checkedOptions.bandeiraCartão || "Sem cartão",
+    FormaRetirada: formaRetirada,
+    Produtos: produtos,
+    frete: fretePorCep !== null
       ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
       : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
-          ? "Frete grátis"
-          : (estabelecimento?.FreteFixo
-              ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
-              : "consultar"),
-          troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
-          preçoTotal: `R$ ${totalPriceWithFrete()}`
-      };
-     
-      // Transformar o objeto em JSON
-const pedidoJson = JSON.stringify(pedido);
-console.log(pedido)
+        ? "Frete grátis"
+        : (estabelecimento?.FreteFixo
+          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
+          : "consultar"),
+    troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
+    preçoTotal: `R$ ${totalPriceWithFrete()}`,
+  };
 
-// Exemplo de como fazer a requisição POST usando fetch
-fetch('URL_DA_API', {
-    method: 'POST',
-    headers: {
+  console.log("Pedido a enviar:", pedido);
+
+  try {
+    const resp = await fetch('http://painel.hotmobile.com.br/sendapi/webhook.aspx?id=NTk6MToz', {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json'
-    },
-    body: pedidoJson
-})
-.then(response => response.json())
-.then(data => {
-    console.log('Sucesso:', data);
-})
-.catch((error) => {
-    console.error('Erro:', error);
-});
+      },
+      body: JSON.stringify(pedido)
+    });
 
+    const contentType = resp.headers.get('content-type') || '';
+    const payload = contentType.includes('application/json')
+      ? await resp.json()
+      : await resp.text(); // lida com respostas como "OK"
+      console.log("📑 Headers:", [...resp.headers.entries()]);
 
-      // Se tudo estiver válido, prosseguir com a finalização do pedido
-      console.log('Pedido finalizado com sucesso!');
-      notify();
-      notify02();
+    if (resp.ok) {
+  console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
+  console.log("📬 Resposta do servidor:", payload);
+} else {
+  console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
+  console.warn("📬 Resposta do servidor:", payload);
+}
 
-      // Log do objeto pedido para verificação
-      console.log(pedido);
+    console.log('Sucesso:', payload);
 
-      // Número do estabelecimento que gera a mensagem
-      const celularWhatsApp = celular.replace(/\D/g, '');
-
-      // Mensagem para o destinatário
-      // Mensagem para o destinatário
-      const mensagemProdutos = pedido.Produtos.map(produto => 
-        `
+    // Mensagem para o destinatário (montada após confirmar o envio)
+    const mensagemProdutos = pedido.Produtos.map(produto =>
+      `
        
         *Nome:* ${produto.Nome}  
         *Quantidade:* ${produto.Quantidade}  
         *Sugestão:* ${produto.Sugestão}  
         *Adicionais:*  
-        ${produto.Adicionais.map(addicional => 
-          `${addicional.Observações.length > 0 ? `Observações: ${addicional.Observações.join(', ')}\n` : ''}
-           ${addicional.Opções.length > 0 ? `Opções: ${addicional.Opções.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}
-           ${addicional.Produtos.length > 0 ? `Produtos: ${addicional.Produtos.map(produto => `${produto.Nome} (${produto.Quantidade})`).join(', ')}` : ''}`
+        ${produto.Adicionais.map(addicional =>
+          `${addicional.Observações.length > 0 ? `Observações: ${addicional.Observações.join(', ')}\n` : ''}${
+            addicional.Opções.length > 0 ? `Opções: ${addicional.Opções.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}${
+            addicional.Produtos.length > 0 ? `Produtos: ${addicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ')}` : ''}`
         ).join('\n')}`
-      ).join('\n\n');
-      
-      const mensagem = `*Olá 👋, acabei de fazer um pedido 🧾*  
+    ).join('\n\n');
+
+    const mensagem = `*Olá 👋, acabei de fazer um pedido 🧾*  
       * Status:* ${pedido.Status}
       ---------------------------
       *Os itens escolhidos são:*  
@@ -615,36 +607,41 @@ fetch('URL_DA_API', {
       ---------------------------
       *Nome:* ${pedido.Cliente}  
       *Telefone:* ${pedido.Tel}`;
-      
-      const mensagemCodificada = encodeURIComponent(mensagem);
-      
 
-      // Cria a URL do WhatsApp
-      const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
+    // Abre o WhatsApp
+    const celularWhatsApp = celular.replace(/\D/g, '');
+    const mensagemCodificada = encodeURIComponent(mensagem);
+    const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
+    window.open(urlWhatsApp, '_blank');
 
-      // Abre o link do WhatsApp em uma nova aba
-      window.open(urlWhatsApp, '_blank');
+    // Notificações e logs
+    console.log('Pedido finalizado com sucesso!');
+    notify();
+    notify02();
 
-      // Limpeza dos campos após o envio
-      setList([]);
-      setNome('');
-      setTelefone('');
-      setBairro('');
-      setEndereco('');
-      setComplemento('');
-      setCep('');
-      setCartao('');
-      setTitular('');
-      setVencimento('');
-      setCvc('');
-      setMesa('');
-      setSelectedOption('');
+    // Limpeza dos campos após o envio (agora sim)
+    setList([]);
+    setNome('');
+    setTelefone('');
+    setBairro('');
+    setEndereco('');
+    setComplemento('');
+    setCep('');
+    setCartao('');
+    setTitular('');
+    setVencimento('');
+    setCvc('');
+    setMesa('');
+    setSelectedOption('');
+    setValorTotalPedido("0,00");
+    clearCart();
 
-  } else {
-      toast.error("Não há pedidos para finalizar", { theme: 'dark' });
-      sound.play();
+  } catch (error) {
+    console.error('Erro na chamada da API:', error);
+    toast.error(`Falha ao enviar pedido: ${error.message}`, { theme: 'dark' });
   }
 };
+
 
 // <------ função para remover o pedido da lista de pedido ------->
   const hendlerRemovePedido = () => {
