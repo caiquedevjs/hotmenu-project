@@ -143,6 +143,8 @@ export const fetchFretePorCep = async (storeId, cep) => {
  
 
 //https://hotmenu.com.br/webhook/BuscarCupom
+
+//https://hotmenu.com.br/Webhook/BuscarDadosFreteCep?id=hotmenu&cep=41680111
  
 //BODY:
 //{"Id":"1","Cupom":"BEM10","Celular":"5571999723638"}

@@ -82,6 +82,7 @@ const [mensagem, setMensagem] = useState('');
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
 const [activeTab, setActiveTab] = useState('pickup');
 const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
+const [formaSelecionada, setFormaSelecionada] = useState(null);
 
 
 
@@ -498,6 +499,7 @@ const handleFinalizarPedido = async () => {
 
   // Mapeia os produtos para o formato desejado
   const produtos = list.map(item => ({
+    
     Id: item.product.Id,
     Nome: item.product.Nome,
     Quantidade: item.quantity,
@@ -523,7 +525,9 @@ const handleFinalizarPedido = async () => {
   }));
 
   const pedido = {
-    DataPedido: new Date().toISOString(),
+    DataPedido: new Date().toLocaleString("pt-BR"),
+    EstabeleicmentoNome: storeName,
+    IdEstabelecimento: estebelecimentoId,
     Status: "Novo",
     Cliente: nome,
     Tel: telefone,
