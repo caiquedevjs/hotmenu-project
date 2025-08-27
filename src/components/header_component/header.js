@@ -82,7 +82,10 @@ const [mensagem, setMensagem] = useState('');
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
 const [activeTab, setActiveTab] = useState('pickup');
 const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
-const [formaSelecionada, setFormaSelecionada] = useState(null);
+// NOVO ESTADO PARA GUARDAR O ID
+const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+const [selectedPaymentNome, setSelectedPaymentNome] = useState(null)
+const [selectedOptionKey, setSelectedOptionKey] = useState('');
 
 
 
@@ -165,17 +168,24 @@ const handleCardChange = (e) => {
   }
 };
 
-const handleCheckboxChange = (nome) => {
-  setCheckedOptions((prev) => {
-      const newOptions = {
-          ...prev,
-          [nome]: !prev[nome], // Alterna o valor do checkbox
-      };
+const handleCheckboxChange = (formaSelecionada) => {
+  const { Id, Nome } = formaSelecionada;
 
-      // Retorna a bandeira do cartão selecionada
-      const selectedBandeira = Object.keys(newOptions).find(key => newOptions[key]);
-      return { ...newOptions, bandeiraCartão: selectedBandeira || null }; // Define a bandeira do cartão
-  });
+  // Lógica para permitir apenas uma bandeira selecionada por vez
+  const newCheckedState = {
+    [Nome]: !checkedOptions[Nome],
+  };
+
+  setCheckedOptions(newCheckedState);
+
+  // Se a bandeira foi marcada (checked), guarda o ID. Se foi desmarcada, limpa o ID.
+  if (newCheckedState[Nome]) {
+    setSelectedPaymentId(Id);
+    setSelectedPaymentNome(Nome)
+    console.log(`Bandeira selecionada: ${Nome}, ID: ${Id}`);
+  } else {
+    setSelectedPaymentId(null);
+  }
 };
 
  
@@ -269,40 +279,40 @@ useEffect(() => {
 
       fetchData();
   }, [storeName]);
-  const renderFormas = (tipo) => {
+const renderFormas = (tipo) => {
     if (!formasPorTipo[tipo]) return null;
 
     return (
-      <div><p>Escolha uma bandeira de cartão.</p>
-        <div className="payment-grid">
-            {formasPorTipo[tipo].map((forma) => (
-                <div key={forma.Id} className="payment-item" onClick={() => handleCheckboxChange(forma.Nome)}>
-                  
-                    <div className="image-container">
-                        <img
-                            src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`}
-                            alt={forma.Nome}
-                        />
-                        <input
-                            type="checkbox"
-                            checked={checkedOptions[forma.Nome] || false}
-                            onChange={() => handleCheckboxChange(forma.Nome)}
-                            className="invisible-checkbox"
-                        />
-                        <span className={`checkmark ${checkedOptions[forma.Nome] ? 'checked' : ''}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" className="check-icon">
-                                <path d="M9 19l-7-7 1.41-1.41L9 16.17l11.59-11.59L22 6l-13 13z"/>
-                            </svg>
-                        </span>
+        <div>
+            <p>Escolha uma bandeira de cartão.</p>
+            <div className="payment-grid">
+                {formasPorTipo[tipo].map((forma) => (
+                    // AQUI ESTÁ A MUDANÇA: passe o objeto 'forma' inteiro
+                    <div key={forma.Id} className="payment-item" onClick={() => handleCheckboxChange(forma)}>
+                        {/* O resto do seu código JSX continua igual... */}
+                        <div className="image-container">
+                            <img
+                                src={`https://hotmenu.com.br/assets/images/FormaPagamento/${forma.Imagem}`}
+                                alt={forma.Nome}
+                            />
+                            <input
+                                type="checkbox"
+                                checked={checkedOptions[forma.Nome] || false}
+                                onChange={() => handleCheckboxChange(forma)} // Também pode mudar aqui se preferir
+                                className="invisible-checkbox"
+                            />
+                            <span className={`checkmark ${checkedOptions[forma.Nome] ? 'checked' : ''}`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" className="check-icon">
+                                    <path d="M9 19l-7-7 1.41-1.41L9 16.17l11.59-11.59L22 6l-13 13z"/>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
-                    
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
         </div>
     );
 };
-
 
 
 
@@ -528,6 +538,7 @@ const handleFinalizarPedido = async () => {
     DataPedido: new Date().toLocaleString("pt-BR"),
     EstabeleicmentoNome: storeName,
     IdEstabelecimento: estebelecimentoId,
+    IdFormaPagamento: selectedPaymentId,
     Status: "Novo",
     Cliente: nome,
     Tel: telefone,
@@ -537,7 +548,7 @@ const handleFinalizarPedido = async () => {
         : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
     mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
     FormaPagamento: selectedOption,
-    bandeiraCartão: checkedOptions.bandeiraCartão || "Sem cartão",
+    bandeiraCartão: selectedPaymentNome|| "Sem cartão",
     FormaRetirada: formaRetirada,
     Produtos: produtos,
     frete: fretePorCep !== null
@@ -668,10 +679,26 @@ const handleFinalizarPedido = async () => {
 
 
 //<------ função para capitar o valor da escolha da forma de pagamento------->
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
-  
+const handleOptionChange = (event) => {
+    // 'nomeDaOpcao' terá o valor exato, como "PicPay" ou "Débito"
+    const nomeDaOpcao = event.target.value; 
+    
+    // Salva a versão minúscula para as verificações (ex: selectedOption === 'pix')
+    setSelectedOption(nomeDaOpcao.toLowerCase()); 
+    
+    // Salva a chave original para usar nas funções de renderização
+    setSelectedOptionKey(nomeDaOpcao); 
+
+    // O resto da sua função continua igual...
+    setCheckedOptions({});
+    setSelectedPaymentId(null);
+    if (formasSemTipo[nomeDaOpcao]) {
+        const formaDePagamento = formasSemTipo[nomeDaOpcao][0];
+        if (formaDePagamento) {
+            setSelectedPaymentId(formaDePagamento.Id);
+        }
+    }
+};
   //<------ função para requisitar o dado no modal de cupom na api de cupom------->
 
 const handleBuscarCupom = async () => {
@@ -1243,13 +1270,14 @@ const handleShow = () => setShow(true);
 ))}
 </div><hr></hr>
 <div className="payment-icons">
-    {selectedOption && renderFormas(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
-    {selectedOption && renderFormasSemTipo(selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1))}
-</div> <hr></hr>
+    {/* Use o novo estado 'selectedOptionKey' aqui */}
+    {selectedOption && renderFormas(selectedOptionKey)}
+    {selectedOption && renderFormasSemTipo(selectedOptionKey)}
+</div>
+<hr />
 
 
-
-{selectedOption === 'Dinheiro' ? (
+{selectedOption === 'dinheiro' ? (
     <div className='titular-card-pay-conteiner'>
         <div className="col-md-4">
             <label htmlFor="inputChangeValue" className='labelValorTroco'>Valor para troco</label>
@@ -1264,7 +1292,7 @@ const handleShow = () => setShow(true);
     </div>
 ) : null}
 
-{selectedOption === 'Pix' ? (
+{selectedOption === 'pix' ? (
     <div className='titular-card-pay-conteiner'>
         <div className="col-md-4" >
             <label htmlFor="inputChangeValue" className='labelValorTroco'>Chave pix</label>

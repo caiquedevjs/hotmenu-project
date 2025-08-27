@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import React, { useState, useEffect } from 'react';
 import { fetchProducts, fetchEstabelecimentoData } from '../service/productService';
 import './Grid_component.css';
@@ -209,6 +210,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
     return price.toFixed(2).replace('.', ',');
   };
 
+  // eslint-disable-next-line no-unused-vars
   const closeUnavailableModal = () => setShowUnavailableModal(false);
 
   return (
@@ -281,7 +283,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
           product={product}
           onClose={() => {
             setSelectedProduct(null);
-            window.history.pushState(null, '', '/');
+            window.history.pushState(null, '', `/${storeName}`);
           }}
           categoryName={categoryName}
         />
