@@ -22,7 +22,8 @@ const Modal_infos_component = () => {
           setColor(data.CorPadrao);
           setLogoMarca(data.Logomarca);
           setCelular(data.TelContato);
-          console.log(data);
+
+          // ------- > Debug   console.log(data);
         } else {
           setError('Nenhum dado recebido da API');
         }

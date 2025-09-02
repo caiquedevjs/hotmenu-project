@@ -109,11 +109,8 @@ const [vencimento, setVencimento] = useState('');
 const [cvc, setCvc] = useState('');
 const [mesa, setMesa] = useState('');
 const [selectedOption, setSelectedOption] = useState('');
-const [isFormValid, setIsFormValid] = useState(false);
-const [isValid, setIsValid] = useState(true);
 const [errorCard, setErrorCard] = useState('');
 const [checkedOptions, setCheckedOptions] = useState({});
-const [showCupomModal, setShowCupomModal] = useState(false);
 const [showFinalizarModal, setShowFinalizarModal] = useState(false);
 
 
@@ -219,11 +216,11 @@ const handleCheckboxChange = (formaSelecionada) => {
 useEffect(() => {
   const verificarFretePorCep = async () => {
     if (cep.length === 8 && storeName) {
-      console.log('🔍 Buscando frete por CEP...');
-      console.log('Payload enviado:', { Id: storeName, cep });
+      //console.log('🔍 Buscando frete por CEP...');
+      //console.log('Payload enviado:', { Id: storeName, cep });
 
       const resposta = await fetchFretePorCep(storeName, cep);
-      console.log('📦 Resposta da API frete por CEP:', resposta);
+      //console.log('📦 Resposta da API frete por CEP:', resposta);
 
       const dadosCep = resposta?.cep?.Data;
 
@@ -232,7 +229,7 @@ useEffect(() => {
         setFretePorCep(valorFrete);
         setBairro(dadosCep.bairro || '');
       } else {
-        console.log('❌ CEP não encontrado ou sem frete configurado.');
+        //console.log('❌ CEP não encontrado ou sem frete configurado.');
         setFretePorCep(null);
       }
     }
@@ -335,11 +332,11 @@ useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData(storeName);
-      console.log('Resposta da API:', response); // Verifique se os dados estão completos
+     // console.log('Resposta da API:', response); // Verifique se os dados estão completos
       if (response) {
         // Confirme se os campos realmente existem
-        console.log('Logomarca:', response.Logomarca);
-        console.log('Nome:', response.Nome);
+        //console.log('Logomarca:', response.Logomarca);
+        //console.log('Nome:', response.Nome);
         setEstabelecimento(response);
         setColor(response.CorPadrao);
         setLogoMarca(response.Logomarca);
