@@ -179,7 +179,7 @@ const Grid_component = ({ categoryId, categoryName }) => {
     }
 
     setSelectedProduct(product);
-    window.history.pushState(null, '', `${storeName}/#product-modal-${product.Id}`);
+    window.history.pushState(null, '', `/${storeName}/#product-modal-${product.Id}`);
 
     const modalElement = document.getElementById(`product-modal-${product.Id}`);
     const bootstrapModal = new Modal(modalElement);

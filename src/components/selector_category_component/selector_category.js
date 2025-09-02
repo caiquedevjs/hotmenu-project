@@ -59,7 +59,7 @@ const SelectorCategoryComponent = ({ categories, products }) => {
                 <div className="category-item" onClick={() => scrollToCategory(category.Id)}>
                   <img
                     src={`https://hotmenu.com.br/arquivos/${firstProduct.Foto}`}
-                    alt={firstProduct.Nome}
+                    alt= 'Foto'
                     className="category-image"
                   />
                   <h4 className="category-title">{category.Nome}</h4>
