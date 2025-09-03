@@ -4,7 +4,8 @@ import { fetchProducts, fetchEstabelecimentoData } from '../service/productServi
 import './modal_search_component.css';
 import Modal_product_component from '../modal_products_component/modal_products_component';
 import { useParams } from 'react-router-dom';
-import { Modal } from 'bootstrap'; // Importando a API do Bootstrap
+// ✅ 1. Re-importamos a API do Modal do Bootstrap
+import { Modal } from 'bootstrap';
 
 const ModalBusca = ({ categories = [] }) => {
   const { storeName } = useParams();
@@ -15,8 +16,9 @@ const ModalBusca = ({ categories = [] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
+  
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
   useEffect(() => {
     const fetchDataEstabelecimento = async () => {
@@ -35,7 +37,6 @@ const ModalBusca = ({ categories = [] }) => {
         setLoading(false);
       }
     };
-
     fetchDataEstabelecimento();
   }, [storeName]);
 
@@ -49,7 +50,6 @@ const ModalBusca = ({ categories = [] }) => {
         console.error('Erro ao buscar produtos:', error);
       }
     };
-
     fetchProductsData();
   }, [storeName]);
 
@@ -61,36 +61,36 @@ const ModalBusca = ({ categories = [] }) => {
     product.Nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-  const openModal = (product) => {
-   
+  // ✅ 2. Função de clique modificada para controlar o fechamento do modal
+  const handleProductClick = (product) => {
     if (!product.ControlarEstoque || product.EstoqueAtual > 0) {
+      // Pega a referência do modal de busca pelo ID
+      const modalElement = document.getElementById('modal_search_id');
+      if (modalElement) {
+        // Pega a instância do modal do Bootstrap que já está na tela
+        const bootstrapModal = Modal.getInstance(modalElement);
+        // Se a instância existir, manda ela fechar
+        if (bootstrapModal) {
+          bootstrapModal.hide();
+        }
+      }
+      
+      // Abre o Offcanvas somente depois de comandar o fechamento do modal
       setSelectedProduct(product);
-      window.history.pushState(null, '', `/#product-modal-${product.Id}`);
-
-      const modalElement = document.getElementById(`product-modal-${product.Id}`);
-      const bootstrapModal = new Modal(modalElement);
-      bootstrapModal.show();
+      setIsOffcanvasOpen(true);
     } else {
       setShowUnavailableModal(true);
     }
   };
-
-  const handleProductClick = (product) => {
-    openModal(product);
+  
+  const handleCloseOffcanvas = () => {
+      setIsOffcanvasOpen(false);
+      setSelectedProduct(null); 
   };
 
-  const handleSearchIconClick = () => {
-    if (filteredProducts.length > 0) {
-      handleProductClick(filteredProducts[0]);
-    } else {
-      console.log('Nenhum produto encontrado para buscar');
-    }
-  };
-
-  return ( 
+  return (
     <div>
-      <div className="modal fade" id="modal_search_id"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> 
+      <div className="modal fade" id="modal_search_id" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -114,16 +114,15 @@ const ModalBusca = ({ categories = [] }) => {
                       filteredProducts.map((product, index) => (
                         <div className="col-6 col-md-4 mb-4" key={index}>
                           <div className="product-container">
-                            <p className="product-name" style={{ color: color }} 
-                               >
-                               {product.Nome}
+                            <p className="product-name" style={{ color: color }}>
+                              {product.Nome}
                             </p>
                             <img
                               src={`https://hotmenu.com.br/arquivos/${product.Foto}`}
                               alt={product.Nome}
                               className="img_category"
-                              onClick={() => { handleProductClick(product)}}
-                              data-bs-dismiss="modal" aria-label="Close"
+                              onClick={() => { handleProductClick(product) }}
+                              // ✅ 3. Atributos que causavam o conflito foram removidos daqui
                             />
                           </div>
                         </div>
@@ -141,16 +140,14 @@ const ModalBusca = ({ categories = [] }) => {
         </div>
       </div>
 
-      {/* Renderização dos modais dinâmico */}
-      {products.map((product, index) => (
+      {/* Renderização condicional do Offcanvas */}
+      {selectedProduct && (
         <Modal_product_component
-          key={`modal-${index}`}
-          id={`product-modal-${product.Id}`}
-          product={product}
-          onClose={() => setSelectedProduct(null)}
-          categoryName={categories.find(cat => cat.Id === product.CategoriaId)?.Nome}
+          product={selectedProduct}
+          show={isOffcanvasOpen}
+          handleClose={handleCloseOffcanvas}
         />
-      ))}
+      )}
 
       {/* Modal para Produto Indisponível */}
       {showUnavailableModal && (
