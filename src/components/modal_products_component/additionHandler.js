@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+// OTIMIZADO E CORRIGIDO
+import { useState, useEffect, useCallback } from 'react';
 import { fetchPerguntas, fetchProductById } from '../service/productService';
 
 const useAdditionalState = (productId) => {
   const [additionalStates, setAdditionalStates] = useState([]);
 
+  // =============================================================================
+  // PARTE 1: Busca e transformação de dados (código original RESTAURADO)
+  // =============================================================================
   useEffect(() => {
     const fetchAdditionalData = async () => {
       try {
@@ -62,7 +66,7 @@ const useAdditionalState = (productId) => {
           const partesPergunta = {
             id: 'partes-produto',
             description: `Escolha ${productData.QuantidadePartes} sabores`,
-            type: 2, // assume que é tipo adicionais com incremento/decremento
+            type: 2,
             required: true,
             minOptions: productData.QuantidadePartes,
             maxOptions: productData.QuantidadePartes,
@@ -72,11 +76,11 @@ const useAdditionalState = (productId) => {
               Nome: parte.Nome,
               PrecoDeVenda: parte.PrecoDeVenda,
               count: 0,
-              QtdMaximaPermitida: 1 // cada sabor no máximo 1 vez (se quiser pode ajustar)
+              QtdMaximaPermitida: 1
             })),
             options: [],
             observacao: [],
-            PrecoPeloMaiorValor: productData.PrecoPeloMaiorValor // aqui que vai o flag
+            PrecoPeloMaiorValor: productData.PrecoPeloMaiorValor
           };
           transformedData.push(partesPergunta);
         }
@@ -92,159 +96,111 @@ const useAdditionalState = (productId) => {
     }
   }, [productId]);
 
-  // Função que calcula o preço total dos adicionais considerando PrecoPeloMaiorValor
-  const calcularPrecoAdicionais = () => {
-    let total = 0;
+  // =============================================================================
+  // PARTE 2: Funções de atualização de estado (lógica otimizada MANTIDA)
+  // =============================================================================
+  const handleIncrement = useCallback((id, perguntaId, isProduto = false) => {
+    setAdditionalStates(prevState => {
+      const additionalIndex = prevState.findIndex(add => add.id === perguntaId);
+      if (additionalIndex === -1) return prevState;
 
+      const additional = prevState[additionalIndex];
+      const newState = [...prevState];
+      
+      if (!isProduto && additional.type === 1) {
+        const item = additional.observacao.find(obs => obs.Id === id);
+        if (item && !item.selected) {
+          const updatedObservacoes = additional.observacao.map(obs => ({...obs, selected: obs.Id === id}));
+          newState[additionalIndex] = {...additional, observacao: updatedObservacoes, selectedCount: 1};
+          return newState;
+        }
+        return prevState;
+      }
+      
+      const targetArray = isProduto ? additional.produtos : additional.options;
+      const itemIndex = targetArray.findIndex(item => (isProduto ? item.Id : item.id) === id);
+      if (itemIndex === -1) return prevState;
+
+      const item = targetArray[itemIndex];
+      if (additional.selectedCount < additional.maxOptions && item.count < (item.QtdMaximaPermitida ?? additional.maxOptions)) {
+        const newTargetArray = [...targetArray];
+        newTargetArray[itemIndex] = { ...item, count: item.count + 1 };
+        
+        newState[additionalIndex] = {
+          ...additional,
+          [isProduto ? 'produtos' : 'options']: newTargetArray,
+          selectedCount: additional.selectedCount + 1,
+        };
+        return newState;
+      }
+
+      return prevState;
+    });
+  }, []);
+
+  const handleDecrement = useCallback((id, perguntaId, isProduto = false) => {
+    setAdditionalStates(prevState => {
+      const additionalIndex = prevState.findIndex(add => add.id === perguntaId);
+      if (additionalIndex === -1) return prevState;
+
+      const additional = prevState[additionalIndex];
+      const targetArray = isProduto ? additional.produtos : additional.options;
+      const itemIndex = targetArray.findIndex(item => (isProduto ? item.Id : item.id) === id);
+      if (itemIndex === -1) return prevState;
+
+      const item = targetArray[itemIndex];
+      if (item.count > 0) {
+        const newState = [...prevState];
+        const newTargetArray = [...targetArray];
+        newTargetArray[itemIndex] = { ...item, count: item.count - 1 };
+
+        newState[additionalIndex] = {
+          ...additional,
+          [isProduto ? 'produtos' : 'options']: newTargetArray,
+          selectedCount: additional.selectedCount - 1,
+        };
+        return newState;
+      }
+      return prevState;
+    });
+  }, []);
+
+  // =============================================================================
+  // PARTE 3: Funções auxiliares e retorno do hook (otimizadas com useCallback)
+  // =============================================================================
+  const calcularPrecoAdicionais = useCallback(() => {
+    let total = 0;
     additionalStates.forEach(additional => {
       if (additional.id === 'partes-produto') {
         const precoPeloMaiorValor = additional.PrecoPeloMaiorValor ?? false;
-
         if (precoPeloMaiorValor) {
-          // Pega o maior preço das partes selecionadas
-          const precosSelecionados = additional.produtos
-            .filter(prod => prod.count > 0)
-            .map(prod => prod.PrecoDeVenda);
-
+          const precosSelecionados = additional.produtos.filter(prod => prod.count > 0).map(prod => prod.PrecoDeVenda);
           if (precosSelecionados.length > 0) {
             total += Math.max(...precosSelecionados);
           }
         } else {
-          // Soma normal das partes
-          total += additional.produtos.reduce(
-            (acc, prod) => acc + prod.PrecoDeVenda * prod.count,
-            0
-          );
+          total += additional.produtos.reduce((acc, prod) => acc + prod.PrecoDeVenda * prod.count, 0);
         }
       } else {
-        // Para outras perguntas, soma normalmente preços dos produtos
         if (additional.produtos && additional.produtos.length > 0) {
-          total += additional.produtos.reduce(
-            (acc, prod) => acc + prod.PrecoDeVenda * prod.count,
-            0
-          );
+          total += additional.produtos.reduce((acc, prod) => acc + prod.PrecoDeVenda * prod.count, 0);
         } else if (additional.options && additional.options.length > 0) {
-          total += additional.options.reduce(
-            (acc, opt) => acc + opt.price * opt.count,
-            0
-          );
+          total += additional.options.reduce((acc, opt) => acc + opt.price * opt.count, 0);
         }
       }
     });
-
     return total;
-  };
+  }, [additionalStates]);
 
-  // Restante do código permanece igual
-  const handleIncrement = (id, perguntaId, isProduto = false) => {
-    setAdditionalStates(prevState =>
-      prevState.map(additional => {
-        if (additional.id === perguntaId) {
-          if (isProduto) {
-            const item = additional.produtos.find(produto => produto.Id === id);
-            if (item) {
-              const maxPerItem = additional.maxOptions;
-              const totalSelected = additional.selectedCount;
-
-              if (item.count < maxPerItem && totalSelected < additional.maxOptions) {
-                return {
-                  ...additional,
-                  produtos: additional.produtos.map(prod =>
-                    prod.Id === id ? { ...prod, count: prod.count + 1 } : prod
-                  ),
-                  selectedCount: totalSelected + 1
-                };
-              }
-            }
-          } else if (additional.type === 1) {
-            const item = additional.observacao.find(obs => obs.Id === id);
-            if (item) {
-              const updatedObservacoes = additional.observacao.map(obs => ({
-                ...obs,
-                selected: obs.Id === id
-              }));
-              return {
-                ...additional,
-                observacao: updatedObservacoes,
-                selectedCount: Math.min(additional.maxOptions, additional.selectedCount + 1)
-              };
-            }
-          } else {
-            const item = additional.options.find(option => option.id === id);
-            if (item) {
-              if (item.count < additional.maxOptions && additional.selectedCount < additional.maxOptions) {
-                return {
-                  ...additional,
-                  options: additional.options.map(it =>
-                    it.id === id ? { ...it, count: it.count + 1 } : it
-                  ),
-                  selectedCount: additional.selectedCount + 1
-                };
-              }
-            }
-          }
-        }
-        return additional;
-      })
-    );
-  };
-
-  const handleDecrement = (id, perguntaId, isProduto = false) => {
-    setAdditionalStates(prevState =>
-      prevState.map(additional => {
-        if (additional.id === perguntaId) {
-          if (isProduto) {
-            const item = additional.produtos.find(produto => produto.Id === id);
-            if (item && item.count > 0) {
-              return {
-                ...additional,
-                produtos: additional.produtos.map(prod =>
-                  prod.Id === id ? { ...prod, count: prod.count - 1 } : prod
-                ),
-                selectedCount: Math.max(0, additional.selectedCount - 1)
-              };
-            }
-          } else if (additional.type === 1) {
-            const item = additional.observacao.find(obs => obs.Id === id);
-            if (item && item.selected) {
-              const updatedObservacoes = additional.observacao.map(obs => ({
-                ...obs,
-                selected: obs.Id === id ? false : obs.selected
-              }));
-              return {
-                ...additional,
-                observacao: updatedObservacoes,
-                selectedCount: Math.max(0, additional.selectedCount - 1)
-              };
-            }
-          } else {
-            const item = additional.options.find(option => option.id === id);
-            if (item && item.count > 0) {
-              return {
-                ...additional,
-                options: additional.options.map(it =>
-                  it.id === id ? { ...it, count: it.count - 1 } : it
-                ),
-                selectedCount: Math.max(0, additional.selectedCount - 1)
-              };
-            }
-          }
-        }
-        return additional;
-      })
-    );
-  };
-
-  const getSelectedTamanho = () => {
+  const getSelectedTamanho = useCallback(() => {
     const tamanhoPergunta = additionalStates.find(item => item.id === 'tamanhos');
     if (!tamanhoPergunta || !tamanhoPergunta.observacao) return null;
-    const selecionado = tamanhoPergunta.observacao.find(obs => obs.selected);
-    return selecionado || null;
-  };
+    return tamanhoPergunta.observacao.find(obs => obs.selected) || null;
+  }, [additionalStates]);
 
-  const totalAdditional = () => {
+  const totalAdditional = useCallback(() => {
     return additionalStates.reduce((total, additional) => total + additional.selectedCount, 0);
-  };
+  }, [additionalStates]);
 
   return {
     totalAdditional,
@@ -252,7 +208,7 @@ const useAdditionalState = (productId) => {
     handleIncrement,
     handleDecrement,
     getSelectedTamanho,
-    calcularPrecoAdicionais, // exporta a função para uso externo
+    calcularPrecoAdicionais,
   };
 };
 

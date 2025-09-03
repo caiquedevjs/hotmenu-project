@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './category_styles.css';
 import Grid_component from '../Grid_component/Grid_component';
 import { fetchCategories, fetchEstabelecimentoData, fetchProducts } from '../service/productService';
@@ -10,69 +10,56 @@ const Category_component = () => {
   const { storeName } = useParams();
 
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]); // Estado para produtos
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const [estabelecimento, setEstabelecimento] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [color, setColor] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // OTIMIZAÇÃO 1: Unificar todas as buscas de dados em um único useEffect.
   useEffect(() => {
-    const fetchCategoriesData = async () => {
+    const fetchAllData = async () => {
       try {
-        const fetchedCategories = await fetchCategories(storeName);
-        const filteredCategories = fetchedCategories
-          .filter(category => !category.Removido)
-          .sort((a, b) => a.Ordem - b.Ordem);
-        setCategories(filteredCategories);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Erro ao buscar categorias:', error);
-        setIsLoading(false);
-      }
-    };
+        setIsLoading(true);
 
-    if(storeName) {
-      fetchCategoriesData();
-    }
-  }, [storeName]);
+        // Usamos Promise.all para fazer as 3 buscas em paralelo.
+        const [fetchedCategories, establishmentData, fetchedProducts] = await Promise.all([
+          fetchCategories(storeName),
+          fetchEstabelecimentoData(storeName),
+          fetchProducts(storeName)
+        ]);
 
-  useEffect(() => {
-    const fetchDataEstabelecimento = async () => {
-      try {
-        const data = await fetchEstabelecimentoData(storeName);
-        if (data && data.CorPadrao) {
-          setEstabelecimento(data);
-          setColor(data.CorPadrao);
-        } else {
-          setError('Nenhum dado recebido da API');
-        }
-      } catch (error) {
-        setError('Erro ao buscar dados do estabelecimento');
-        console.error('Erro na busca: ', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDataEstabelecimento();
-  }, [storeName]);
-
-  // Novo useEffect para buscar produtos
-  useEffect(() => {
-    const fetchProductsData = async () => {
-      try {
-        const fetchedProducts = await fetchProducts(storeName); // Função para buscar produtos
+        // Processa e define os estados de uma só vez.
+        setCategories(fetchedCategories);
         setProducts(fetchedProducts);
-      } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
+
+        if (establishmentData && establishmentData.CorPadrao) {
+          setEstabelecimento(establishmentData);
+          setColor(establishmentData.CorPadrao);
+        } else {
+          setError('Nenhum dado do estabelecimento recebido da API');
+        }
+
+      } catch (err) {
+        console.error('Erro ao buscar dados da página:', err);
+        setError('Erro ao carregar os dados.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (storeName) {
-      fetchProductsData();
+      fetchAllData();
     }
   }, [storeName]);
+
+  // OTIMIZAÇÃO 2: Memoizar o processamento das categorias.
+  // Este cálculo só será refeito se o state `categories` mudar.
+  const sortedCategories = useMemo(() => {
+    return categories
+      .filter(category => !category.Removido)
+      .sort((a, b) => a.Ordem - b.Ordem);
+  }, [categories]);
 
   if (isLoading) {
     return (
@@ -83,21 +70,36 @@ const Category_component = () => {
       </div>
     );
   }
+  
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className='category_component'>
-      {categories.length > 0 && <SelectorCategoryComponent categories={categories} products={products} />}
+      {sortedCategories.length > 0 && <SelectorCategoryComponent categories={sortedCategories} products={products} />}
       <div id='category_container'>
-        {categories.map((category, index) => (
-          <div key={index}>
-            <div id='category_label_title'>
-              <h4 className='category_title' id={`category-${category.Id}`} style={{ backgroundColor: color }}>{category.Nome}</h4>
+        {/* Agora mapeamos as categorias já filtradas e ordenadas */}
+        {sortedCategories.map(category => {
+          // OTIMIZAÇÃO 3: Filtrar os produtos para cada categoria aqui no componente pai.
+          const productsForCategory = products.filter(product => product.CategoriaId === category.Id);
+
+          return (
+            <div key={category.Id}>
+              <div id='category_label_title'>
+                <h4 className='category_title' id={`category-${category.Id}`} style={{ backgroundColor: color }}>{category.Nome}</h4>
+              </div>
+              {/* Passamos apenas os produtos relevantes para o Grid_component */}
+              <Grid_component 
+                categoryId={category.Id} 
+                categoryName={category.Nome} 
+                products={productsForCategory} // <-- Passando os produtos como prop
+              />
             </div>
-            <Grid_component categoryId={category.Id} categoryName={category.Nome} />
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <ModalBusca categories={categories} />
+      <ModalBusca categories={sortedCategories} />
     </div>
   );
 };
