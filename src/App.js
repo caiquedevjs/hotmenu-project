@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './App.css';
 
-// ✅ 1. IMPORTAR O CARTPROVIDER
 import { CartProvider } from './components/modal_cart_itens/CartContext';
 
 // Importação dos seus componentes
@@ -33,11 +32,14 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [color, setColor] = useState("");
+
+    // ✅ === ESTADOS PARA MODAIS E OFFCANVAS RESTAURADOS ===
+    const [showSearchModal, setShowSearchModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
     useEffect(() => {
-        // Seu useEffect para buscar todos os dados continua o mesmo
+        // ... seu useEffect para buscar dados (sem alterações) ...
         const fetchData = async () => {
             try {
                 const productsData = await fetchProducts(storeName);
@@ -69,8 +71,8 @@ function App() {
     }, [storeName]);
 
     useEffect(() => {
-        // Seu useEffect para o botão de scroll continua o mesmo
-        const handleScroll = () => { /* ... */ };
+        // ... seu useEffect para o botão de scroll (sem alterações) ...
+        const handleScroll = () => { if (window.pageYOffset > 300) { setShowScrollButton(true); } else { setShowScrollButton(false); } };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -79,30 +81,47 @@ function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
+    // ✅ === FUNÇÕES DE CONTROLE RESTAURADAS ===
+
+    // Funções para o Modal de Busca
+    const handleOpenSearch = () => setShowSearchModal(true);
+    const handleCloseSearch = () => setShowSearchModal(false);
+
+    // Funções para o Offcanvas de Produto
     const handleOpenOffcanvas = (product) => {
         setSelectedProduct(product);
         setIsOffcanvasOpen(true);
     };
-    
     const handleCloseOffcanvas = () => {
         setIsOffcanvasOpen(false);
-        // Pequena espera para a animação de fechar terminar antes de limpar o produto
-        setTimeout(() => setSelectedProduct(null), 300); 
+        setTimeout(() => setSelectedProduct(null), 300);
+    };
+
+    // Função que conecta o Modal de Busca ao Offcanvas
+    const handleProductSelectedFromSearch = (product) => {
+        handleCloseSearch(); // Fecha o modal de busca
+        handleOpenOffcanvas(product); // Abre o offcanvas do produto
     };
 
     return (
-        // ✅ 2. ENVOLVER A APLICAÇÃO COM O CARTPROVIDER
         <CartProvider>
             <div className="App">
                 <PrimeReactProvider>
-                    <Header_component />
+                    {/* ✅ Passando a prop onSearchClick de volta para o Header */}
+                    <Header_component onSearchClick={handleOpenSearch} />
                     <Status_moment_component />
                     <Infos_component />
                     <Infos_icons_component />
                     <Category_component categories={categories} products={products} onProductClick={handleOpenOffcanvas} />
                     <Selector_category_component />
                     
-                    <ModalBusca />
+                    {/* ✅ Passando as props de controle de volta para o ModalBusca */}
+                    {/* Nota: o seu ModalBusca precisará ser adaptado para receber estas props */}
+                    <ModalBusca
+                        show={showSearchModal}
+                        handleClose={handleCloseSearch}
+                        onProductSelect={handleProductSelectedFromSearch}
+                    />
                     
                     {selectedProduct && (
                         <Modal_product_component
