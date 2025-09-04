@@ -504,32 +504,40 @@ const handleFinalizarPedido = async () => {
   // Captura a forma de retirada
   const formaRetirada = activeTab;
 
-  // Mapeia os produtos para o formato desejado
   const produtos = list.map(item => ({
-    
     Id: item.product.Id,
     Nome: item.product.Nome,
     Quantidade: item.quantity,
     Sugestão: item.suggestion,
     Adicionais: item.additionalStates.map(additional => ({
-      Observações: additional.observacao.filter(obs => obs.selected).map(obs => obs.Nome),
-      Opções: additional.options
-        .filter(option => option.count > 0)
-        .map(option => ({
-          Id: option.id,
-          Nome: option.name,
-          Quantidade: option.count
-        })),
-      Produtos: additional.produtos
-        .filter(produto => produto.count > 0)
-        .map(produto => ({
-          Id: produto.Id,
-          Nome: produto.Nome,
-          Quantidade: produto.count
-        })),
+        // ✅ ADICIONADO PREÇO NAS OBSERVAÇÕES
+        Observações: additional.observacao
+            .filter(obs => obs.selected)
+            .map(obs => ({
+                Nome: obs.Nome,
+                Preço: obs.PrecoDeVenda 
+            })),
+        // ✅ ADICIONADO PREÇO NAS OPÇÕES
+        Opções: additional.options
+            .filter(option => option.count > 0)
+            .map(option => ({
+                Id: option.id,
+                Nome: option.name,
+                Quantidade: option.count,
+                Preço: option.price 
+            })),
+        // ✅ ADICIONADO PREÇO NOS PRODUTOS
+        Produtos: additional.produtos
+            .filter(produto => produto.count > 0)
+            .map(produto => ({
+                Id: produto.Id,
+                Nome: produto.Nome,
+                Quantidade: produto.count,
+                Preço: produto.PrecoDeVenda
+            })),
     })),
     Preço: item.product.PrecoDeVenda,
-  }));
+}));
 
   const pedido = {
     DataPedido: new Date().toLocaleString("pt-BR"),
