@@ -37,7 +37,7 @@ import truncateText from '../../utils/truncateText';
 
 
 
-const Header_component = () =>{
+const Header_component = ({onSearchClick}) =>{
 
  // <------ constantes utils ------->
   const cartHover = useHover();
@@ -832,9 +832,11 @@ const handleShow = () => setShow(true);
 </div>
  {/* <-------estrutura dos icons do header-------> */}
  <div className={isIconsFixed ? 'icons_header_conteiner_class fixed' : 'icons_header_conteiner_class'}>
+  
   <FaSearch onMouseEnter={cartHover.handleMouseEnter}
         onMouseLeave={cartHover.handleMouseLeave}
-        style={{ color: cartHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} data-bs-toggle="modal" data-bs-target="#modal_search_id"/>
+        onClick={onSearchClick} 
+        style={{ color: cartHover.isHovered ? '#332D2D' : color, marginTop: '10px', cursor : 'pointer',  transition: 'color 0.5s ease',  marginLeft: '10px',  }} />
         {cartItems.length === 0 ?  (
           <div className='amount_order_conteiner'>
           <FaShoppingCart onMouseEnter={searchHover.handleMouseEnter}
