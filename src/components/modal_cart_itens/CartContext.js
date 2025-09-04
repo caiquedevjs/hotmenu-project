@@ -1,17 +1,46 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
-// Criar o contexto do carrinho
 export const CartContext = createContext();
 
-// Fornecer o contexto do carrinho
 export const CartProvider = ({ children }) => {
-  const { storeName } = useParams(); // Obter o nome do estabelecimento da URL
+  const { storeName } = useParams();
   const [cartItems, setCartItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [agendamentoDePedidos, setAgendamentoDePedidos] = useState(false);
+  
+  const isInitialMount = useRef(true);
 
-  // Função para buscar horários de funcionamento e agendamento de pedidos da API
+  const getCartStorageKey = (store) => `hotmenu-cart-${store}`;
+
+  // Efeito para carregar o carrinho do localStorage ao iniciar
+  useEffect(() => {
+    if (storeName) {
+      const storageKey = getCartStorageKey(storeName);
+      try {
+        const savedCart = localStorage.getItem(storageKey);
+        if (savedCart) {
+          setCartItems(JSON.parse(savedCart));
+        }
+      } catch (error) {
+        console.error("Falha ao carregar o carrinho do localStorage:", error);
+        localStorage.removeItem(storageKey);
+      }
+    }
+  }, [storeName]);
+
+  // Efeito para salvar o carrinho no localStorage, ignorando a primeira renderização
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      if (storeName) {
+        const storageKey = getCartStorageKey(storeName);
+        localStorage.setItem(storageKey, JSON.stringify(cartItems));
+      }
+    }
+  }, [cartItems, storeName]);
+
   const fetchHorarioFuncionamento = async (storeName) => {
     try {
       const response = await fetch(`https://hotmenu.com.br/webhook/HorarioAtendimento/${storeName}`);
@@ -40,9 +69,8 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Função para verificar se o estabelecimento está aberto ou fechado
   const checkIfOpen = async () => {
-    if (!storeName) return; // Verifica se o storeName foi definido
+    if (!storeName) return;
 
     try {
       const [horarios, fechadoLiberarPedido] = await Promise.all([
@@ -67,8 +95,8 @@ export const CartProvider = ({ children }) => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
-    const currentTime = currentHour * 60 + currentMinutes; // Convertendo para minutos
-    const currentDay = now.getDay() + 1; // Dia da semana, começando de domingo (1=Domingo, 7=Sábado)
+    const currentTime = currentHour * 60 + currentMinutes;
+    const currentDay = now.getDay() + 1;
   
     const hojeHorario = horarios.find(h => h.DiaDaSemana === currentDay);
     
@@ -77,10 +105,10 @@ export const CartProvider = ({ children }) => {
       const [horaFim, minFim] = hojeHorario.HoraFim.split(':').map(Number);
       
       const startTime = horaIni * 60 + minIni;
-      const endTime = (horaFim === 0 && minFim === 0) ? 1440 : horaFim * 60 + minFim; // 1440 é 24h em minutos
+      const endTime = (horaFim === 0 && minFim === 0) ? 1440 : horaFim * 60 + minFim;
   
       const isOpenNow = currentTime >= startTime && currentTime < endTime;
-      
+  
       console.log("Horário Atual:", currentHour + ':' + currentMinutes);
       console.log("Horário de Abertura:", hojeHorario.HoraIni);
       console.log("Horário de Fechamento:", hojeHorario.HoraFim);
@@ -94,8 +122,9 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log("Store Name:", storeName); // Verifique o valor de storeName
-    checkIfOpen();
+    if (storeName) {
+      checkIfOpen();
+    }
   }, [storeName]);
   
 
@@ -132,14 +161,13 @@ export const CartProvider = ({ children }) => {
   const totalCartPrice = () => {
     return cartItems.reduce((total, item) => total + item.totalPrice, 0).toFixed(2).replace('.', ',');
   };
-const clearCart = () => {
-  setCartItems([]);
-  totalCartPrice(0)
   
+  const clearCart = () => {
+    setCartItems([]);
+  };
 
-};
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen, clearCart  }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalCartPrice, isOpen, clearCart }}>
       {children}
     </CartContext.Provider>
   );

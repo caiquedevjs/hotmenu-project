@@ -1,18 +1,20 @@
-// OTIMIZADO E CORRIGIDO
 import { useState, useEffect, useCallback } from 'react';
 import { fetchPerguntas, fetchProductById } from '../service/productService';
 
 const useAdditionalState = (productId) => {
   const [additionalStates, setAdditionalStates] = useState([]);
+  // NOVO ESTADO: Para armazenar os dados do produto (incluindo a flag "EhCombo")
+  const [productData, setProductData] = useState(null);
 
-  // =============================================================================
-  // PARTE 1: Busca e transformação de dados (código original RESTAURADO)
-  // =============================================================================
   useEffect(() => {
     const fetchAdditionalData = async () => {
       try {
         const perguntas = await fetchPerguntas(productId);
-        const productData = await fetchProductById(productId);
+        // O nome da variável foi alterado para evitar conflito com o nome do estado
+        const fetchedProductData = await fetchProductById(productId);
+
+        // DADO GUARDADO: Salvamos os dados do produto no estado para usar na validação
+        setProductData(fetchedProductData);
 
         const transformedData = perguntas.map(pergunta => ({
           id: pergunta.PerguntaId,
@@ -39,19 +41,18 @@ const useAdditionalState = (productId) => {
           observacao: pergunta.Observacao || []
         }));
 
-        // Pergunta fake para tamanhos
-        if (productData?.Tamanhos?.length > 0) {
+        if (fetchedProductData?.Tamanhos?.length > 0) {
           const tamanhosPergunta = {
             id: 'tamanhos',
             description: 'Escolha um tamanho',
-            type: 1, // observação tipo radio
+            type: 1,
             required: true,
             minOptions: 1,
             maxOptions: 1,
             selectedCount: 0,
             produtos: [],
             options: [],
-            observacao: productData.Tamanhos.map(tamanho => ({
+            observacao: fetchedProductData.Tamanhos.map(tamanho => ({
               Id: tamanho.Id,
               Nome: tamanho.Nome,
               PrecoDeVenda: tamanho.PrecoDeVenda,
@@ -61,17 +62,16 @@ const useAdditionalState = (productId) => {
           transformedData.unshift(tamanhosPergunta);
         }
 
-        // Pergunta para as partes do produto (sabores)
-        if (productData?.PartesProduto?.length > 0 && productData.QuantidadePartes > 0) {
+        if (fetchedProductData?.PartesProduto?.length > 0 && fetchedProductData.QuantidadePartes > 0) {
           const partesPergunta = {
             id: 'partes-produto',
-            description: `Escolha ${productData.QuantidadePartes} sabores`,
+            description: `Escolha ${fetchedProductData.QuantidadePartes} sabores`,
             type: 2,
             required: true,
-            minOptions: productData.QuantidadePartes,
-            maxOptions: productData.QuantidadePartes,
+            minOptions: fetchedProductData.QuantidadePartes,
+            maxOptions: fetchedProductData.QuantidadePartes,
             selectedCount: 0,
-            produtos: productData.PartesProduto.map(parte => ({
+            produtos: fetchedProductData.PartesProduto.map(parte => ({
               Id: parte.Id,
               Nome: parte.Nome,
               PrecoDeVenda: parte.PrecoDeVenda,
@@ -80,7 +80,7 @@ const useAdditionalState = (productId) => {
             })),
             options: [],
             observacao: [],
-            PrecoPeloMaiorValor: productData.PrecoPeloMaiorValor
+            PrecoPeloMaiorValor: fetchedProductData.PrecoPeloMaiorValor
           };
           transformedData.push(partesPergunta);
         }
@@ -96,11 +96,10 @@ const useAdditionalState = (productId) => {
     }
   }, [productId]);
 
-  // =============================================================================
-  // PARTE 2: Funções de atualização de estado (lógica otimizada MANTIDA)
-  // =============================================================================
+  // Nenhuma alteração nesta função
   const handleIncrement = useCallback((id, perguntaId, isProduto = false) => {
     setAdditionalStates(prevState => {
+        // ...código original mantido...
       const additionalIndex = prevState.findIndex(add => add.id === perguntaId);
       if (additionalIndex === -1) return prevState;
 
@@ -138,8 +137,10 @@ const useAdditionalState = (productId) => {
     });
   }, []);
 
+  // Nenhuma alteração nesta função
   const handleDecrement = useCallback((id, perguntaId, isProduto = false) => {
     setAdditionalStates(prevState => {
+        // ...código original mantido...
       const additionalIndex = prevState.findIndex(add => add.id === perguntaId);
       if (additionalIndex === -1) return prevState;
 
@@ -165,10 +166,14 @@ const useAdditionalState = (productId) => {
     });
   }, []);
 
-  // =============================================================================
-  // PARTE 3: Funções auxiliares e retorno do hook (otimizadas com useCallback)
-  // =============================================================================
   const calcularPrecoAdicionais = useCallback(() => {
+    // LÓGICA ALTERADA: Validando se o produto é um combo (EhCombo: true)
+    // Se for um combo, o preço dos adicionais é 0.
+    if (productData && productData.EhCombo === true) {
+      return 0;
+    }
+
+    // Se não for um combo, o cálculo original acontece normalmente.
     let total = 0;
     additionalStates.forEach(additional => {
       if (additional.id === 'partes-produto') {
@@ -190,7 +195,8 @@ const useAdditionalState = (productId) => {
       }
     });
     return total;
-  }, [additionalStates]);
+  // DEPENDÊNCIA ADICIONADA: Para que a validação funcione corretamente
+  }, [additionalStates, productData]);
 
   const getSelectedTamanho = useCallback(() => {
     const tamanhoPergunta = additionalStates.find(item => item.id === 'tamanhos');

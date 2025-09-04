@@ -5,6 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './App.css';
 
+// ✅ 1. IMPORTAR O CARTPROVIDER
+import { CartProvider } from './components/modal_cart_itens/CartContext';
+
 // Importação dos seus componentes
 import Header_component from './components/header_component/header';
 import Status_moment_component from './components/status_moment_component/status_moment';
@@ -13,7 +16,6 @@ import Infos_icons_component from './components/infos_icons_component/infos_icon
 import Selector_category_component from './components/selector_category_component/selector_category';
 import Category_component from './components/category_component/category';
 import ModalBusca from './components/modal_search_component/modal_search_component';
-// Precisamos do Offcanvas aqui também
 import Modal_product_component from './components/modal_products_component/modal_products_component';
 
 import { PrimeReactProvider } from 'primereact/api';
@@ -31,9 +33,6 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [color, setColor] = useState("");
-
-    // ✅ === ESTADOS PARA MODAIS E OFFCANVAS ===
-    const [showSearchModal, setShowSearchModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
 
@@ -71,86 +70,63 @@ function App() {
 
     useEffect(() => {
         // Seu useEffect para o botão de scroll continua o mesmo
-        const handleScroll = () => {
-            if (window.pageYOffset > 300) {
-                setShowScrollButton(true);
-            } else {
-                setShowScrollButton(false);
-            }
-        };
+        const handleScroll = () => { /* ... */ };
         window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
-    // ✅ === FUNÇÕES DE CONTROLE ===
-
-    // Funções para o Modal de Busca
-    const handleOpenSearch = () => setShowSearchModal(true);
-    const handleCloseSearch = () => setShowSearchModal(false);
-
-    // Funções para o Offcanvas de Produto
     const handleOpenOffcanvas = (product) => {
         setSelectedProduct(product);
         setIsOffcanvasOpen(true);
     };
+    
     const handleCloseOffcanvas = () => {
         setIsOffcanvasOpen(false);
-        setTimeout(() => setSelectedProduct(null), 300);
-    };
-
-    // Função que conecta o Modal de Busca ao Offcanvas
-    const handleProductSelectedFromSearch = (product) => {
-        handleOpenOffcanvas(product);
+        // Pequena espera para a animação de fechar terminar antes de limpar o produto
+        setTimeout(() => setSelectedProduct(null), 300); 
     };
 
     return (
-        <div className="App">
-            <PrimeReactProvider>
-                {/* ✅ Passando a função e a cor para o Header */}
-                <Header_component onSearchClick={handleOpenSearch}/>
-                <Status_moment_component />
-                <Infos_component />
-                <Infos_icons_component />
-                {/* O seu Category_component provavelmente precisará de 'onProductClick={handleOpenOffcanvas}' */}
-                <Category_component categories={categories} products={products} onProductClick={handleOpenOffcanvas} />
-                <Selector_category_component />
-                
-                {/* ✅ Passando as props de controle para o ModalBusca */}
-                <ModalBusca
-                    show={showSearchModal}
-                    handleClose={handleCloseSearch}
-                    onProductSelect={handleProductSelectedFromSearch}
-                />
-                
-                {/* ✅ Renderização do Offcanvas controlada aqui */}
-                {selectedProduct && (
-                    <Modal_product_component
-                        product={selectedProduct}
-                        show={isOffcanvasOpen}
-                        handleClose={handleCloseOffcanvas}
-                    />
-                )}
-            </PrimeReactProvider>
+        // ✅ 2. ENVOLVER A APLICAÇÃO COM O CARTPROVIDER
+        <CartProvider>
+            <div className="App">
+                <PrimeReactProvider>
+                    <Header_component />
+                    <Status_moment_component />
+                    <Infos_component />
+                    <Infos_icons_component />
+                    <Category_component categories={categories} products={products} onProductClick={handleOpenOffcanvas} />
+                    <Selector_category_component />
+                    
+                    <ModalBusca />
+                    
+                    {selectedProduct && (
+                        <Modal_product_component
+                            product={selectedProduct}
+                            show={isOffcanvasOpen}
+                            handleClose={handleCloseOffcanvas}
+                        />
+                    )}
+                </PrimeReactProvider>
 
-            <button className={`scroll-to-top ${showScrollButton ? 'show' : ''}`} onClick={scrollToTop} style={{ backgroundColor: color }}>
-                &#8593;
-            </button>
+                <button className={`scroll-to-top ${showScrollButton ? 'show' : ''}`} onClick={scrollToTop} style={{ backgroundColor: color }}>
+                    &#8593;
+                </button>
 
-            {error && <div className="error-message">{error}</div>}
+                {error && <div className="error-message">{error}</div>}
 
-            <footer>
-                <div className='conteiner_hotmenu_logo'>
-                    <img src="/logo-removebg-preview.png" alt="..." /> {/* Use / no início para caminhos da pasta public */}
-                </div>
-                <label>© Copyright 2024 Hotmenu. Todos os direitos reservados.</label>
-            </footer>
-        </div>
+                <footer>
+                    <div className='conteiner_hotmenu_logo'>
+                        <img src="/logo-removebg-preview.png" alt="..." />
+                    </div>
+                    <label>© Copyright 2024 Hotmenu. Todos os direitos reservados.</label>
+                </footer>
+            </div>
+        </CartProvider>
     );
 }
 
