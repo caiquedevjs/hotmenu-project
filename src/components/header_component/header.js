@@ -78,6 +78,8 @@ const [valorTroco, setValorTroco] = useState(0);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
+const [cupomId, setCupomId] = useState('');
+const [regrasCupom, setRegrasCupom] = useState('');
 const [mensagem, setMensagem] = useState('');
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
 const [activeTab, setActiveTab] = useState('pickup');
@@ -544,6 +546,7 @@ const handleFinalizarPedido = async () => {
     EstabeleicmentoNome: storeName,
     IdEstabelecimento: estebelecimentoId,
     IdFormaPagamento: selectedPaymentId,
+    IdCupomDesconto: cupomId,
     Status: "Novo",
     Cliente: nome,
     Tel: telefone,
@@ -742,6 +745,15 @@ const handleBuscarCupom = async () => {
     }
 
     console.log('Resposta JSON:', data);
+    
+    // <--- CORREÇÃO 1: Acessar o ID pelo caminho correto e guardar em uma variável local
+    const idDoCupomRecebido = data?.cupom?.Data?.CupomId;
+
+    if (idDoCupomRecebido) {
+      // <--- CORREÇÃO 2: Atualizar o estado com o valor da variável
+      setCupomId(idDoCupomRecebido);
+      console.log(`CupomId recebido e guardado: ${idDoCupomRecebido}`); // Loga a variável local, que tem o valor imediato
+    }
 
     const { Valido, MsgErro, Regras } = data?.cupom?.Data || {};
 
@@ -756,6 +768,7 @@ const handleBuscarCupom = async () => {
         .trim();
 
       console.log('Regras limpa:', regrasLimpa);
+      setRegrasCupom(regrasLimpa);
 
       // Regex para desconto percentual (com %)
       const matchPercentual = regrasLimpa.match(/Desconto de:\s*(\d{1,3},\d{2})%/);
@@ -773,11 +786,11 @@ const handleBuscarCupom = async () => {
         const valorFixo = parseFloat(matchFixo[1].replace(',', '.'));
         console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
         setDescontoAplicado(valorFixo);
-         const modalElement = document.getElementById('modal_cupom_desconto');
-      if (modalElement) {
-        const modal = Modal.getInstance(modalElement) || new Modal(modalElement);
-        modal.hide();
-      }
+          const modalElement = document.getElementById('modal_cupom_desconto');
+        if (modalElement) {
+          const modal = Modal.getInstance(modalElement) || new Modal(modalElement);
+          modal.hide();
+        }
 
       } else {
         console.warn('Nenhum desconto reconhecido nas regras.');
@@ -793,7 +806,6 @@ const handleBuscarCupom = async () => {
     setMensagem('Erro ao buscar o cupom');
   }
 };
-
 
 
 const [show, setShow] = useState(false);
@@ -1104,8 +1116,17 @@ const handleShow = () => setShow(true);
              data-tooltip-content="busque um cupom para ultilizar"
              data-tooltip-place="top-start"
              ></input> 
-            <button className='btn-buscar-cupom' style={{backgroundColor: color}}  data-bs-dismiss="modal"  onClick={handleBuscarCupom}>buscar</button>
+            <button className='btn-buscar-cupom' style={{backgroundColor: color}}   onClick={handleBuscarCupom}>buscar</button>
+     
           </div>
+               {regrasCupom && (
+    <div
+      className="alert alert-warning mt-2 p-2"
+      role="alert"
+      style ={{fontSize: '10px'}}
+      dangerouslySetInnerHTML={{ __html: regrasCupom }}
+    ></div>
+)}
         </div>
       </div>
     </div>
