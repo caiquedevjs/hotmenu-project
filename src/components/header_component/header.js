@@ -814,19 +814,48 @@ const handleShow = () => setShow(true);
   <div id="carouselExampleFade" class="carousel slide carousel-fade" >
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src={`https://hotmenu.com.br/arquivos/${fotoCard}`} class="d-block w-100" alt="..."/>
+     {fotoCard ? (
+        <img src={`https://hotmenu.com.br/arquivos/${fotoCard}`} class="d-block w-100" alt="Banner 1"/>
+      ) : (
+        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
+          height: '125px' }}></div>
+      )}
     </div>
+
     <div class="carousel-item">
-      <img src={`https://hotmenu.com.br/arquivos/${fotoCard2}`} class="d-block w-100" alt="..."/>
+      {fotoCard2 ? (
+        <img src={`https://hotmenu.com.br/arquivos/${fotoCard2}`} class="d-block w-100" alt="Banner 2"/>
+      ) : (
+        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
+          height: '125px'}}></div>
+      )}
     </div>
+
     <div class="carousel-item">
-      <img src={`https://hotmenu.com.br/arquivos/${fotoCard3}`} class="d-block w-100" alt="..."/>
+      {fotoCard3 ? (
+        <img src={`https://hotmenu.com.br/arquivos/${fotoCard3}`} class="d-block w-100" alt="Banner 3"/>
+      ) : (
+        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
+          height: '125px' }}></div>
+      )}
     </div>
+
     <div class="carousel-item">
-      <img src={`https://hotmenu.com.br/arquivos/${fotoCard4}`} class="d-block w-100" alt="..."/>
+      {fotoCard4 ? (
+        <img src={`https://hotmenu.com.br/arquivos/${fotoCard4}`} class="d-block w-100" alt="Banner 4"/>
+      ) : (
+        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
+          height: '125px' }}></div>
+      )}
     </div>
+
     <div class="carousel-item">
-      <img src={`https://hotmenu.com.br/arquivos/${fotoCard5}`} class="d-block w-100" alt="..."/>
+      {fotoCard5 ? (
+        <img src={`https://hotmenu.com.br/arquivos/${fotoCard5}`} class="d-block w-100" alt="Banner 5"/>
+      ) : (
+        <div class="banner-fallback" style={{ backgroundColor: color, wwidth: '100%', 
+          height: '125px' }}></div>
+      )}
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
