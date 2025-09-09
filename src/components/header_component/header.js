@@ -13,6 +13,8 @@ import './modal_cart_itens.css';
 import './modal_cupom_desconto.css';
 import './modal_finalizar_pedido.css';
 import 'react-toastify/dist/ReactToastify.css';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 // <------- import react icons, assets, toaltip and toast ------->
 import { FaSearch,FaShoppingCart } from "react-icons/fa";
@@ -814,7 +816,16 @@ const handleClose = () => setShow(false);
 const handleShow = () => setShow(true);
 
 
+const [larguraTela, setLarguraTela] = useState(window.innerWidth);
 
+useEffect(() => {
+  const handleResize = () => setLarguraTela(window.innerWidth);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+// Define a altura do skeleton com base na largura da tela
+const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
 
 
 
@@ -829,8 +840,7 @@ const handleShow = () => setShow(true);
      {fotoCard ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard}`} class="d-block w-100" alt="Banner 1"/>
       ) : (
-        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
-          height: '125px' }}></div>
+  <Skeleton height={alturaDoBannerSkeleton} />
       )}
     </div>
 
@@ -838,8 +848,8 @@ const handleShow = () => setShow(true);
       {fotoCard2 ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard2}`} class="d-block w-100" alt="Banner 2"/>
       ) : (
-        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
-          height: '125px'}}></div>
+        <div className="banner-fallback" 
+  style={{ backgroundColor: color }}></div>
       )}
     </div>
 
@@ -847,8 +857,8 @@ const handleShow = () => setShow(true);
       {fotoCard3 ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard3}`} class="d-block w-100" alt="Banner 3"/>
       ) : (
-        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
-          height: '125px' }}></div>
+        <div className="banner-fallback" 
+  style={{ backgroundColor: color }}></div>
       )}
     </div>
 
@@ -856,8 +866,8 @@ const handleShow = () => setShow(true);
       {fotoCard4 ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard4}`} class="d-block w-100" alt="Banner 4"/>
       ) : (
-        <div class="banner-fallback" style={{ backgroundColor: color, width: '100%', 
-          height: '125px' }}></div>
+        <div className="banner-fallback" 
+  style={{ backgroundColor: color }}></div>
       )}
     </div>
 
@@ -865,8 +875,8 @@ const handleShow = () => setShow(true);
       {fotoCard5 ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard5}`} class="d-block w-100" alt="Banner 5"/>
       ) : (
-        <div class="banner-fallback" style={{ backgroundColor: color, wwidth: '100%', 
-          height: '125px' }}></div>
+        <div className="banner-fallback" 
+  style={{ backgroundColor: color }}></div>
       )}
     </div>
   </div>

@@ -13,6 +13,23 @@
   white-space: nowrap; /* Evita quebra de linha */
 }
 
+/* Adicione isso ao seu arquivo CSS */
+
+.category-title-skeleton {
+  height: 20px;
+  max-width: 120px;
+  margin: 5px auto 0 auto; /* Centraliza e adiciona margem */
+  margin-bottom: 0px;
+  display: block;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+  .category-title-skeleton {
+    height: 12px;
+    max-width: 80px;
+  }
+}
 .category {
   flex: 0 0 auto; /* Não permite que os itens encolham */
   text-align: center; /* Centraliza o texto */
@@ -40,8 +57,14 @@
   font-size: 20px; /* Título maior */
   margin-top: 5px; /* Espaço acima do título */
   font-family: "Roboto", sans-serif;
+  font-weight: bolder;
 }
-
+.category-title-img{
+  font-size: 20px; /* Título menor */
+    margin-top: 30px; /* Espaço acima do título */
+    font-family: "Roboto", sans-serif;
+    font-weight: bolder;
+}
 /* Estilos para dispositivos móveis */
 @media (max-width: 768px) {
   .selector_category_component {
@@ -61,6 +84,16 @@
   .category-title {
     font-size: 12px; /* Título menor */
     margin-top: 5px; /* Espaço acima do título */
+    max-width: 100px; /* Largura máxima do título */
+    word-wrap: break-word; /* Quebra palavras longas em múltiplas linhas */
+    white-space: normal; /* Permite quebra de linha normal */
+    font-family: "Roboto", sans-serif;
+    font-weight: bolder;
+}
+
+.category-title-img{
+  font-size: 12px; /* Título menor */
+    margin-top: 30px; /* Espaço acima do título */
     max-width: 100px; /* Largura máxima do título */
     word-wrap: break-word; /* Quebra palavras longas em múltiplas linhas */
     white-space: normal; /* Permite quebra de linha normal */

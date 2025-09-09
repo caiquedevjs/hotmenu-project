@@ -13,7 +13,17 @@
     z-index: 0;
 
 }
-
+.banner-fallback {
+  width: 100%;
+  height: 125px; /* Altura padrão para mobile */
+  display: block;
+}
+/* Para telas maiores que tablets (desktops) */
+@media (min-width: 768px) {
+  .banner-fallback {
+    height: 293px; /* Nova altura para desktop - ajuste como quiser! */
+  }
+}
 .icons_header_conteiner_class{
     display: flex;
     justify-content: right;
