@@ -58,12 +58,18 @@
   margin-top: 5px; /* Espaço acima do título */
   font-family: "Roboto", sans-serif;
   font-weight: bolder;
+  word-wrap: break-word; /* Quebra palavras longas em múltiplas linhas */
+  max-width: 250px; /* Largura máxima do título */
+  white-space: normal; /* Permite quebra de linha normal */
 }
 .category-title-img{
   font-size: 20px; /* Título menor */
     margin-top: 30px; /* Espaço acima do título */
     font-family: "Roboto", sans-serif;
     font-weight: bolder;
+    word-wrap: break-word; /* Quebra palavras longas em múltiplas linhas */
+    max-width: 250px; /* Largura máxima do título */
+    white-space: normal; /* Permite quebra de linha normal */
 }
 /* Estilos para dispositivos móveis */
 @media (max-width: 768px) {

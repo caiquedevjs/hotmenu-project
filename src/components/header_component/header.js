@@ -840,7 +840,8 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
      {fotoCard ? (
         <img src={`https://hotmenu.com.br/arquivos/${fotoCard}`} class="d-block w-100" alt="Banner 1"/>
       ) : (
-  <Skeleton height={alturaDoBannerSkeleton} />
+                 <div className="banner-fallback" 
+  style={{ backgroundColor: color }}></div>
       )}
     </div>
 
