@@ -568,6 +568,7 @@ const handleFinalizarPedido = async () => {
         : (estabelecimento?.FreteFixo
           ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
           : "consultar"),
+    desconto: descontoAplicado,
     troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
     preçoTotal: `R$ ${totalPriceWithFrete()}`,
   };
@@ -1206,7 +1207,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
 
                 <InputMask
                  className="form-control"
-                 mask = '99999-999999'
+                 mask = '(99) 99999-9999'
                   id="inputTelefone4" value={telefone} 
                   onChange={(e) => setTelefone(e.target.value)} 
                   >
