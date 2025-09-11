@@ -661,7 +661,8 @@ const handleFinalizarPedido = async () => {
     setSelectedOption('');
     setValorTotalPedido("0,00");
     clearCart();
-    setDescontoAplicado()
+    setDescontoAplicado();
+    setFretePorCep()
 
   } catch (error) {
     console.error('Erro na chamada da API:', error);
@@ -677,11 +678,11 @@ const handleFinalizarPedido = async () => {
       sound.play()
     }
     else{
-    setList([])
-    setValorTotalPedido("0.00")
-    clearCart()
-    setDescontoAplicado()
-    
+    setList([]);
+    setValorTotalPedido("0.00");
+    clearCart();
+    setDescontoAplicado();
+    setFretePorCep()
     
     
     toast.success("Pedido excluido com sucesso. 😞",  {theme: 'dark'})
