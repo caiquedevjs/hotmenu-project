@@ -76,6 +76,7 @@ const [FreteFixo,setFreteFixo] = useState('');
 const [fretePorCep, setFretePorCep] = useState(null);
 const [Fretefuncao, setFreteFuncao] = useState('');
 const [descontoAplicado, setDescontoAplicado] = useState(0);
+const [totalSemFreteAplicado, setTotalSemFreteAplicado] = useState(null)
 const [valorTroco, setValorTroco] = useState(0);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
@@ -83,6 +84,7 @@ const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [cupomId, setCupomId] = useState('');
 const [regrasCupom, setRegrasCupom] = useState('');
 const [mensagem, setMensagem] = useState('');
+const [cupomStatus, setCupomStatus] = useState('idle'); // Estados possíveis: 'idle', 'success', 'error'
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
 const [activeTab, setActiveTab] = useState('pickup');
 const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
@@ -661,8 +663,7 @@ const handleFinalizarPedido = async () => {
     setSelectedOption('');
     setValorTotalPedido("0,00");
     clearCart();
-    setDescontoAplicado();
-    setFretePorCep()
+    setDescontoAplicado()
 
   } catch (error) {
     console.error('Erro na chamada da API:', error);
@@ -678,11 +679,11 @@ const handleFinalizarPedido = async () => {
       sound.play()
     }
     else{
-    setList([]);
-    setValorTotalPedido("0.00");
-    clearCart();
-    setDescontoAplicado();
-    setFretePorCep()
+    setList([])
+    setValorTotalPedido("0.00")
+    clearCart()
+    setDescontoAplicado()
+    
     
     
     toast.success("Pedido excluido com sucesso. 😞",  {theme: 'dark'})
@@ -720,6 +721,7 @@ const handleBuscarCupom = async () => {
   }
 
   const totalSemFrete = parseFloat(totalCartPrice().replace(',', '.'));
+  setTotalSemFreteAplicado(totalSemFrete);
 
   if (totalSemFrete < 20) {
     setMensagem('O valor mínimo para aplicar o cupom é R$ 20,00.');
@@ -730,7 +732,7 @@ const handleBuscarCupom = async () => {
     const params = new URLSearchParams({
       id: storeName,
       cupom: cupom,
-      celular: "5571999723638",
+      celular: celular,
       ValorPedido: totalSemFrete.toString()
     });
 
@@ -785,11 +787,13 @@ const handleBuscarCupom = async () => {
         const valorDesconto = (totalSemFrete * percentual) / 100;
         console.log(`Desconto percentual de ${percentual}%: R$ ${valorDesconto.toFixed(2)}`);
         setDescontoAplicado(valorDesconto);
+        setCupom('')
 
       } else if (matchFixo) {
         const valorFixo = parseFloat(matchFixo[1].replace(',', '.'));
         console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
         setDescontoAplicado(valorFixo);
+        setCupom('')
           const modalElement = document.getElementById('modal_cupom_desconto');
         if (modalElement) {
           const modal = Modal.getInstance(modalElement) || new Modal(modalElement);
@@ -1088,7 +1092,10 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                       Finalizar Compra
                     </button>
                     <Tooltip id='carrinho-vazio-id'></Tooltip>
-                    <button data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto" className='btn-cupom'
+                    
+                    {/*//
+
+                     <button data-bs-toggle="modal" data-bs-target="#modal_cupom_desconto" className='btn-cupom'
                       data-tooltip-id="tooltip-cupom-btn"
                       data-tooltip-content="adicione o seu cupom aqui."
                       data-tooltip-place="top-start"
@@ -1098,6 +1105,8 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                       onClick={handleClose}
                     >Adicionar cupom
                     </button>
+                    */}
+                   
                   </div></>
                </div>
             </div>
@@ -1109,8 +1118,9 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
 
 
 
-              {/* <------------ Modal carrinho de cupom de desconto ------------>*/}
-      <div className="modal fade" id="modal_cupom_desconto"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              {/* <------------ Modal carrinho de cupom de desconto ------------>
+
+              <div className="modal fade" id="modal_cupom_desconto"  data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
@@ -1143,6 +1153,8 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
         </div>
       </div>
     </div>
+              */}
+    
 
 {/*//---------------------------------------------------------------------------------------------------------------------------------------------------------*/}
 
@@ -1195,7 +1207,9 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
               </div>
                 </div>
                 <div className='total-valor-pedido'>
-                <p className='total-valor-pedido-p'>Valor total: <span className='total-valor-pedido-span'>R$ {valorTotalPedido}</span></p>
+                  <p className='total-valor-pedido-p'>Subtotal: <span className='total-valor-pedido-span'>R$ {totalCartPrice()}</span></p>
+                <p className='total-valor-pedido-p'>Valor total: <span className='total-valor-pedido-span'>R$ {totalPriceWithFrete()}</span></p>
+               
               </div>
                 <form className="row g-3">
                   <div className='user--inputs-conteine'>
@@ -1214,7 +1228,36 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                   >
                 </InputMask>
                   {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputTelefone4" />}
-                  
+
+
+            <Tooltip id='tooltip-bsucar-cupom'></Tooltip>
+            <div style={{display : 'flex', marginTop : '15px'}}>
+              <input className='form-control' placeholder='cupom'
+            value={cupom}
+            onChange={(e) => setCupom(e.target.value)}
+             data-tooltip-id="tooltip-bsucar-cupom"
+             data-tooltip-content="busque um cupom para ultilizar"
+             data-tooltip-place="top-start"
+             ></input> 
+            <button type='button' className='btn-buscar-cupom' style={{backgroundColor: color}}   onClick={handleBuscarCupom}>buscar cupom</button>
+            </div>
+            
+     
+         
+               {regrasCupom && (
+    <div
+      className="alert alert-warning mt-2 p-2"
+      role="alert"
+      style ={{fontSize: '10px'}}
+      dangerouslySetInnerHTML={{ __html: regrasCupom }}
+    ></div>
+)}
+
+{! regrasCupom && (
+  <div className="alert alert-danger mt-2 p-2" role="alert" style={{fontSize: '12px'}}>
+      {mensagem}
+    </div>
+)}
               </div>
                   </div><hr></hr>
 
