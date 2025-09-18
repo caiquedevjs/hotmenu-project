@@ -680,9 +680,9 @@ const handleFinalizarPedido = async () => {
     }
     else{
     setList([])
-    setValorTotalPedido("0.00")
-    clearCart()
-    setDescontoAplicado()
+    setValorTotalPedido("0,00");
+    clearCart();
+    setDescontoAplicado();
     
     
     
@@ -1207,7 +1207,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
               </div>
                 </div>
                 <div className='total-valor-pedido'>
-                  <p className='total-valor-pedido-p'>Subtotal: <span className='total-valor-pedido-span'>R$ {totalCartPrice()}</span></p>
+                  
                 <p className='total-valor-pedido-p'>Valor total: <span className='total-valor-pedido-span'>R$ {totalPriceWithFrete()}</span></p>
                
               </div>
