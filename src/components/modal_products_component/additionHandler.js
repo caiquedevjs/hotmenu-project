@@ -6,95 +6,97 @@ const useAdditionalState = (productId) => {
   // NOVO ESTADO: Para armazenar os dados do produto (incluindo a flag "EhCombo")
   const [productData, setProductData] = useState(null);
 
-  useEffect(() => {
-    const fetchAdditionalData = async () => {
-      try {
-        const perguntas = await fetchPerguntas(productId);
-        // O nome da variável foi alterado para evitar conflito com o nome do estado
-        const fetchedProductData = await fetchProductById(productId);
+ useEffect(() => {
+  const fetchAdditionalData = async () => {
+    try {
+      const perguntas = await fetchPerguntas(productId);
+      const fetchedProductData = await fetchProductById(productId);
 
-        // DADO GUARDADO: Salvamos os dados do produto no estado para usar na validação
-        setProductData(fetchedProductData);
+      setProductData(fetchedProductData);
 
-        const transformedData = perguntas.map(pergunta => ({
-          id: pergunta.PerguntaId,
-          description: pergunta.Texto,
-          type: pergunta.Tipo,
-          required: pergunta.RespostaObrigatoria,
-          minOptions: pergunta.QtdOpcoesResPostaMin,
-          maxOptions: pergunta.QtdOpcoesResPostaMax,
-          options: pergunta.Complemento.map(complemento => ({
-            id: complemento.Id,
-            name: complemento.Nome,
-            price: complemento.PrecoVenda,
-            count: 0,
-            QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
-          })),
+      const transformedData = perguntas.map(pergunta => ({
+        id: pergunta.PerguntaId,
+        description: pergunta.Texto,
+        type: pergunta.Tipo,
+        required: pergunta.RespostaObrigatoria,
+        minOptions: pergunta.QtdOpcoesResPostaMin,
+        maxOptions: pergunta.QtdOpcoesResPostaMax,
+        options: pergunta.Complemento.map(complemento => ({
+          id: complemento.Id,
+          name: complemento.Nome,
+          // 👇 ALTERAÇÃO AQUI: Prioriza o PrecoPromo se existir
+          price: complemento.PrecoPromo ?? complemento.PrecoVenda,
+          count: 0,
+          QtdMaximaPermitida: complemento.QtdMaximaPermitida || null
+        })),
+        selectedCount: 0,
+        produtos: pergunta.Produto.map(produto => ({
+          Id: produto.Id,
+          Nome: produto.Nome,
+          // 👇 ALTERAÇÃO AQUI: Prioriza o PrecoPromo se existir
+          PrecoDeVenda: produto.PrecoPromo ?? produto.PrecoDeVenda,
+          count: 0,
+          QtdMaximaPermitida: produto.QtdMaximaPermitida || null
+        })),
+        observacao: pergunta.Observacao || []
+      }));
+
+      if (fetchedProductData?.Tamanhos?.length > 0) {
+        const tamanhosPergunta = {
+          id: 'tamanhos',
+          description: 'Escolha um tamanho',
+          type: 1,
+          required: true,
+          minOptions: 1,
+          maxOptions: 1,
           selectedCount: 0,
-          produtos: pergunta.Produto.map(produto => ({
-            Id: produto.Id,
-            Nome: produto.Nome,
-            PrecoDeVenda: produto.PrecoDeVenda,
-            count: 0,
-            QtdMaximaPermitida: produto.QtdMaximaPermitida || null
-          })),
-          observacao: pergunta.Observacao || []
-        }));
-
-        if (fetchedProductData?.Tamanhos?.length > 0) {
-          const tamanhosPergunta = {
-            id: 'tamanhos',
-            description: 'Escolha um tamanho',
-            type: 1,
-            required: true,
-            minOptions: 1,
-            maxOptions: 1,
-            selectedCount: 0,
-            produtos: [],
-            options: [],
-            observacao: fetchedProductData.Tamanhos.map(tamanho => ({
-              Id: tamanho.Id,
-              Nome: tamanho.Nome,
-              PrecoDeVenda: tamanho.PrecoDeVenda,
-              selected: false
-            }))
-          };
-          transformedData.unshift(tamanhosPergunta);
-        }
-
-        if (fetchedProductData?.PartesProduto?.length > 0 && fetchedProductData.QuantidadePartes > 0) {
-          const partesPergunta = {
-            id: 'partes-produto',
-            description: `Escolha ${fetchedProductData.QuantidadePartes} sabores`,
-            type: 2,
-            required: true,
-            minOptions: fetchedProductData.QuantidadePartes,
-            maxOptions: fetchedProductData.QuantidadePartes,
-            selectedCount: 0,
-            produtos: fetchedProductData.PartesProduto.map(parte => ({
-              Id: parte.Id,
-              Nome: parte.Nome,
-              PrecoDeVenda: parte.PrecoDeVenda,
-              count: 0,
-              QtdMaximaPermitida: 1
-            })),
-            options: [],
-            observacao: [],
-            PrecoPeloMaiorValor: fetchedProductData.PrecoPeloMaiorValor
-          };
-          transformedData.push(partesPergunta);
-        }
-
-        setAdditionalStates(transformedData);
-      } catch (error) {
-        console.error('Erro ao buscar dados adicionais:', error);
+          produtos: [],
+          options: [],
+          observacao: fetchedProductData.Tamanhos.map(tamanho => ({
+            Id: tamanho.Id,
+            Nome: tamanho.Nome,
+            // 👇 ALTERAÇÃO AQUI: Prioriza o PrecoPromo se existir
+            PrecoDeVenda: tamanho.PrecoPromo ?? tamanho.PrecoDeVenda,
+            selected: false
+          }))
+        };
+        transformedData.unshift(tamanhosPergunta);
       }
-    };
 
-    if (productId) {
-      fetchAdditionalData();
+      if (fetchedProductData?.PartesProduto?.length > 0 && fetchedProductData.QuantidadePartes > 0) {
+        const partesPergunta = {
+          id: 'partes-produto',
+          description: `Escolha ${fetchedProductData.QuantidadePartes} sabores`,
+          type: 2,
+          required: true,
+          minOptions: fetchedProductData.QuantidadePartes,
+          maxOptions: fetchedProductData.QuantidadePartes,
+          selectedCount: 0,
+          produtos: fetchedProductData.PartesProduto.map(parte => ({
+            Id: parte.Id,
+            Nome: parte.Nome,
+            // 👇 ALTERAÇÃO AQUI: Prioriza o PrecoPromo se existir
+            PrecoDeVenda: parte.PrecoPromo ?? parte.PrecoDeVenda,
+            count: 0,
+            QtdMaximaPermitida: 1
+          })),
+          options: [],
+          observacao: [],
+          PrecoPeloMaiorValor: fetchedProductData.PrecoPeloMaiorValor
+        };
+        transformedData.push(partesPergunta);
+      }
+
+      setAdditionalStates(transformedData);
+    } catch (error) {
+      console.error('Erro ao buscar dados adicionais:', error);
     }
-  }, [productId]);
+  };
+
+  if (productId) {
+    fetchAdditionalData();
+  }
+}, [productId]);
 
   // Nenhuma alteração nesta função
   const handleIncrement = useCallback((id, perguntaId, isProduto = false) => {
