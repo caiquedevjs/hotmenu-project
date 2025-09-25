@@ -109,14 +109,14 @@ export const CartProvider = ({ children }) => {
   
       const isOpenNow = currentTime >= startTime && currentTime < endTime;
   
-      console.log("Horário Atual:", currentHour + ':' + currentMinutes);
-      console.log("Horário de Abertura:", hojeHorario.HoraIni);
-      console.log("Horário de Fechamento:", hojeHorario.HoraFim);
-      console.log("Estabelecimento está aberto?", isOpenNow);
+      //console.log("Horário Atual:", currentHour + ':' + currentMinutes);
+      //console.log("Horário de Abertura:", hojeHorario.HoraIni);
+      //console.log("Horário de Fechamento:", hojeHorario.HoraFim);
+      //console.log("Estabelecimento está aberto?", isOpenNow);
   
       setIsOpen(isOpenNow);
     } else {
-      console.log("Nenhum horário definido para hoje.");
+      //console.log("Nenhum horário definido para hoje.");
       setIsOpen(false);
     }
   };

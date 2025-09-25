@@ -185,7 +185,7 @@ const handleCheckboxChange = (formaSelecionada) => {
   if (newCheckedState[Nome]) {
     setSelectedPaymentId(Id);
     setSelectedPaymentNome(Nome)
-    console.log(`Bandeira selecionada: ${Nome}, ID: ${Id}`);
+    //console.log(`Bandeira selecionada: ${Nome}, ID: ${Id}`);
   } else {
     setSelectedPaymentId(null);
   }
@@ -575,7 +575,7 @@ const handleFinalizarPedido = async () => {
     preçoTotal: `R$ ${totalPriceWithFrete()}`,
   };
 
-  console.log("Pedido a enviar:", pedido);
+  //console.log("Pedido a enviar:", pedido);
 
   try {
     const resp = await fetch('http://painel.hotmobile.com.br/sendapi/webhook.aspx?id=NTk6MToz', {
@@ -590,17 +590,17 @@ const handleFinalizarPedido = async () => {
     const payload = contentType.includes('application/json')
       ? await resp.json()
       : await resp.text(); // lida com respostas como "OK"
-      console.log("📑 Headers:", [...resp.headers.entries()]);
+      //console.log("📑 Headers:", [...resp.headers.entries()]);
 
     if (resp.ok) {
-  console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
-  console.log("📬 Resposta do servidor:", payload);
+  //console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
+  //console.log("📬 Resposta do servidor:", payload);
 } else {
   console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
   console.warn("📬 Resposta do servidor:", payload);
 }
 
-    console.log('Sucesso:', payload);
+    //console.log('Sucesso:', payload);
 
     // Mensagem para o destinatário (montada após confirmar o envio)
     const mensagemProdutos = pedido.Produtos.map(produto =>
@@ -643,7 +643,7 @@ const handleFinalizarPedido = async () => {
     window.open(urlWhatsApp, '_blank');
 
     // Notificações e logs
-    console.log('Pedido finalizado com sucesso!');
+    //console.log('Pedido finalizado com sucesso!');
     notify();
     notify02();
 
@@ -750,7 +750,7 @@ const handleBuscarCupom = async () => {
       return;
     }
 
-    console.log('Resposta JSON:', data);
+    //console.log('Resposta JSON:', data);
     
     // <--- CORREÇÃO 1: Acessar o ID pelo caminho correto e guardar em uma variável local
     const idDoCupomRecebido = data?.cupom?.Data?.CupomId;
@@ -758,14 +758,14 @@ const handleBuscarCupom = async () => {
     if (idDoCupomRecebido) {
       // <--- CORREÇÃO 2: Atualizar o estado com o valor da variável
       setCupomId(idDoCupomRecebido);
-      console.log(`CupomId recebido e guardado: ${idDoCupomRecebido}`); // Loga a variável local, que tem o valor imediato
+      //console.log(`CupomId recebido e guardado: ${idDoCupomRecebido}`); // Loga a variável local, que tem o valor imediato
     }
 
     const { Valido, MsgErro, Regras } = data?.cupom?.Data || {};
 
     if (Valido) {
       setMensagem('Cupom válido!');
-      console.log("Total sem frete:", totalSemFrete);
+      //console.log("Total sem frete:", totalSemFrete);
 
       // Remove tags HTML e normaliza espaços
       const regrasLimpa = Regras
@@ -773,7 +773,7 @@ const handleBuscarCupom = async () => {
         .replace(/\s+/g, ' ')
         .trim();
 
-      console.log('Regras limpa:', regrasLimpa);
+      //console.log('Regras limpa:', regrasLimpa);
       setRegrasCupom(regrasLimpa);
 
       // Regex para desconto percentual (com %)
@@ -785,13 +785,13 @@ const handleBuscarCupom = async () => {
       if (matchPercentual) {
         const percentual = parseFloat(matchPercentual[1].replace(',', '.'));
         const valorDesconto = (totalSemFrete * percentual) / 100;
-        console.log(`Desconto percentual de ${percentual}%: R$ ${valorDesconto.toFixed(2)}`);
+        //console.log(`Desconto percentual de ${percentual}%: R$ ${valorDesconto.toFixed(2)}`);
         setDescontoAplicado(valorDesconto);
         setCupom('')
 
       } else if (matchFixo) {
         const valorFixo = parseFloat(matchFixo[1].replace(',', '.'));
-        console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
+        //console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
         setDescontoAplicado(valorFixo);
         setCupom('')
           const modalElement = document.getElementById('modal_cupom_desconto');
