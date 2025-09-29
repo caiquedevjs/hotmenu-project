@@ -189,10 +189,21 @@
       .carousel-item img{
         height: 125px;
       }
-      .estabelecimento-description{
-        font-size: 12px;
-        font-family:  "Poppins", sans-serif;
-      }
+     .estabelecimento-description {
+  font-size: 12px;
+  max-width: 50%;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+
+  /* Centraliza o bloco */
+  margin: 0 auto;
+
+  /* Quebra de linha quando precisar */
+  word-break: break-word;     /* quebra elegante */
+  overflow-wrap: break-word;  /* compatibilidade */
+  white-space: normal;
+}
+
   }
   
   

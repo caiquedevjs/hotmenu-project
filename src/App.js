@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet,HelmetProvider } from 'react-helmet-async';
 import './App.css';
 
 import { CartProvider } from './components/modal_cart_itens/CartContext';
@@ -104,8 +105,28 @@ function App() {
     };
 
     return (
+        <HelmetProvider>
         <CartProvider>
             <div className="App">
+                 {estabelecimento && (
+                        <Helmet>
+                            <title>HOTMENU - {estabelecimento.Nome}</title>
+                            <meta name="author" content={estabelecimento.Nome} />
+                            <meta name="description" content={estabelecimento.Descricao} />
+                            <meta name="url" content={`https://hotmenu.com.br/${estabelecimento.StringWIFI}`} />
+
+                            {/* Open Graph (og) tags para redes sociais */}
+                            <meta property="og:title" content={estabelecimento.Nome} />
+                            <meta property="og:type" content="website" />
+                            <meta property="og:url" content={`https://hotmenu.com.br/${estabelecimento.StringWIFI}`} />
+                            <meta property="og:image" content={`http://hotmenu.com.br/arquivos/${estabelecimento.Logomarca}`} />
+                            <meta property="og:site_name" content={`HOTMENU - ${estabelecimento.Nome}`} />
+                            <meta property="og:description" content={estabelecimento.Descricao} />
+
+                            {/* Link canônico é uma boa prática de SEO */}
+                            <link rel="canonical" href={`https://hotmenu.com.br/${estabelecimento.StringWIFI}`} />
+                        </Helmet>
+                    )}
                 <PrimeReactProvider>
                     {/* ✅ Passando a prop onSearchClick de volta para o Header */}
                     <Header_component onSearchClick={handleOpenSearch} />
@@ -146,6 +167,7 @@ function App() {
                 </footer>
             </div>
         </CartProvider>
+        </HelmetProvider>
     );
 }
 

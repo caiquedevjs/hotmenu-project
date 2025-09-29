@@ -578,7 +578,7 @@ const handleFinalizarPedido = async () => {
   //console.log("Pedido a enviar:", pedido);
 
   try {
-    const resp = await fetch('http://painel.hotmobile.com.br/sendapi/webhook.aspx?id=NTk6MToz', {
+    const resp = await fetch('https://api.hotmobile.com.br/hotmenu/salvarpedido', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -946,7 +946,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
 
   </div>
   <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
-  <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Pizza de qualidade"}</h6> 
+  <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Carregando..."}</h6> 
      
   </header>
 
