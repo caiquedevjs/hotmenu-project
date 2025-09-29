@@ -113,10 +113,15 @@
 }
 
 @media only screen and (min-width: 1920px) {
-    .category_title{
+  .category_title {
         font-family: "Roboto", sans-serif;
         background-color: #ce2929;
+        
+        /* Aqui está a mágica: 
+          Ele terá 67% da tela, mas NUNCA passará de 1280px.
+        */
         width: 67%;
+        max-width: 1280px; 
         
         border-radius: 5px;
         margin-top: 50px;
