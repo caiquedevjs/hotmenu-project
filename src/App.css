@@ -3,7 +3,8 @@
 .App {
   text-align: center;
   background-color: white;
-  
+  /* Adicione esta linha */
+  overflow-x: hidden;
   
  
 }

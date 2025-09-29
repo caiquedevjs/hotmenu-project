@@ -514,23 +514,23 @@ const handleFinalizarPedido = async () => {
     Id: item.product.Id,
     Nome: item.product.Nome,
     Quantidade: item.quantity,
-    Sugestão: item.suggestion,
+    Sugestao: item.suggestion,
     Adicionais: item.additionalStates.map(additional => ({
         // ✅ ADICIONADO PREÇO NAS OBSERVAÇÕES
-        Observações: additional.observacao
+        Observacoes: additional.observacao
             .filter(obs => obs.selected)
             .map(obs => ({
                 Nome: obs.Nome,
-                Preço: obs.PrecoDeVenda 
+                Preco: obs.PrecoDeVenda 
             })),
         // ✅ ADICIONADO PREÇO NAS OPÇÕES
-        Opções: additional.options
+        Opcoes: additional.options
             .filter(option => option.count > 0)
             .map(option => ({
                 Id: option.id,
                 Nome: option.name,
                 Quantidade: option.count,
-                Preço: option.price 
+                Preco: option.price 
             })),
         // ✅ ADICIONADO PREÇO NOS PRODUTOS
         Produtos: additional.produtos
@@ -539,10 +539,10 @@ const handleFinalizarPedido = async () => {
                 Id: produto.Id,
                 Nome: produto.Nome,
                 Quantidade: produto.count,
-                Preço: produto.PrecoDeVenda
+                Preco: produto.PrecoDeVenda
             })),
     })),
-    Preço: item.product.PrecoDeVenda,
+    Preco: item.product.PrecoDeVenda,
 }));
 
   const pedido = {
@@ -554,13 +554,13 @@ const handleFinalizarPedido = async () => {
     Status: "Novo",
     Cliente: nome,
     Tel: telefone,
-    Endereço:
+    Endereco:
       (cep === '' && endereco === '' && complemento === '' && bairro === '')
         ? "RETIRADA NO LOCAL"
         : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
     mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
     FormaPagamento: selectedOption,
-    bandeiraCartão: selectedPaymentNome|| "Sem cartão",
+    bandeiraCartao: selectedPaymentNome|| "Sem cartão",
     FormaRetirada: formaRetirada,
     Produtos: produtos,
     frete: fretePorCep !== null
@@ -572,7 +572,7 @@ const handleFinalizarPedido = async () => {
           : "consultar"),
     desconto: descontoAplicado,
     troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
-    preçoTotal: `R$ ${totalPriceWithFrete()}`,
+    precoTotal: `R$ ${totalPriceWithFrete()}`,
   };
 
   //console.log("Pedido a enviar:", pedido);
@@ -608,11 +608,11 @@ const handleFinalizarPedido = async () => {
        
         *Nome:* ${produto.Nome}  
         *Quantidade:* ${produto.Quantidade}  
-        *Sugestão:* ${produto.Sugestão}  
+        *Sugestão:* ${produto.Sugestao}  
         *Adicionais:*  
         ${produto.Adicionais.map(addicional =>
-          `${addicional.Observações.length > 0 ? `Observações: ${addicional.Observações.join(', ')}\n` : ''}${
-            addicional.Opções.length > 0 ? `Opções: ${addicional.Opções.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}${
+          `${addicional.Observacoes.length > 0 ? `Observações: ${addicional.Observacoes.join(', ')}\n` : ''}${
+            addicional.Opcoes.length > 0 ? `Opções: ${addicional.Opcoes.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}${
             addicional.Produtos.length > 0 ? `Produtos: ${addicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ')}` : ''}`
         ).join('\n')}`
     ).join('\n\n');
@@ -624,13 +624,13 @@ const handleFinalizarPedido = async () => {
       ${mensagemProdutos}  
       ---------------------------
       *Frete:*  ${pedido.frete}  
-      *Preço Total:*  ${pedido.preçoTotal}  
+      *Preço Total:*  ${pedido.precoTotal}  
       *Troco:* ${pedido.troco}
       ---------------------------
       *Forma de Entrega:* ${pedido.FormaRetirada}  
       *Forma de pagamento:* ${pedido.FormaPagamento}  
-      *Cartão:* ${pedido.bandeiraCartão}  
-      *Endereço:* ${pedido.Endereço}  
+      *Cartão:* ${pedido.bandeiraCartao}  
+      *Endereço:* ${pedido.Endereco}  
       *Mesa:* ${pedido.mesa}  
       ---------------------------
       *Nome:* ${pedido.Cliente}  
