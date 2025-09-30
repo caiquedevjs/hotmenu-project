@@ -78,16 +78,18 @@ const [Fretefuncao, setFreteFuncao] = useState('');
 const [descontoAplicado, setDescontoAplicado] = useState(0);
 const [totalSemFreteAplicado, setTotalSemFreteAplicado] = useState(null)
 const [valorTroco, setValorTroco] = useState(0);
+const [valorFinal, setValorFinal] = useState(null);
 const [cupom, setCupom] = useState('');
 const [celular, setCelular] = useState('');
 const [estebelecimentoId, setEstabelecimentoId] = useState('');
 const [cupomId, setCupomId] = useState('');
 const [regrasCupom, setRegrasCupom] = useState('');
 const [mensagem, setMensagem] = useState('');
+const [statusCupom, setStatusCupom] = useState({ texto: '', tipo: '' });
 const [cupomStatus, setCupomStatus] = useState('idle'); // Estados possíveis: 'idle', 'success', 'error'
 const [fontSize, setFontSize] = useState('16px'); // Tamanho de fonte padrão
-const [activeTab, setActiveTab] = useState('pickup');
-const [activeTabCard, setActiveTabCard] = useState('pagamentoOnline ');
+const [activeTab, setActiveTab] = useState('home');
+const [activeTabCard, setActiveTabCard] = useState('pagamentoNaRetirada');
 // NOVO ESTADO PARA GUARDAR O ID
 const [selectedPaymentId, setSelectedPaymentId] = useState(null);
 const [selectedPaymentNome, setSelectedPaymentNome] = useState(null)
@@ -100,7 +102,7 @@ const [selectedOptionKey, setSelectedOptionKey] = useState('');
 
 
 // <------ estados do formulario, valor total do pedido------->  
-const [valorTotalPedido, setValorTotalPedido] = useState();
+const [valorTotalPedido, setValorTotalPedido] = useState(null);
 const [valorVendaMinima, setValorVendaMinima] = useState(0);
 const [list, setList] = useState([]);
 const [nome, setNome] = useState('');
@@ -118,6 +120,8 @@ const [selectedOption, setSelectedOption] = useState('');
 const [errorCard, setErrorCard] = useState('');
 const [checkedOptions, setCheckedOptions] = useState({});
 const [showFinalizarModal, setShowFinalizarModal] = useState(false);
+
+
 
 
 // <---------- Notificações ---------->
@@ -222,11 +226,11 @@ const handleCheckboxChange = (formaSelecionada) => {
 useEffect(() => {
   const verificarFretePorCep = async () => {
     if (cep.length === 8 && storeName) {
-      //console.log('🔍 Buscando frete por CEP...');
-      //console.log('Payload enviado:', { Id: storeName, cep });
+      console.log('🔍 Buscando frete por CEP...');
+      console.log('Payload enviado:', { Id: storeName, cep });
 
       const resposta = await fetchFretePorCep(storeName, cep);
-      //console.log('📦 Resposta da API frete por CEP:', resposta);
+      console.log('📦 Resposta da API frete por CEP:', resposta);
 
       const dadosCep = resposta?.cep?.Data;
 
@@ -234,8 +238,10 @@ useEffect(() => {
         const valorFrete = parseFloat(dadosCep.frete.replace(',', '.'));
         setFretePorCep(valorFrete);
         setBairro(dadosCep.bairro || '');
+        setEndereco(dadosCep.logradouro || '');
+        setComplemento(dadosCep.complemento || '')
       } else {
-        //console.log('❌ CEP não encontrado ou sem frete configurado.');
+        console.log('❌ CEP não encontrado ou sem frete configurado.');
         setFretePorCep(null);
       }
     }
@@ -575,7 +581,7 @@ const handleFinalizarPedido = async () => {
     precoTotal: `R$ ${totalPriceWithFrete()}`,
   };
 
-  //console.log("Pedido a enviar:", pedido);
+  console.log("Pedido a enviar:", pedido);
 
   try {
     const resp = await fetch('https://api.hotmobile.com.br/hotmenu/salvarpedido', {
@@ -590,11 +596,11 @@ const handleFinalizarPedido = async () => {
     const payload = contentType.includes('application/json')
       ? await resp.json()
       : await resp.text(); // lida com respostas como "OK"
-      //console.log("📑 Headers:", [...resp.headers.entries()]);
+      console.log("📑 Headers:", [...resp.headers.entries()]);
 
     if (resp.ok) {
-  //console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
-  //console.log("📬 Resposta do servidor:", payload);
+  console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
+  console.log("📬 Resposta do servidor:", payload);
 } else {
   console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
   console.warn("📬 Resposta do servidor:", payload);
@@ -646,25 +652,14 @@ const handleFinalizarPedido = async () => {
     //console.log('Pedido finalizado com sucesso!');
     notify();
     notify02();
+    
 
     // Limpeza dos campos após o envio (agora sim)
     setList([]);
-    setNome('');
-    setTelefone('');
-    setBairro('');
-    setEndereco('');
-    setComplemento('');
-    setCep('');
-    setCartao('');
-    setTitular('');
-    setVencimento('');
-    setCvc('');
-    setMesa('');
-    setSelectedOption('');
     setValorTotalPedido("0,00");
     clearCart();
     setDescontoAplicado()
-
+    salvarDadosNoHistorico();
   } catch (error) {
     console.error('Erro na chamada da API:', error);
     toast.error(`Falha ao enviar pedido: ${error.message}`, { theme: 'dark' });
@@ -682,7 +677,7 @@ const handleFinalizarPedido = async () => {
     setList([])
     setValorTotalPedido("0,00");
     clearCart();
-    setDescontoAplicado();
+    setDescontoAplicado(null);
     
     
     
@@ -715,8 +710,13 @@ const handleOptionChange = (event) => {
   //<------ função para requisitar o dado no modal de cupom na api de cupom------->
 
 const handleBuscarCupom = async () => {
+  // --- MUDANÇA 1: Limpar o status anterior antes de cada nova busca ---
+  setStatusCupom({ texto: '', tipo: '' });
+  setDescontoAplicado(0); // Zera o desconto anterior
+
   if (!estabelecimento) {
     console.error('Dados do estabelecimento não carregados');
+    // Poderia até definir um status de erro aqui, se quisesse
     return;
   }
 
@@ -724,7 +724,11 @@ const handleBuscarCupom = async () => {
   setTotalSemFreteAplicado(totalSemFrete);
 
   if (totalSemFrete < 20) {
-    setMensagem('O valor mínimo para aplicar o cupom é R$ 20,00.');
+    // --- MUDANÇA 2: Usar o setStatusCupom para todas as mensagens ---
+    setStatusCupom({
+      texto: 'O valor mínimo para aplicar o cupom é R$ 20,00.',
+      tipo: 'erro',
+    });
     return;
   }
 
@@ -733,89 +737,135 @@ const handleBuscarCupom = async () => {
       id: storeName,
       cupom: cupom,
       celular: celular,
-      ValorPedido: totalSemFrete.toString()
+      ValorPedido: totalSemFrete.toString(),
     });
 
     const url = `https://hotmenu.com.br/Webhook/BuscarCupom?${params.toString()}`;
-
     const response = await fetch(url, { method: 'GET' });
 
-    let data;
-    try {
-      data = await response.json();
-    } catch (err) {
-      const text = await response.text();
-      console.error('Erro ao interpretar resposta como JSON:', text);
-      setMensagem('Erro ao interpretar a resposta do cupom.');
-      return;
+    // Simplificando a verificação da resposta
+    if (!response.ok) {
+        // Se a resposta não for bem-sucedida (ex: erro 500, 404), trata como erro
+        throw new Error(`Erro na rede: ${response.statusText}`);
     }
 
-    //console.log('Resposta JSON:', data);
-    
-    // <--- CORREÇÃO 1: Acessar o ID pelo caminho correto e guardar em uma variável local
-    const idDoCupomRecebido = data?.cupom?.Data?.CupomId;
+    const data = await response.json();
+    const { Valido, MsgErro, Regras, CupomId } = data?.cupom?.Data || {};
 
-    if (idDoCupomRecebido) {
-      // <--- CORREÇÃO 2: Atualizar o estado com o valor da variável
-      setCupomId(idDoCupomRecebido);
-      //console.log(`CupomId recebido e guardado: ${idDoCupomRecebido}`); // Loga a variável local, que tem o valor imediato
+    if (CupomId) {
+      setCupomId(CupomId);
     }
-
-    const { Valido, MsgErro, Regras } = data?.cupom?.Data || {};
 
     if (Valido) {
-      setMensagem('Cupom válido!');
-      //console.log("Total sem frete:", totalSemFrete);
+      // --- MUDANÇA 3: Sucesso! Define o status como 'aviso' com as regras em HTML ---
+      // O JSX vai usar o dangerouslySetInnerHTML com base no 'tipo'
+      setStatusCupom({ texto: Regras, tipo: 'aviso' });
 
-      // Remove tags HTML e normaliza espaços
-      const regrasLimpa = Regras
-        .replace(/<[^>]*>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      //console.log('Regras limpa:', regrasLimpa);
-      setRegrasCupom(regrasLimpa);
-
-      // Regex para desconto percentual (com %)
+      // A lógica de cálculo do desconto permanece a mesma
+      const regrasLimpa = Regras.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
       const matchPercentual = regrasLimpa.match(/Desconto de:\s*(\d{1,3},\d{2})%/);
-
-      // Regex para desconto fixo (sem %)
       const matchFixo = !matchPercentual && regrasLimpa.match(/Desconto de:\s*(?:R\$)?\s*(\d{1,3},\d{2})/);
 
+      let desconto = 0;
       if (matchPercentual) {
         const percentual = parseFloat(matchPercentual[1].replace(',', '.'));
-        const valorDesconto = (totalSemFrete * percentual) / 100;
-        //console.log(`Desconto percentual de ${percentual}%: R$ ${valorDesconto.toFixed(2)}`);
-        setDescontoAplicado(valorDesconto);
-        setCupom('')
-
+        desconto = (totalSemFrete * percentual) / 100;
       } else if (matchFixo) {
         const valorFixo = parseFloat(matchFixo[1].replace(',', '.'));
-        //console.log(`Desconto fixo de R$ ${valorFixo.toFixed(2)}`);
-        setDescontoAplicado(valorFixo);
-        setCupom('')
-          const modalElement = document.getElementById('modal_cupom_desconto');
-        if (modalElement) {
-          const modal = Modal.getInstance(modalElement) || new Modal(modalElement);
-          modal.hide();
-        }
-
-      } else {
-        console.warn('Nenhum desconto reconhecido nas regras.');
-        setMensagem('Desconto não pôde ser interpretado nas regras.');
+        desconto = valorFixo;
       }
 
+      if (desconto > 0) {
+        setDescontoAplicado(desconto);
+        setCupom('');
+        // --- MUDANÇA 4: Controlar o modal via estado, em vez de DOM ---
+       
+      } else {
+        console.warn('Nenhum desconto reconhecido nas regras.');
+        setStatusCupom({
+          texto: 'Cupom válido, mas o desconto não pôde ser interpretado.',
+          tipo: 'erro',
+        });
+      }
     } else {
-      setMensagem(MsgErro || 'Cupom inválido ou não encontrado para este estabelecimento.');
+      // --- MUDANÇA 5: Erro de cupom inválido ---
+      setStatusCupom({
+        texto: MsgErro || 'Cupom inválido ou não encontrado.',
+        tipo: 'erro',
+      });
     }
 
   } catch (error) {
     console.error('Erro ao buscar o cupom:', error);
-    setMensagem('Erro ao buscar o cupom');
+    // --- MUDANÇA 6: Erro genérico na chamada da API ---
+    setStatusCupom({ texto: 'Erro de comunicação ao validar o cupom.', tipo: 'erro' });
   }
 };
 
 
+const salvarDadosNoHistorico = () => {
+  // Pega os dados atuais dos seus estados
+  const novosDados = {
+    nome,
+    telefone,
+    endereco,
+    complemento,
+    bairro,
+    cep
+  };
+
+  // 1. Garante que só vamos salvar se tivermos as informações essenciais
+  if (!novosDados.nome || !novosDados.telefone) {
+    console.warn("Tentativa de salvar no histórico sem nome ou telefone.");
+    return;
+  }
+
+  // 2. Define uma chave de armazenamento específica para o histórico
+  const storageKey = `historicoFormularios_${storeName}`;
+  
+  // 3. Pega o histórico que já existe no localStorage
+  const historicoRaw = localStorage.getItem(storageKey);
+  let historico = historicoRaw ? JSON.parse(historicoRaw) : [];
+
+  // 4. Verifica se já existe uma entrada com o mesmo telefone (para evitar duplicatas)
+  // Usamos o telefone como identificador único
+  const indexExistente = historico.findIndex(item => item.telefone === novosDados.telefone);
+
+  if (indexExistente !== -1) {
+    // Se o cliente já existe, movemos ele para o topo da lista (mais recente)
+    // Primeiro, removemos a entrada antiga
+    historico.splice(indexExistente, 1);
+    // Depois, adicionamos a nova (ou atualizada) no início
+    historico.unshift(novosDados);
+    console.log("Histórico atualizado para o cliente:", novosDados.nome);
+  } else {
+    // Se é um cliente novo, simplesmente adiciona no início da lista
+    historico.unshift(novosDados);
+    console.log("Novo cliente salvo no histórico:", novosDados.nome);
+  }
+
+  // 5. Opcional: Limita o tamanho do histórico para não ficar muito grande
+  // Vamos manter, por exemplo, os últimos 20 clientes
+  if (historico.length > 20) {
+    historico = historico.slice(0, 20);
+  }
+
+  // 6. Salva o array atualizado de volta no localStorage
+  localStorage.setItem(storageKey, JSON.stringify(historico));
+};
+
+
+const [historico, setHistorico] = useState([]);
+useEffect(() => {
+  // Carrega o histórico do localStorage quando o componente monta
+  if (storeName) {
+    const storageKey = `historicoFormularios_${storeName}`;
+    const historicoRaw = localStorage.getItem(storageKey);
+    if (historicoRaw) {
+      setHistorico(JSON.parse(historicoRaw));
+    }
+  }
+}, [storeName]);
 const [show, setShow] = useState(false);
 
 const handleClose = () => setShow(false);
@@ -1215,7 +1265,13 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                   <div className='user--inputs-conteine'>
                   <div className="col-md-6">
                 <label htmlFor="inputNome4" className="form-label-credit-usuario">Nome</label>
-                <input type="text" className="form-control" id="inputNome4" value={nome} onChange={(e) => setNome(e.target.value)} />
+                <input type="text" className="form-control" id="inputNome4" name='nome' value={nome} onChange={(e) => setNome(e.target.value)}   list="historico-clientes"/>
+                 {/* ✅ ESTE É O DATALIST */}
+                <datalist id="historico-clientes"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                  {historico.map((cliente, index) => (
+                    <option key={index} value={cliente.nome} />
+                  ))}
+                </datalist>
               </div>
               <div className="col-md-6">
                 <label htmlFor="inputTelefone4" className="form-label-credit-usuario">Telefone</label>
@@ -1223,10 +1279,19 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                 <InputMask
                  className="form-control"
                  mask = '(99) 99999-9999'
-                  id="inputTelefone4" value={telefone} 
+                  id="inputTelefone4"
+                  name = 'telefone'
+                   value={telefone} 
                   onChange={(e) => setTelefone(e.target.value)} 
+                  list="historico-telefones"
                   >
                 </InputMask>
+                {/* ✅ ESTE É O DATALIST */}
+                <datalist id="historico-telefones"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                  {historico.map((cliente, index) => (
+                    <option key={index} value={cliente.telefone} />
+                  ))}
+                </datalist>
                   {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputTelefone4" />}
 
 
@@ -1244,21 +1309,23 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
             
      
          
-               {regrasCupom && (
-    <div
-      className="alert alert-warning mt-2 p-2"
-      role="alert"
-      style ={{fontSize: '10px'}}
-      dangerouslySetInnerHTML={{ __html: regrasCupom }}
-    ></div>
-)}
 
-{! regrasCupom && (
-  <div className="alert alert-danger mt-2 p-2" role="alert" style={{fontSize: '12px'}}>
-      {mensagem}
-    </div>
-)}
+
               </div>
+              {statusCupom.texto && (
+  <div
+    className={`alert ${statusCupom.tipo === 'erro' ? 'alert-danger' : 'alert-warning'} mt-2 p-2`}
+    role="alert"
+    id='meu-alerta-cupom '
+    style={{ fontSize: statusCupom.tipo === 'erro' ? '12px' : '10px' }}
+    // Renderiza como HTML se for 'aviso', ou como texto normal se for 'erro'
+    {...(statusCupom.tipo === 'aviso'
+        ? { dangerouslySetInnerHTML: { __html: statusCupom.texto } }
+        : { children: statusCupom.texto }
+    )}
+  >
+  </div>
+)}
                   </div><hr></hr>
 
         <h3 className='formas_retirada_titulo'>Forma de retirda</h3>
@@ -1289,30 +1356,57 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
         )}
         {activeTab === 'home' && (
           <Tab.Pane eventKey="home">
-            <div className="col-12">
-              <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
-              <input type="text" className="form-control" id="inputAddress" placeholder="Av. Luís Viana Filho, 6462 - Paralela" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
-            </div>
-            <div className="col-12">
-              <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
-              <input type="text" className="form-control" id="inputComplemento" placeholder="Wall Street Empresarial" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
-              <input type="text" className="form-control" id="inputCity" value={bairro} onChange={(e) => setBairro(e.target.value)} />
-            </div>
             <div className="col-md-2">
               <label htmlFor="inputZip" className="form-label-credit-usuario">Cep</label>
               <InputMask
                 mask="99999999"
+                name= 'cep'
                 className="form-control"
-                id="inputZip"
+                id=""
                 value={cep}
                 onChange={(e) => setCep(e.target.value)}
+                list="historico-cep" 
               >
-                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputZip" />}
+                {(inputProps) => <input {...inputProps} type="text" className="form-control" id="inputZip"  />}
               </InputMask>
+                {/* ✅ ESTE É O DATALIST */}
+              <datalist id="historico-cep"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                {historico.map((cliente, index) => (
+                  <option key={index} value={cliente.endereco} />
+                ))}
+              </datalist>
             </div>
+            <div className="col-12">
+              <label htmlFor="inputAddress" className="form-label-credit-usuario">Endereço</label>
+              <input type="text" className="form-control" id="inputAddress" placeholder="Av. Luís Viana Filho, 6462 - Paralela"  nome= 'endereco' value={endereco} onChange={(e) => setEndereco(e.target.value)} list="historico-endereços" />
+               {/* ✅ ESTE É O DATALIST */}
+              <datalist id="historico-endereços"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                {historico.map((cliente, index) => (
+                  <option key={index} value={cliente.endereco} />
+                ))}
+              </datalist>
+            </div>
+            <div className="col-12">
+              <label htmlFor="inputComplemento" className="form-label-credit-usuario">Complemento</label>
+              <input type="text" className="form-control" id="inputComplemento" placeholder="Wall Street Empresarial" nome= 'complemento' value={complemento} onChange={(e) => setComplemento(e.target.value)} list="historico-complementos"/>
+              {/* ✅ ESTE É O DATALIST */}
+              <datalist id="historico-complementos"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                {historico.map((cliente, index) => (
+                  <option key={index} value={cliente.complemento} />
+                ))}
+              </datalist>
+            </div>
+            <div className="col-md-6">
+              <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
+              <input type="text" className="form-control" id="inputCity" nome= 'bairro' value={bairro} onChange={(e) => setBairro(e.target.value)}  list="historico-bairros"/>
+              {/* ✅ ESTE É O DATALIST */}
+              <datalist id="historico-bairros"> {/* <-- PASSO B: O ID deve ser o mesmo */}
+                {historico.map((cliente, index) => (
+                  <option key={index} value={cliente.bairro} />
+                ))}
+              </datalist>
+            </div>
+            
           </Tab.Pane>
         )}
         {activeTab === 'mesa' && (
