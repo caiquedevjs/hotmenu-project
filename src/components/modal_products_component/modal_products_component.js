@@ -11,7 +11,9 @@ import './modal_products_styles.css';
 import './PerguntasComponent.css';
 
 const Modal_product_component = ({ product, show, handleClose }) => {
-  const { additionalStates, handleIncrement, handleDecrement, getSelectedTamanho, calcularPrecoAdicionais } = useAdditionalState(product?.Id);
+  // ✅ 1. ALTERAÇÃO AQUI: Importando a função correta 'calcularPrecoTotal'
+  const { additionalStates, handleIncrement, handleDecrement, calcularPrecoTotal } = useAdditionalState(product?.Id);
+  
   const { addToCart } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
   const [estabelecimento, setEstabelecimento] = useState(null);
@@ -32,11 +34,14 @@ const Modal_product_component = ({ product, show, handleClose }) => {
     fetchDataEstabelecimento();
   }, [storeName]);
 
-  const totalPrice = useMemo(() => { if (!product) return '0.00'; const selectedTamanho = getSelectedTamanho(); const basePrice = selectedTamanho ? parseFloat(selectedTamanho.PrecoDeVenda) : parseFloat(product.PrecoDeVenda); const adicionaisPreco = calcularPrecoAdicionais(); const total = (basePrice + adicionaisPreco) * quantity; return total.toFixed(2); }, [additionalStates, quantity, product, getSelectedTamanho, calcularPrecoAdicionais]);
+  // ✅ 2. ALTERAÇÃO AQUI: Usando a função 'calcularPrecoTotal' do hook
+  const totalPrice = useMemo(() => {
+    return (calcularPrecoTotal() * quantity).toFixed(2);
+  }, [calcularPrecoTotal, quantity]);
+  
   const isButtonDisabled = useMemo(() => { if (!product) return true; return !additionalStates.every(additional => { if (additional.required) { return additional.selectedCount >= additional.minOptions; } return true; }); }, [additionalStates, product]);
   const formatPrice = (price) => { if (typeof price !== 'number') return '0,00'; return price.toFixed(2).replace('.', ','); };
   
-  // ✅ CORREÇÃO AQUI
   const handleAddToCart = useCallback(() => { if (!isButtonDisabled) { addToCart(product, additionalStates, parseFloat(totalPrice), quantity, suggestion); handleClose(); } }, [isButtonDisabled, product, additionalStates, totalPrice, quantity, suggestion, addToCart, handleClose]);
 
   if (!product) {

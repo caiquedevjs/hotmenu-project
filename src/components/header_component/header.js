@@ -609,45 +609,77 @@ const handleFinalizarPedido = async () => {
     //console.log('Sucesso:', payload);
 
     // Mensagem para o destinatário (montada após confirmar o envio)
-    const mensagemProdutos = pedido.Produtos.map(produto =>
-      `
-       
-        *Nome:* ${produto.Nome}  
-        *Quantidade:* ${produto.Quantidade}  
-        *Sugestão:* ${produto.Sugestao}  
-        *Adicionais:*  
-        ${produto.Adicionais.map(addicional =>
-          `${addicional.Observacoes.length > 0 ? `Observações: ${addicional.Observacoes.join(', ')}\n` : ''}${
-            addicional.Opcoes.length > 0 ? `Opções: ${addicional.Opcoes.map(opcao => `${opcao.Nome} (${opcao.Quantidade})`).join(', ')}\n` : ''}${
-            addicional.Produtos.length > 0 ? `Produtos: ${addicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ')}` : ''}`
-        ).join('\n')}`
-    ).join('\n\n');
+   // 1. MONTAGEM DOS PRODUTOS EM FORMATO DE LISTA
+const mensagemProdutos = pedido.Produtos.map(produto => {
+    const blocoProduto = [];
 
-    const mensagem = `*Olá 👋, acabei de fazer um pedido 🧾*  
-      * Status:* ${pedido.Status}
-      ---------------------------
-      *Os itens escolhidos são:*  
-      ${mensagemProdutos}  
-      ---------------------------
-      *Frete:*  ${pedido.frete}  
-      *Preço Total:*  ${pedido.precoTotal}  
-      *Troco:* ${pedido.troco}
-      ---------------------------
-      *Forma de Entrega:* ${pedido.FormaRetirada}  
-      *Forma de pagamento:* ${pedido.FormaPagamento}  
-      *Cartão:* ${pedido.bandeiraCartao}  
-      *Endereço:* ${pedido.Endereco}  
-      *Mesa:* ${pedido.mesa}  
-      ---------------------------
-      *Nome:* ${pedido.Cliente}  
-      *Telefone:* ${pedido.Tel}`;
+    // Linha principal do produto com nome em negrito
+    blocoProduto.push(`*${produto.Quantidade}x ${produto.Nome}* - ${produto.Preco.toFixed(2).replace('.', ',')}`);
 
-    // Abre o WhatsApp
-    const celularWhatsApp = celular.replace(/\D/g, '');
-    const mensagemCodificada = encodeURIComponent(mensagem);
-    const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
-    window.open(urlWhatsApp, '_blank');
+    // Adiciona a sugestão, se houver
+    if (produto.Sugestao) {
+        blocoProduto.push(`  › *Sugestão:* ${produto.Sugestao}`);
+    }
 
+    // Adiciona os adicionais de forma indentada
+    produto.Adicionais.forEach(adicional => {
+        if (adicional.Observacoes.length > 0) {
+            const textoObs = adicional.Observacoes.map(o => o.Nome).join(', ');
+            blocoProduto.push(`  › *Observações:* ${textoObs}`);
+        }
+        if (adicional.Opcoes.length > 0) {
+            const textoOps = adicional.Opcoes.map(op => `${op.Nome} (${op.Quantidade})`).join(', ');
+            blocoProduto.push(`  › *Opções:* ${textoOps}`);
+        }
+        if (adicional.Produtos.length > 0) {
+            const textoProds = adicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ');
+            blocoProduto.push(`  › *Produtos Adicionais:* ${textoProds}`);
+        }
+    });
+
+    return blocoProduto.join('\n');
+}).join('\n\n'); // Separa cada produto com uma linha em branco
+
+
+// 2. MONTAGEM DA MENSAGEM FINAL USANDO SEÇÕES
+const mensagem = `*Novo Pedido Recebido!* 🧾
+*Horário:* ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+---------------------------
+
+*👤 Dados do Cliente:*
+*Nome:* ${pedido.Cliente}
+*Telefone:* ${pedido.Tel}
+*Endereço:* ${pedido.Endereco}
+${pedido.mesa !== 'Não possui mesa' ? `*Mesa:* ${pedido.mesa}` : ''}
+
+---------------------------
+
+*📦 Itens do Pedido:*
+
+${mensagemProdutos}
+
+---------------------------
+
+*💰 Resumo Financeiro:*
+*Frete:* ${pedido.frete}
+*Desconto:* ${pedido.desconto}
+*Troco para:* ${pedido.troco}
+*Total do Pedido:* ${pedido.precoTotal}
+
+---------------------------
+
+*🚚 Entrega e Pagamento:*
+*Forma de Entrega:* ${pedido.Endereco}
+*Forma de Pagamento:* ${pedido.FormaPagamento}
+${pedido.bandeiraCartao !== "Sem cartão" ? `*Cartão:* ${pedido.bandeiraCartao}` : ''}
+`;
+
+
+// O resto do seu código para abrir o WhatsApp continua o mesmo
+const celularWhatsApp = celular.replace(/\D/g, '');
+const mensagemCodificada = encodeURIComponent(mensagem);
+const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
+window.open(urlWhatsApp, '_blank');
     // Notificações e logs
     //console.log('Pedido finalizado com sucesso!');
     notify();
@@ -890,7 +922,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
  <div className='Header-component'>
   <header className='header_class'>
    {/* <-------estrutura dos icons do carrossel de banners-------> */}
-  <div id="carouselExampleFade" class="carousel slide carousel-fade" >
+  <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
      {fotoCard ? (
