@@ -12,7 +12,7 @@ const TextoTruncadoComModal = ({ texto, maxCaracteres = 120, color }) => {
   }
 
   // Lógica para cortar o texto
-  const textoTruncado = `${texto.substring(0, maxCaracteres)}... `;
+  const textoTruncado = `${texto.substring(0, maxCaracteres)}`;
 
   return (
     <>

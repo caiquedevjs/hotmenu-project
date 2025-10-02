@@ -1050,7 +1050,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
   <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
  <TextoTruncadoComModal 
     texto={estabelecimento ? estabelecimento.Descricao : ""} 
-    maxCaracteres={50}
+    maxCaracteres={0}
     color={color} // <-- Passe a cor do estabelecimento aqui
 /> 
   </header>
