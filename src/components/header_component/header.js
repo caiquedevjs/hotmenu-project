@@ -3,7 +3,7 @@
 // <------- import hooks and context------->
 import React, { useState, useEffect, useContext } from 'react';
 import { CartContext } from '../modal_cart_itens/CartContext';
-
+import TextoTruncadoComModal from './TextoTruncadoComModal';
 
 
 // <------- import css------->
@@ -1048,8 +1048,11 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
 
   </div>
   <h1 id='title_logo'>{estabelecimento ? estabelecimento.Nome : 'Carregando...'}</h1>
-  <h6 className='estabelecimento-description'>{estabelecimento ? estabelecimento.Descricao : "Carregando..."}</h6> 
-     
+ <TextoTruncadoComModal 
+    texto={estabelecimento ? estabelecimento.Descricao : ""} 
+    maxCaracteres={50}
+    color={color} // <-- Passe a cor do estabelecimento aqui
+/> 
   </header>
 
 

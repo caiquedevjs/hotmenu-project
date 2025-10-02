@@ -1,0 +1,15 @@
+/* Estilo para o botão "Ver mais" */
+.ver-mais-btn {
+  background: none;
+  border: none;
+  color: #2b2a2acb; /* Azul padrão do Bootstrap, ou a cor que preferir */
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: inherit; /* Herda o tamanho da fonte do h6 */
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.ver-mais-btn:hover {
+  text-decoration: underline;
+}
