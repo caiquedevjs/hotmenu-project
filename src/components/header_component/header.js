@@ -586,6 +586,7 @@ const handleFinalizarPedido = async () => {
   };
 
   console.log("Pedido a enviar:", pedido);
+  
 
   try {
     const resp = await fetch('https://api.hotmobile.com.br/hotmenu/salvarpedido', {
@@ -609,7 +610,9 @@ const handleFinalizarPedido = async () => {
   console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
   console.warn("📬 Resposta do servidor:", payload);
 }
-//console.log('Sucesso:', payload);
+console.log('Sucesso:', payload);
+console.log(payload.pedidoId)
+
 
 
     // Mensagem para o destinatário (montada após confirmar o envio)
@@ -646,7 +649,7 @@ const mensagemProdutos = pedido.Produtos.map(produto => {
 
 
 // 2. MONTAGEM DA MENSAGEM FINAL USANDO SEÇÕES
-const mensagem = `*Novo Pedido Recebido!* 🧾
+let mensagem = `*Novo Pedido Recebido!* 🧾
 *Horário:* ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
 ---------------------------
 
@@ -666,8 +669,8 @@ ${mensagemProdutos}
 
 *💰 Resumo Financeiro:*
 *Frete:* ${pedido.frete}
-*Desconto:* ${pedido.desconto}
-*Troco para:* ${pedido.troco}
+*Desconto:* R$ ${(parseFloat(pedido.desconto) || 0).toFixed(2).replace('.', ',')}
+*Troco:* ${pedido.troco}
 *Total do Pedido:* ${pedido.precoTotal}
 
 ---------------------------
@@ -677,7 +680,20 @@ ${mensagemProdutos}
 *Forma de Pagamento:* ${pedido.FormaPagamento}
 ${pedido.bandeiraCartao !== "Sem cartão" ? `*Cartão:* ${pedido.bandeiraCartao}` : ''}
 `;
-
+ // 3. ADIÇÃO CONDICIONAL DO LINK DE IMPRESSÃO
+    // Verificamos se a API retornou ImprimirPedido como true e se temos um ID
+    if (imprimirPedido && payload.pedidoId) {
+        
+        // IMPORTANTE: Confirme se o nome da propriedade do ID é 'IdPedido'.
+        const idDoPedido = payload.pedidoId;
+        const linkImpressao = `https://hotmenu.com.br/Home/ImprimirPedido/${idDoPedido}`;
+        
+        // Adiciona a seção de impressão ao final da mensagem
+        mensagem += `
+---------------------------
+*🖨️ Imprimir Pedido:*
+${linkImpressao}`;
+    }
 
 // O resto do seu código para abrir o WhatsApp continua o mesmo
 const celularWhatsApp = celular.replace(/\D/g, '');
