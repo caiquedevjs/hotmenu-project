@@ -71,6 +71,8 @@ const [fotoCard2,setFotoCard2] = useState('');
 const [fotoCard3, setFotoCard3] = useState('');
 const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
+const [imprimirPedido, setImprimirPedido] = useState(null);
+const [tipoImpressao, setTipoImpressao] = useState(null);
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
 const [fretePorCep, setFretePorCep] = useState(null);
@@ -361,6 +363,8 @@ useEffect(() => {
         setCelular(response.TelContato);
         setFreteFixo(response.ValorFreteFixo);
         setFreteFuncao(response.FreteFixo); 
+        setImprimirPedido(response.ImprimirPedido);
+        setTipoImpressao(response.ImpressoraPadrao);
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
           pagamentoNaRetirada : response.PgtoRetiradaLocal
@@ -605,8 +609,8 @@ const handleFinalizarPedido = async () => {
   console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
   console.warn("📬 Resposta do servidor:", payload);
 }
+//console.log('Sucesso:', payload);
 
-    //console.log('Sucesso:', payload);
 
     // Mensagem para o destinatário (montada após confirmar o envio)
    // 1. MONTAGEM DOS PRODUTOS EM FORMATO DE LISTA
