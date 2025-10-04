@@ -227,6 +227,12 @@ const handleCheckboxChange = (formaSelecionada) => {
 // <------ função para buscar o frete por bairro ------>
 useEffect(() => {
   const verificarFretePorCep = async () => {
+    // Reseta o estado anterior para evitar mostrar um frete antigo para um novo CEP
+    setFretePorCep(null); 
+    setBairro('');
+    setEndereco('');
+    setComplemento('');
+
     if (cep.length === 8 && storeName) {
       console.log('🔍 Buscando frete por CEP...');
       console.log('Payload enviado:', { Id: storeName, cep });
@@ -237,11 +243,24 @@ useEffect(() => {
       const dadosCep = resposta?.cep?.Data;
 
       if (dadosCep?.frete) {
-        const valorFrete = parseFloat(dadosCep.frete.replace(',', '.'));
-        setFretePorCep(valorFrete);
-        setBairro(dadosCep.bairro || '');
-        setEndereco(dadosCep.logradouro || '');
-        setComplemento(dadosCep.complemento || '')
+        // 1. Tenta converter o valor do frete
+        const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
+
+        // 2. VERIFICAÇÃO CRÍTICA: Checa se o resultado é um número válido
+        if (!isNaN(valorFreteNumerico)) {
+          // Se for um número, atualiza os estados
+          setFretePorCep(valorFreteNumerico);
+          setBairro(dadosCep.bairro || '');
+          setEndereco(dadosCep.logradouro || '');
+          setComplemento(dadosCep.complemento || '');
+        } else {
+          // Se não for um número (ex: "Não Entregamos"), trata como erro
+          console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
+          setFretePorCep(null); // Garante que o frete seja nulo
+          // Opcional: Você pode querer guardar a mensagem para exibir ao usuário
+          // setMensagemFrete(dadosCep.frete); 
+        }
+
       } else {
         console.log('❌ CEP não encontrado ou sem frete configurado.');
         setFretePorCep(null);
@@ -251,7 +270,6 @@ useEffect(() => {
 
   verificarFretePorCep();
 }, [cep, storeName]);
-
 
 
 
@@ -467,19 +485,20 @@ const handleAddPedido =() =>{
 
 // <------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = async () => {
+  // =========================================================================
+  // 1. VALIDAÇÕES INICIAIS
+  // =========================================================================
   if (list.length <= 0) {
     toast.error("Não há pedidos para finalizar", { theme: 'dark' });
     sound.play();
     return;
   }
 
-  // Validação dos campos obrigatórios
   if (!nome || !telefone) {
     toast.error("Nome e telefone são dados obrigatórios", { theme: 'dark' });
     return;
   }
 
-  // Verifica se as abas de retirada e pagamento estão selecionadas
   if (!['pickup', 'home', 'mesa'].includes(activeTab)) {
     toast.error("Escolha uma forma de retirada.", { theme: 'dark' });
     sound.play();
@@ -492,13 +511,20 @@ const handleFinalizarPedido = async () => {
     return;
   }
 
-  // Validação para forma de retirada
+  // Validação de endereço (somente se a entrega for 'home')
   if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
     alert("Por favor, preencha todos os campos de entrega.");
     return;
   }
 
-  // Validação para pagamento online
+  // Validação de CEP não atendido (somente se a entrega for 'home')
+  if (activeTab === 'home' && cep.length === 8 && fretePorCep === null) {
+    toast.error("Não entregamos neste CEP. Verifique o endereço ou escolha 'Retirar no Local'.", { theme: 'dark' });
+    sound.play();
+    return;
+  }
+
+  // Validações de pagamento
   if (activeTabCard === 'pagamentoOnline') {
     if (!cartao || !titular || !vencimento || !cvc) {
       toast.error("Por favor, preencha todos os dados do cartão", { theme: 'dark' });
@@ -506,7 +532,6 @@ const handleFinalizarPedido = async () => {
     }
   }
 
-  // Validação para pagamento na retirada
   if (activeTabCard === 'pagamentoNaRetirada') {
     if (!selectedOption) {
       toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
@@ -517,8 +542,40 @@ const handleFinalizarPedido = async () => {
     }
   }
 
-  // Captura a forma de retirada
+  // =========================================================================
+  // 2. PREPARAÇÃO DOS DADOS DO PEDIDO
+  // =========================================================================
   const formaRetirada = activeTab;
+  let enderecoFinal = "RETIRADA NO BALCÃO";
+  let freteFinal = "Não se aplica";
+  let mesaFinal = "Não se aplica";
+  let precoTotalFinal;
+
+  if (formaRetirada === 'home') {
+    // Caso 1: Entrega em casa
+    enderecoFinal = `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`;
+    freteFinal = fretePorCep !== null
+      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
+      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
+        ? "Frete grátis"
+        : (estabelecimento?.FreteFixo
+          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
+          : "consultar");
+    precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
+
+  } else {
+    // Caso 2: Retirada no local ou Consumo na mesa
+    if (formaRetirada === 'mesa') {
+      enderecoFinal = `CONSUMO NA MESA`;
+      if (mesa) {
+        mesaFinal = `Mesa número: ${mesa}`;
+      }
+    }
+    const subTotal = parseFloat(totalCartPrice().replace(',', '.')) || 0;
+    const desconto = parseFloat(descontoAplicado) || 0;
+    const totalSemFrete = subTotal - desconto;
+    precoTotalFinal = `R$ ${totalSemFrete.toFixed(2).replace('.', ',')}`;
+  }
 
   const produtos = list.map(item => ({
     Id: item.product.Id,
@@ -526,35 +583,16 @@ const handleFinalizarPedido = async () => {
     Quantidade: item.quantity,
     Sugestao: item.suggestion,
     Adicionais: item.additionalStates.map(additional => ({
-        // ✅ ADICIONADO PREÇO NAS OBSERVAÇÕES
-        Observacoes: additional.observacao
-            .filter(obs => obs.selected)
-            .map(obs => ({
-                Nome: obs.Nome,
-                Preco: obs.PrecoDeVenda 
-            })),
-        // ✅ ADICIONADO PREÇO NAS OPÇÕES
-        Opcoes: additional.options
-            .filter(option => option.count > 0)
-            .map(option => ({
-                Id: option.id,
-                Nome: option.name,
-                Quantidade: option.count,
-                Preco: option.price 
-            })),
-        // ✅ ADICIONADO PREÇO NOS PRODUTOS
-        Produtos: additional.produtos
-            .filter(produto => produto.count > 0)
-            .map(produto => ({
-                Id: produto.Id,
-                Nome: produto.Nome,
-                Quantidade: produto.count,
-                Preco: produto.PrecoDeVenda
-            })),
+        Observacoes: additional.observacao.filter(obs => obs.selected).map(obs => ({ Nome: obs.Nome, Preco: obs.PrecoDeVenda })),
+        Opcoes: additional.options.filter(option => option.count > 0).map(option => ({ Id: option.id, Nome: option.name, Quantidade: option.count, Preco: option.price })),
+        Produtos: additional.produtos.filter(produto => produto.count > 0).map(produto => ({ Id: produto.Id, Nome: produto.Nome, Quantidade: produto.count, Preco: produto.PrecoDeVenda})),
     })),
     Preco: item.product.PrecoDeVenda,
-}));
+  }));
 
+  // =========================================================================
+  // 3. MONTAGEM DO OBJETO FINAL DO PEDIDO
+  // =========================================================================
   const pedido = {
     DataPedido: new Date().toLocaleString("pt-BR"),
     EstabeleicmentoNome: storeName,
@@ -564,92 +602,68 @@ const handleFinalizarPedido = async () => {
     Status: "Novo",
     Cliente: nome,
     Tel: telefone,
-    Endereco:
-      (cep === '' && endereco === '' && complemento === '' && bairro === '')
-        ? "RETIRADA NO LOCAL"
-        : `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`,
-    mesa: (mesa === '') ? "Não possui mesa" : `Mesa número: ${mesa}`,
+    Endereco: enderecoFinal,
+    mesa: mesaFinal,
     FormaPagamento: selectedOption,
-    bandeiraCartao: selectedPaymentNome|| "Sem cartão",
+    bandeiraCartao: selectedPaymentNome || "Sem cartão",
     FormaRetirada: formaRetirada,
     Produtos: produtos,
-    frete: fretePorCep !== null
-      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
-      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
-        ? "Frete grátis"
-        : (estabelecimento?.FreteFixo
-          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
-          : "consultar"),
+    frete: freteFinal,
     desconto: descontoAplicado,
     troco: valorTroco ? `R$ ${calcularTroco()}` : `R$ 00,00`,
-    precoTotal: `R$ ${totalPriceWithFrete()}`,
+    precoTotal: precoTotalFinal,
   };
 
   console.log("Pedido a enviar:", pedido);
-  
 
+  // =========================================================================
+  // 4. ENVIO DO PEDIDO PARA A API E WHATSAPP
+  // =========================================================================
   try {
     const resp = await fetch('https://api.hotmobile.com.br/hotmenu/salvarpedido', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pedido)
     });
 
     const contentType = resp.headers.get('content-type') || '';
-    const payload = contentType.includes('application/json')
-      ? await resp.json()
-      : await resp.text(); // lida com respostas como "OK"
-      console.log("📑 Headers:", [...resp.headers.entries()]);
+    const payload = contentType.includes('application/json') ? await resp.json() : await resp.text();
 
-    if (resp.ok) {
-  console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
-  console.log("📬 Resposta do servidor:", payload);
-} else {
-  console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
-  console.warn("📬 Resposta do servidor:", payload);
-}
-console.log('Sucesso:', payload);
-console.log(payload.pedidoId)
-
-
-
-    // Mensagem para o destinatário (montada após confirmar o envio)
-   // 1. MONTAGEM DOS PRODUTOS EM FORMATO DE LISTA
-const mensagemProdutos = pedido.Produtos.map(produto => {
-    const blocoProduto = [];
-
-    // Linha principal do produto com nome em negrito
-    blocoProduto.push(`*${produto.Quantidade}x ${produto.Nome}* - ${produto.Preco.toFixed(2).replace('.', ',')}`);
-
-    // Adiciona a sugestão, se houver
-    if (produto.Sugestao) {
-        blocoProduto.push(`  › *Sugestão:* ${produto.Sugestao}`);
+    if (!resp.ok) {
+        console.warn(`⚠️ Pedido enviado, mas retorno não foi sucesso [${resp.status} ${resp.statusText}]`);
+        console.warn("📬 Resposta do servidor:", payload);
+    } else {
+        console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
+        console.log("📬 Resposta do servidor:", payload);
     }
+    
+    // =========================================================================
+    // 5. MONTAGEM E ENVIO DA MENSAGEM DO WHATSAPP
+    // =========================================================================
+    const mensagemProdutos = pedido.Produtos.map(produto => {
+      const blocoProduto = [];
+      blocoProduto.push(`*${produto.Quantidade}x ${produto.Nome}* - ${produto.Preco.toFixed(2).replace('.', ',')}`);
+      if (produto.Sugestao) {
+          blocoProduto.push(`  › *Sugestão:* ${produto.Sugestao}`);
+      }
+      produto.Adicionais.forEach(adicional => {
+          if (adicional.Observacoes.length > 0) {
+              const textoObs = adicional.Observacoes.map(o => o.Nome).join(', ');
+              blocoProduto.push(`  › *Observações:* ${textoObs}`);
+          }
+          if (adicional.Opcoes.length > 0) {
+              const textoOps = adicional.Opcoes.map(op => `${op.Nome} (${op.Quantidade})`).join(', ');
+              blocoProduto.push(`  › *Opções:* ${textoOps}`);
+          }
+          if (adicional.Produtos.length > 0) {
+              const textoProds = adicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ');
+              blocoProduto.push(`  › *Produtos Adicionais:* ${textoProds}`);
+          }
+      });
+      return blocoProduto.join('\n');
+    }).join('\n\n');
 
-    // Adiciona os adicionais de forma indentada
-    produto.Adicionais.forEach(adicional => {
-        if (adicional.Observacoes.length > 0) {
-            const textoObs = adicional.Observacoes.map(o => o.Nome).join(', ');
-            blocoProduto.push(`  › *Observações:* ${textoObs}`);
-        }
-        if (adicional.Opcoes.length > 0) {
-            const textoOps = adicional.Opcoes.map(op => `${op.Nome} (${op.Quantidade})`).join(', ');
-            blocoProduto.push(`  › *Opções:* ${textoOps}`);
-        }
-        if (adicional.Produtos.length > 0) {
-            const textoProds = adicional.Produtos.map(p => `${p.Nome} (${p.Quantidade})`).join(', ');
-            blocoProduto.push(`  › *Produtos Adicionais:* ${textoProds}`);
-        }
-    });
-
-    return blocoProduto.join('\n');
-}).join('\n\n'); // Separa cada produto com uma linha em branco
-
-
-// 2. MONTAGEM DA MENSAGEM FINAL USANDO SEÇÕES
-let mensagem = `*Novo Pedido Recebido!* 🧾
+    let mensagem = `*Novo Pedido Recebido!* 🧾
 *Horário:* ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
 ---------------------------
 
@@ -657,7 +671,7 @@ let mensagem = `*Novo Pedido Recebido!* 🧾
 *Nome:* ${pedido.Cliente}
 *Telefone:* ${pedido.Tel}
 *Endereço:* ${pedido.Endereco}
-${pedido.mesa !== 'Não possui mesa' ? `*Mesa:* ${pedido.mesa}` : ''}
+${pedido.mesa !== 'Não se aplica' ? `*Mesa:* ${pedido.mesa}` : ''}
 
 ---------------------------
 
@@ -676,48 +690,41 @@ ${mensagemProdutos}
 ---------------------------
 
 *🚚 Entrega e Pagamento:*
-*Forma de Entrega:* ${pedido.Endereco}
+*Forma de Entrega:* ${pedido.FormaRetirada === 'home' ? 'Entrega' : (pedido.FormaRetirada === 'pickup' ? 'Retirada no Balcão' : 'Consumo na Mesa')}
 *Forma de Pagamento:* ${pedido.FormaPagamento}
 ${pedido.bandeiraCartao !== "Sem cartão" ? `*Cartão:* ${pedido.bandeiraCartao}` : ''}
 `;
- // 3. ADIÇÃO CONDICIONAL DO LINK DE IMPRESSÃO
-    // Verificamos se a API retornou ImprimirPedido como true e se temos um ID
+
     if (imprimirPedido && payload.pedidoId) {
-        
-        // IMPORTANTE: Confirme se o nome da propriedade do ID é 'IdPedido'.
         const idDoPedido = payload.pedidoId;
         const linkImpressao = `https://hotmenu.com.br/Home/ImprimirPedido/${idDoPedido}`;
-        
-        // Adiciona a seção de impressão ao final da mensagem
         mensagem += `
 ---------------------------
 *🖨️ Imprimir Pedido:*
 ${linkImpressao}`;
     }
 
-// O resto do seu código para abrir o WhatsApp continua o mesmo
-const celularWhatsApp = celular.replace(/\D/g, '');
-const mensagemCodificada = encodeURIComponent(mensagem);
-const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
-window.open(urlWhatsApp, '_blank');
-    // Notificações e logs
-    //console.log('Pedido finalizado com sucesso!');
+    const celularWhatsApp = celular.replace(/\D/g, '');
+    const mensagemCodificada = encodeURIComponent(mensagem);
+    const urlWhatsApp = `https://wa.me/${celularWhatsApp}?text=${mensagemCodificada}`;
+    window.open(urlWhatsApp, '_blank');
+
+    // =========================================================================
+    // 6. LIMPEZA E FINALIZAÇÃO
+    // =========================================================================
     notify();
     notify02();
-    
-
-    // Limpeza dos campos após o envio (agora sim)
     setList([]);
     setValorTotalPedido("0,00");
     clearCart();
-    setDescontoAplicado()
+    setDescontoAplicado();
     salvarDadosNoHistorico();
+
   } catch (error) {
-    console.error('Erro na chamada da API:', error);
+    console.error('Erro na chamada da API ou ao processar o pedido:', error);
     toast.error(`Falha ao enviar pedido: ${error.message}`, { theme: 'dark' });
   }
 };
-
 
 // <------ função para remover o pedido da lista de pedido ------->
   const hendlerRemovePedido = () => {
