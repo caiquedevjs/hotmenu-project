@@ -227,43 +227,59 @@ const handleCheckboxChange = (formaSelecionada) => {
 // <------ função para buscar o frete por bairro ------>
 useEffect(() => {
   const verificarFretePorCep = async () => {
-    // Reseta o estado anterior para evitar mostrar um frete antigo para um novo CEP
-    setFretePorCep(null); 
+    // 1. Reseta os estados para evitar mostrar dados antigos
+    setFretePorCep(null);
     setBairro('');
     setEndereco('');
     setComplemento('');
 
+    // 2. Valida se o CEP está no formato correto para a busca
     if (cep.length === 8 && storeName) {
-      console.log('🔍 Buscando frete por CEP...');
-      console.log('Payload enviado:', { Id: storeName, cep });
+      try {
+        console.log('🔍 Buscando frete por CEP:', { Id: storeName, cep });
+        const resposta = await fetchFretePorCep(storeName, cep);
+        console.log('📦 Resposta da API:', resposta);
 
-      const resposta = await fetchFretePorCep(storeName, cep);
-      console.log('📦 Resposta da API frete por CEP:', resposta);
+        const dadosCep = resposta?.cep?.Data;
 
-      const dadosCep = resposta?.cep?.Data;
-
-      if (dadosCep?.frete) {
-        // 1. Tenta converter o valor do frete
-        const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
-
-        // 2. VERIFICAÇÃO CRÍTICA: Checa se o resultado é um número válido
-        if (!isNaN(valorFreteNumerico)) {
-          // Se for um número, atualiza os estados
-          setFretePorCep(valorFreteNumerico);
+        // 3. Verifica se a API retornou os dados do CEP
+        if (dadosCep) {
+          // Atualiza os dados de endereço, pois eles existem independentemente do frete
           setBairro(dadosCep.bairro || '');
           setEndereco(dadosCep.logradouro || '');
           setComplemento(dadosCep.complemento || '');
-        } else {
-          // Se não for um número (ex: "Não Entregamos"), trata como erro
-          console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
-          setFretePorCep(null); // Garante que o frete seja nulo
-          // Opcional: Você pode querer guardar a mensagem para exibir ao usuário
-          // setMensagemFrete(dadosCep.frete); 
-        }
 
-      } else {
-        console.log('❌ CEP não encontrado ou sem frete configurado.');
+          const freteApi = dadosCep.frete;
+
+          // 4. Estrutura lógica correta para tratar os diferentes valores de frete
+          if (freteApi === "Consulte") {
+            // Caso 1: O frete é uma string específica "Consulte"
+            setFretePorCep('Consulte');
+
+          } else {
+            // Tenta converter qualquer outro valor para número
+            const valorNumerico = parseFloat(String(freteApi).replace(',', '.'));
+
+            if (!isNaN(valorNumerico)) {
+              // Caso 2: O frete é um número válido
+              setFretePorCep(valorNumerico);
+            } else {
+              // Caso 3: O frete é qualquer outra coisa (ex: "Não Entregamos", nulo, etc.)
+              console.log('❌ Valor de frete não é numérico nem "Consulte":', freteApi);
+              setFretePorCep(null); // Mantém como nulo para indicar que não há frete válido
+            }
+          }
+        } else {
+          console.log('❌ CEP não encontrado ou sem dados de frete.');
+          // Os estados já foram resetados no início, então não precisa fazer nada aqui.
+        }
+      } catch (error) {
+        console.error('💥 Erro ao buscar frete por CEP:', error);
+        // Garante que o estado fique limpo em caso de erro na requisição
         setFretePorCep(null);
+        setBairro('');
+        setEndereco('');
+        setComplemento('');
       }
     }
   };
@@ -444,11 +460,15 @@ const totalPriceWithFrete = () => {
     // descontoAplicado já é valor em R$
     totalComDesconto -= descontoAplicado;
   }
+if(fretePorCep === 'Consulte'){
+    return totalComDesconto.toFixed(2).replace('.', ',');
+  }
 
-  if (fretePorCep !== null) {
+  if (typeof(fretePorCep) ==='number') {
     return (totalComDesconto + fretePorCep).toFixed(2).replace('.', ',');
   }
 
+  
   if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
     return totalComDesconto.toFixed(2).replace('.', ',');
   }
@@ -523,6 +543,8 @@ const handleFinalizarPedido = async () => {
     sound.play();
     return;
   }
+ 
+
 
   // Validações de pagamento
   if (activeTabCard === 'pagamentoOnline') {
@@ -554,16 +576,34 @@ const handleFinalizarPedido = async () => {
   if (formaRetirada === 'home') {
     // Caso 1: Entrega em casa
     enderecoFinal = `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`;
-    freteFinal = fretePorCep !== null
-      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
-      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
-        ? "Frete grátis"
-        : (estabelecimento?.FreteFixo
-          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
-          : "consultar");
-    precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
 
-  } else {
+    // --- LÓGICA CORRIGIDA E SEGURA PARA 'freteFinal' ---
+    if (typeof fretePorCep === 'number') {
+        // 1. A prioridade é o frete calculado pelo CEP, se for um número.
+        freteFinal = `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`;
+
+    } else if (fretePorCep === 'Consulte') {
+        // 2. Se for 'Consulte', definimos o texto correspondente.
+        freteFinal = 'A consultar';
+
+    } else if (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe) {
+        // 3. Senão, verificamos a promoção de frete grátis.
+        freteFinal = "Frete grátis";
+
+    } else if (estabelecimento?.FreteFixo) {
+        // 4. Senão, verificamos se há um frete fixo.
+        freteFinal = `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`;
+        
+    } else {
+        // 5. Como último caso, definimos um valor padrão seguro.
+        freteFinal = "A consultar";
+    }
+
+    precoTotalFinal = `R$ ${totalPriceWithFrete()}`; // Lembre-se que essa função também precisa estar corrigida
+
+}
+  
+  else {
     // Caso 2: Retirada no local ou Consumo na mesa
     if (formaRetirada === 'mesa') {
       enderecoFinal = `CONSUMO NA MESA`;
@@ -1160,7 +1200,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                        <p  className='freeGratis_class' style={{ color: 'red' ,'fontSize': fontSize}}>
                           Frete grátis 
                         </p> )
-                         : fretePorCep !== null ? (
+                         : typeof(fretePorCep) === 'number'? (
                             // Frete por CEP
                             <p className='Total-price-cart' style={{ color: '#228B22' }}>
                               R$ {fretePorCep.toFixed(2).replace('.', ',')}
