@@ -72,6 +72,7 @@ const [fotoCard3, setFotoCard3] = useState('');
 const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [imprimirPedido, setImprimirPedido] = useState(null);
+const [bloquadorFreteNaoCadastrados, setBloqueadorFreteNaoCadastrados] = useState(null);
 const [tipoImpressao, setTipoImpressao] = useState(null);
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
@@ -398,6 +399,7 @@ useEffect(() => {
         setFreteFixo(response.ValorFreteFixo);
         setFreteFuncao(response.FreteFixo); 
         setImprimirPedido(response.ImprimirPedido);
+        setBloqueadorFreteNaoCadastrados(response.AtivarBloqueioDeEntregaForaDaKm);
         setTipoImpressao(response.ImpressoraPadrao);
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
@@ -555,10 +557,15 @@ const handleFinalizarPedido = async () => {
   }
 
   if (activeTabCard === 'pagamentoNaRetirada') {
-    if (!selectedOption) {
+    if (!selectedOption || selectedOption === null ) {
       toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
       return;
-    } else if (selectedOption === 'Dinheiro' && !valorTroco) {
+    }
+    if(selectedPaymentId === null){
+      toast.error(`Escolha uma opção de bandeira de cartão de ${selectedOption}`, { theme: 'dark' });
+      return;
+    }
+     else if (selectedOption === 'Dinheiro' && !valorTroco) {
       toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
       return;
     }
