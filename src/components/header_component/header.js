@@ -73,6 +73,7 @@ const [fotoCard3, setFotoCard3] = useState('');
 const [fotoCard4, setFotoCard4] = useState('');
 const [fotoCard5, setFotoCard5] = useState('');
 const [imprimirPedido, setImprimirPedido] = useState(null);
+const [bloquadorFreteNaoCadastrados, setBloqueadorFreteNaoCadastrados] = useState(null);
 const [tipoImpressao, setTipoImpressao] = useState(null);
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
@@ -233,58 +234,43 @@ const handleCheckboxChange = (formaSelecionada) => {
 useEffect(() => {
   // --- Parte 1: Lógica de verificação do CEP ---
   const verificarFretePorCep = async () => {
-    // Reseta estados...
-    setFretePorCep(null);
+    // Reseta o estado anterior para evitar mostrar um frete antigo para um novo CEP
+    setFretePorCep(null); 
+    setBairro('');
     setEndereco('');
     setComplemento('');
-    
-    // Se o bloqueador estiver DESLIGADO, reseta o bairro normal
-    if (!bloqueadorFreteKm) {
-      setBairro('');
-    }
-    // Se o bloqueador estiver LIGADO, reseta o frete por bairro
-    if (bloqueadorFreteKm) {
-       setFretePorBairro(null);
-       setBairroSelecionado('');
-    }
 
     if (cep.length === 8 && storeName) {
-      console.log('🔍 Buscando dados por CEP...');
+      console.log('🔍 Buscando frete por CEP...');
+      console.log('Payload enviado:', { Id: storeName, cep });
+
       const resposta = await fetchFretePorCep(storeName, cep);
-      console.log('📦 Resposta da API CEP:', resposta);
+      console.log('📦 Resposta da API frete por CEP:', resposta);
 
-      const dadosCep = resposta?.cep?.Data;
+        const dadosCep = resposta?.cep?.Data;
 
-      // VERIFICAÇÃO CRÍTICA: O que fazer com os dados do CEP?
-      if (bloqueadorFreteKm) {
-        // MODO BLOQUEADOR ATIVO:
-        // O CEP SÓ preenche endereço e complemento. NÃO define frete.
-        console.log('🏁 Modo Bloqueador por Bairro ATIVO. CEP preencherá apenas endereço.');
-        if (dadosCep) {
+      if (dadosCep?.frete) {
+        // 1. Tenta converter o valor do frete
+        const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
+
+        // 2. VERIFICAÇÃO CRÍTICA: Checa se o resultado é um número válido
+        if (!isNaN(valorFreteNumerico)) {
+          // Se for um número, atualiza os estados
+          setFretePorCep(valorFreteNumerico);
+          setBairro(dadosCep.bairro || '');
           setEndereco(dadosCep.logradouro || '');
           setComplemento(dadosCep.complemento || '');
-          // Não mexemos no frete nem no bairro
+        } else {
+          // Se não for um número (ex: "Não Entregamos"), trata como erro
+          console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
+          setFretePorCep(null); // Garante que o frete seja nulo
+          // Opcional: Você pode querer guardar a mensagem para exibir ao usuário
+          // setMensagemFrete(dadosCep.frete); 
         }
-        setFretePorCep(null); // Garante que o frete por CEP seja nulo
 
       } else {
-        // MODO NORMAL (sem bloqueador):
-        // Comportamento original do seu código
-        if (dadosCep?.frete) {
-          const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
-          if (!isNaN(valorFreteNumerico)) {
-            setFretePorCep(valorFreteNumerico);
-            setBairro(dadosCep.bairro || '');
-            setEndereco(dadosCep.logradouro || '');
-            setComplemento(dadosCep.complemento || '');
-          } else {
-            console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
-            setFretePorCep(null);
-          }
-        } else {
-          console.log('❌ CEP não encontrado ou sem frete configurado.');
-          setFretePorCep(null);
-        }
+        console.log('❌ CEP não encontrado ou sem frete configurado.');
+        setFretePorCep(null);
       }
     }
   };
@@ -465,6 +451,7 @@ useEffect(() => {
         setFreteFuncao(response.FreteFixo); 
         setBloqueadorFreteKm(response.AtivarBloqueioDeEntregaForaDaKm)
         setImprimirPedido(response.ImprimirPedido);
+        setBloqueadorFreteNaoCadastrados(response.AtivarBloqueioDeEntregaForaDaKm);
         setTipoImpressao(response.ImpressoraPadrao);
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
@@ -526,14 +513,14 @@ const totalPriceWithFrete = () => {
   if (descontoAplicado > 0) {
     totalComDesconto -= descontoAplicado;
   }
-
-  // --- LÓGICA DE FRETE ATUALIZADA ---
-
-   // 1. Prioridade 1: Frete Fixo da Loja
-   if (estabelecimento?.FreteFixo) {
-    return (totalComDesconto + estabelecimento.ValorFreteFixo).toFixed(2).replace('.', ',');
+if(fretePorCep === 'Consulte'){
+    return totalComDesconto.toFixed(2).replace('.', ',');
   }
- // 2. Prioridade 2: Promoção Frete Grátis
+
+  if (fretePorCep !== null) {
+    return (totalComDesconto + fretePorCep).toFixed(2).replace('.', ',');
+  }
+
   if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
     return totalComDesconto.toFixed(2).replace('.', ',');
   }
@@ -603,34 +590,18 @@ const handleFinalizarPedido = async () => {
   }
 
   // Validação de endereço (somente se a entrega for 'home')
-if (activeTab === 'home') {
-
-  // Cenário 1: A entrega é por BAIRRO (lista suspensa)
-  if (bloqueadorFreteKm) {
-    // CORREÇÃO AQUI: Verificamos apenas se o endereço ou o bairro estão vazios.
-    if (!bairroSelecionado) {
-      toast.error("Por favor, preencha o campo de endereço e selecione um bairro na lista para continuar.", { theme: 'dark' });
-      return; // Interrompe a execução
-    }
+  if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
+    alert("Por favor, preencha todos os campos de entrega.");
+    return;
   }
-  // Cenário 2: A entrega é por CEP (modo padrão)
-  else {
-    // Esta é a sua validação original, que está correta para este caso.
-    if (!endereco || !bairro || !cep) {
-      toast.error("Por favor, preencha todos os campos de entrega: CEP, Endereço e Bairro.", { theme: 'dark' });
-      return; // Interrompe a execução
-    }
-  }
-}
 
-// Validação de CEP não atendido (somente se a entrega for 'home' e o modo for CEP)
-// CORREÇÃO AQUI: Adicionamos a verificação '!bloqueadorFreteKm'
-// para que esta regra só seja aplicada no modo de entrega por CEP.
-if (activeTab === 'home' && !bloqueadorFreteKm && cep.length === 8 && fretePorCep === null) {
-  toast.error("Não entregamos neste CEP. Verifique o endereço ou escolha 'Retirar no Local'.", { theme: 'dark' });
-  sound.play();
-  return;
-}
+  // Validação de CEP não atendido (somente se a entrega for 'home')
+  if (activeTab === 'home' && cep.length === 8 && fretePorCep === null) {
+    toast.error("Não entregamos neste CEP. Verifique o endereço ou escolha 'Retirar no Local'.", { theme: 'dark' });
+    sound.play();
+    return;
+  }
+
   // Validações de pagamento
   if (activeTabCard === 'pagamentoOnline') {
     if (!cartao || !titular || !vencimento || !cvc) {
@@ -640,10 +611,15 @@ if (activeTab === 'home' && !bloqueadorFreteKm && cep.length === 8 && fretePorCe
   }
 
   if (activeTabCard === 'pagamentoNaRetirada') {
-    if (!selectedOption) {
+    if (!selectedOption || selectedOption === null ) {
       toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
       return;
-    } else if (selectedOption === 'Dinheiro' && !valorTroco) {
+    }
+    if(selectedPaymentId === null){
+      toast.error(`Escolha uma opção de bandeira de cartão de ${selectedOption}`, { theme: 'dark' });
+      return;
+    }
+     else if (selectedOption === 'Dinheiro' && !valorTroco) {
       toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
       return;
     }
@@ -665,25 +641,16 @@ if (formaRetirada === 'home') {
   }
   else{
     enderecoFinal = `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`;
-  }
-  
+    freteFinal = fretePorCep !== null
+      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
+      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
+        ? "Frete grátis"
+        : (estabelecimento?.FreteFixo
+          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
+          : "consultar");
+    precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
 
-  const totalCarrinho = parseFloat(totalCartPrice().replace(',', '.'));
-
-  // Atribuição ÚNICA para freteFinal com todas as condições aninhadas
-  freteFinal = (estabelecimento?.PromocaoFreteGratis && totalCarrinho >= estabelecimento.ValorFreteGratisAcimaDe)
-    ? "Frete grátis" // 1º: Tem frete grátis?
-    : (fretePorBairro !== null)
-      ? `R$ ${fretePorBairro.toFixed(2).replace('.', ',')}` // 2º: Se não, tem frete por bairro?
-      : (fretePorCep !== null)
-        ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}` // 3º: Se não, tem frete por CEP?
-        : (estabelecimento?.FreteFixo)
-          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` // 4º: Se não, tem frete fixo?
-          : "consultar"; // 5º: Senão, é "consultar"
-
-  precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
-}
-else {
+  } else {
     // Caso 2: Retirada no local ou Consumo na mesa
     if (formaRetirada === 'mesa') {
       enderecoFinal = `CONSUMO NA MESA`;
@@ -1280,7 +1247,7 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                        <p  className='freeGratis_class' style={{ color: 'red' ,'fontSize': fontSize}}>
                           Frete grátis 
                         </p> )
-                         : fretePorCep !== null ? (
+                         : typeof(fretePorCep) === 'number'? (
                             // Frete por CEP
                             <p className='Total-price-cart' style={{ color: '#228B22' }}>
                               R$ {fretePorCep.toFixed(2).replace('.', ',')}
