@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 // <------- import hooks and context------->
@@ -28,7 +29,7 @@ import { Nav, Tab } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { Modal } from 'bootstrap';
 // <------- import utils------->
-import { fetchFormaPagamentos,fetchEstabelecimentoData, fetchFretePorCep } from '../service/productService';
+import { fetchFormaPagamentos,fetchEstabelecimentoData, fetchFretePorCep, fetchFretPorBairro } from '../service/productService';
 import  useHover  from '../../utils/headerHoverHandlers';
 import useScrollToTopButton from '../../utils/scrollHandler';
 import truncateText from '../../utils/truncateText';
@@ -76,6 +77,10 @@ const [tipoImpressao, setTipoImpressao] = useState(null);
 const [pixKey, setPixKey] = useState(``);
 const [FreteFixo,setFreteFixo] = useState('');
 const [fretePorCep, setFretePorCep] = useState(null);
+const [bloqueadorFreteKm, setBloqueadorFreteKm] = useState(null);
+const [listaBairros, setListaBairros] = useState([]);
+const [bairroSelecionado, setBairroSelecionado] = useState(''); // Guarda o NOME do bairro selecionado
+const [fretePorBairro, setFretePorBairro] = useState(null); 
 const [Fretefuncao, setFreteFuncao] = useState('');
 const [descontoAplicado, setDescontoAplicado] = useState(0);
 const [totalSemFreteAplicado, setTotalSemFreteAplicado] = useState(null)
@@ -226,51 +231,128 @@ const handleCheckboxChange = (formaSelecionada) => {
 
 // <------ função para buscar o frete por bairro ------>
 useEffect(() => {
+  // --- Parte 1: Lógica de verificação do CEP ---
   const verificarFretePorCep = async () => {
-    // Reseta o estado anterior para evitar mostrar um frete antigo para um novo CEP
-    setFretePorCep(null); 
-    setBairro('');
+    // Reseta estados...
+    setFretePorCep(null);
     setEndereco('');
     setComplemento('');
+    
+    // Se o bloqueador estiver DESLIGADO, reseta o bairro normal
+    if (!bloqueadorFreteKm) {
+      setBairro('');
+    }
+    // Se o bloqueador estiver LIGADO, reseta o frete por bairro
+    if (bloqueadorFreteKm) {
+       setFretePorBairro(null);
+       setBairroSelecionado('');
+    }
 
     if (cep.length === 8 && storeName) {
-      console.log('🔍 Buscando frete por CEP...');
-      console.log('Payload enviado:', { Id: storeName, cep });
-
+      console.log('🔍 Buscando dados por CEP...');
       const resposta = await fetchFretePorCep(storeName, cep);
-      console.log('📦 Resposta da API frete por CEP:', resposta);
+      console.log('📦 Resposta da API CEP:', resposta);
 
       const dadosCep = resposta?.cep?.Data;
 
-      if (dadosCep?.frete) {
-        // 1. Tenta converter o valor do frete
-        const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
-
-        // 2. VERIFICAÇÃO CRÍTICA: Checa se o resultado é um número válido
-        if (!isNaN(valorFreteNumerico)) {
-          // Se for um número, atualiza os estados
-          setFretePorCep(valorFreteNumerico);
-          setBairro(dadosCep.bairro || '');
+      // VERIFICAÇÃO CRÍTICA: O que fazer com os dados do CEP?
+      if (bloqueadorFreteKm) {
+        // MODO BLOQUEADOR ATIVO:
+        // O CEP SÓ preenche endereço e complemento. NÃO define frete.
+        console.log('🏁 Modo Bloqueador por Bairro ATIVO. CEP preencherá apenas endereço.');
+        if (dadosCep) {
           setEndereco(dadosCep.logradouro || '');
           setComplemento(dadosCep.complemento || '');
-        } else {
-          // Se não for um número (ex: "Não Entregamos"), trata como erro
-          console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
-          setFretePorCep(null); // Garante que o frete seja nulo
-          // Opcional: Você pode querer guardar a mensagem para exibir ao usuário
-          // setMensagemFrete(dadosCep.frete); 
+          // Não mexemos no frete nem no bairro
         }
+        setFretePorCep(null); // Garante que o frete por CEP seja nulo
 
       } else {
-        console.log('❌ CEP não encontrado ou sem frete configurado.');
-        setFretePorCep(null);
+        // MODO NORMAL (sem bloqueador):
+        // Comportamento original do seu código
+        if (dadosCep?.frete) {
+          const valorFreteNumerico = parseFloat(dadosCep.frete.replace(',', '.'));
+          if (!isNaN(valorFreteNumerico)) {
+            setFretePorCep(valorFreteNumerico);
+            setBairro(dadosCep.bairro || '');
+            setEndereco(dadosCep.logradouro || '');
+            setComplemento(dadosCep.complemento || '');
+          } else {
+            console.log('❌ Valor de frete não é numérico:', dadosCep.frete);
+            setFretePorCep(null);
+          }
+        } else {
+          console.log('❌ CEP não encontrado ou sem frete configurado.');
+          setFretePorCep(null);
+        }
       }
     }
   };
 
-  verificarFretePorCep();
-}, [cep, storeName]);
+  // --- Parte 2: Lógica de buscar a LISTA DE BAIRROS ---
+  const buscarFretesPorBairro = async () => {
+    if (storeName) {
+      console.log('🚚 Buscando lista de bairros com frete...');
+      try {
+        const resposta = await fetchFretPorBairro(storeName); // Sua função
+        if (resposta && Array.isArray(resposta.Bairros)) {
+          setListaBairros(resposta.Bairros);
+          console.log('🏘️ Lista de bairros carregada:', resposta.Bairros);
+        } else {
+          setListaBairros([]);
+          console.log('⚠️ Lista de bairros vazia ou em formato inesperado.');
+        }
+      } catch (error) {
+        console.error('❌ Erro ao buscar lista de bairros:', error);
+        setListaBairros([]);
+      }
+    }
+  };
 
+  // --- Execução da Lógica ---
+
+  // 1. A verificação de CEP sempre roda quando o CEP muda
+  verificarFretePorCep();
+
+  // 2. A busca por Bairros só roda se o bloqueador estiver ATIVO
+  if (bloqueadorFreteKm) {
+    buscarFretesPorBairro();
+  } else {
+    // Se o bloqueador for desligado, limpa a lista e o frete por bairro
+    setListaBairros([]);
+    setFretePorBairro(null);
+    setBairroSelecionado('');
+  }
+
+  // Adicione 'bloqueadorFreteKm' ao array de dependências
+}, [cep, storeName, bloqueadorFreteKm]);
+
+
+const handleBairroSelectChange = (e) => {
+  const bairroNomeSelecionado = e.target.value;
+  setBairroSelecionado(bairroNomeSelecionado); // Atualiza o nome do bairro
+
+  // Encontra o objeto do bairro na lista para pegar o valor
+  const bairroObj = listaBairros.find(b => b.Bairro === bairroNomeSelecionado);
+
+  if (bairroObj) {
+    const valorFrete = parseFloat(bairroObj.Valor); // API retorna ex: 12.0000
+
+    if (!isNaN(valorFrete)) {
+      setFretePorBairro(valorFrete); // Define o frete por bairro
+      console.log(`Bairro selecionado: ${bairroNomeSelecionado}, Frete: R$ ${valorFrete}`);
+      
+      // CRÍTICO: Limpa o frete por CEP, pois o bairro agora é a fonte de verdade
+      setFretePorCep(null); 
+    } else {
+      console.error('Valor do frete do bairro é inválido:', bairroObj.Valor);
+      setFretePorBairro(null);
+    }
+  } else {
+    // Opção "Selecione..." foi escolhida
+    setFretePorBairro(null);
+  }
+};
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -381,6 +463,7 @@ useEffect(() => {
         setCelular(response.TelContato);
         setFreteFixo(response.ValorFreteFixo);
         setFreteFuncao(response.FreteFixo); 
+        setBloqueadorFreteKm(response.AtivarBloqueioDeEntregaForaDaKm)
         setImprimirPedido(response.ImprimirPedido);
         setTipoImpressao(response.ImpressoraPadrao);
         setPagamentoOptions({
@@ -441,22 +524,30 @@ const totalPriceWithFrete = () => {
   let totalComDesconto = cartTotal;
 
   if (descontoAplicado > 0) {
-    // descontoAplicado já é valor em R$
     totalComDesconto -= descontoAplicado;
   }
 
+  // --- LÓGICA DE FRETE ATUALIZADA ---
+
+   // 1. Prioridade 1: Frete Fixo da Loja
+   if (estabelecimento?.FreteFixo) {
+    return (totalComDesconto + estabelecimento.ValorFreteFixo).toFixed(2).replace('.', ',');
+  }
+ // 2. Prioridade 2: Promoção Frete Grátis
+  if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
+    return totalComDesconto.toFixed(2).replace('.', ',');
+  }
+// 3. Prioridade 3: Frete por Bairro (se um foi selecionado)
+  if (fretePorBairro !== null) {
+    return (totalComDesconto + fretePorBairro).toFixed(2).replace('.', ',');
+  }
+
+  // 4. Prioridade 4: Frete por CEP (modo antigo, só roda se fretePorBairro for null)
   if (fretePorCep !== null) {
     return (totalComDesconto + fretePorCep).toFixed(2).replace('.', ',');
   }
 
-  if (estabelecimento?.PromocaoFreteGratis && cartTotal >= estabelecimento.ValorFreteGratisAcimaDe) {
-    return totalComDesconto.toFixed(2).replace('.', ',');
-  }
-
-  if (estabelecimento?.FreteFixo) {
-    return (totalComDesconto + estabelecimento.ValorFreteFixo).toFixed(2).replace('.', ',');
-  }
-
+  // 5. Default: Sem frete
   return totalComDesconto.toFixed(2).replace('.', ',');
 };
 
@@ -512,18 +603,34 @@ const handleFinalizarPedido = async () => {
   }
 
   // Validação de endereço (somente se a entrega for 'home')
-  if (activeTab === 'home' && (!endereco || !bairro || !cep)) {
-    alert("Por favor, preencha todos os campos de entrega.");
-    return;
-  }
+if (activeTab === 'home') {
 
-  // Validação de CEP não atendido (somente se a entrega for 'home')
-  if (activeTab === 'home' && cep.length === 8 && fretePorCep === null) {
-    toast.error("Não entregamos neste CEP. Verifique o endereço ou escolha 'Retirar no Local'.", { theme: 'dark' });
-    sound.play();
-    return;
+  // Cenário 1: A entrega é por BAIRRO (lista suspensa)
+  if (bloqueadorFreteKm) {
+    // CORREÇÃO AQUI: Verificamos apenas se o endereço ou o bairro estão vazios.
+    if (!bairroSelecionado) {
+      toast.error("Por favor, preencha o campo de endereço e selecione um bairro na lista para continuar.", { theme: 'dark' });
+      return; // Interrompe a execução
+    }
   }
+  // Cenário 2: A entrega é por CEP (modo padrão)
+  else {
+    // Esta é a sua validação original, que está correta para este caso.
+    if (!endereco || !bairro || !cep) {
+      toast.error("Por favor, preencha todos os campos de entrega: CEP, Endereço e Bairro.", { theme: 'dark' });
+      return; // Interrompe a execução
+    }
+  }
+}
 
+// Validação de CEP não atendido (somente se a entrega for 'home' e o modo for CEP)
+// CORREÇÃO AQUI: Adicionamos a verificação '!bloqueadorFreteKm'
+// para que esta regra só seja aplicada no modo de entrega por CEP.
+if (activeTab === 'home' && !bloqueadorFreteKm && cep.length === 8 && fretePorCep === null) {
+  toast.error("Não entregamos neste CEP. Verifique o endereço ou escolha 'Retirar no Local'.", { theme: 'dark' });
+  sound.play();
+  return;
+}
   // Validações de pagamento
   if (activeTabCard === 'pagamentoOnline') {
     if (!cartao || !titular || !vencimento || !cvc) {
@@ -551,19 +658,32 @@ const handleFinalizarPedido = async () => {
   let mesaFinal = "Não se aplica";
   let precoTotalFinal;
 
-  if (formaRetirada === 'home') {
-    // Caso 1: Entrega em casa
+if (formaRetirada === 'home') {
+  // Caso 1: Entrega em casa
+  if(bairroSelecionado){
+    enderecoFinal = `Cep: ${cep}, ${endereco}, ${complemento}, ${bairroSelecionado}`;
+  }
+  else{
     enderecoFinal = `Cep: ${cep}, ${endereco}, ${complemento}, ${bairro}`;
-    freteFinal = fretePorCep !== null
-      ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}`
-      : (estabelecimento?.PromocaoFreteGratis && parseFloat(totalCartPrice().replace(',', '.')) >= estabelecimento.ValorFreteGratisAcimaDe)
-        ? "Frete grátis"
-        : (estabelecimento?.FreteFixo
-          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}`
-          : "consultar");
-    precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
+  }
+  
 
-  } else {
+  const totalCarrinho = parseFloat(totalCartPrice().replace(',', '.'));
+
+  // Atribuição ÚNICA para freteFinal com todas as condições aninhadas
+  freteFinal = (estabelecimento?.PromocaoFreteGratis && totalCarrinho >= estabelecimento.ValorFreteGratisAcimaDe)
+    ? "Frete grátis" // 1º: Tem frete grátis?
+    : (fretePorBairro !== null)
+      ? `R$ ${fretePorBairro.toFixed(2).replace('.', ',')}` // 2º: Se não, tem frete por bairro?
+      : (fretePorCep !== null)
+        ? `R$ ${fretePorCep.toFixed(2).replace('.', ',')}` // 3º: Se não, tem frete por CEP?
+        : (estabelecimento?.FreteFixo)
+          ? `R$ ${estabelecimento.ValorFreteFixo.toFixed(2).replace('.', ',')}` // 4º: Se não, tem frete fixo?
+          : "consultar"; // 5º: Senão, é "consultar"
+
+  precoTotalFinal = `R$ ${totalPriceWithFrete()}`;
+}
+else {
     // Caso 2: Retirada no local ou Consumo na mesa
     if (formaRetirada === 'mesa') {
       enderecoFinal = `CONSUMO NA MESA`;
@@ -1458,16 +1578,59 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
                 ))}
               </datalist>
             </div>
-            <div className="col-md-6">
-              <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
-              <input type="text" className="form-control" id="inputCity" nome= 'bairro' value={bairro} onChange={(e) => setBairro(e.target.value)}  list="historico-bairros"/>
-              {/* ✅ ESTE É O DATALIST */}
-              <datalist id="historico-bairros"> {/* <-- PASSO B: O ID deve ser o mesmo */}
-                {historico.map((cliente, index) => (
-                  <option key={index} value={cliente.bairro} />
-                ))}
-              </datalist>
-            </div>
+           <div className="col-md-6">
+  <label htmlFor="inputCity" className="form-label-credit-usuario">Bairro</label>
+  
+  {/* RENDERIZAÇÃO CONDICIONAL AQUI */}
+  {bloqueadorFreteKm && listaBairros.length > 0 ? (
+    // MODO 1: Bloqueador ATIVO e Lista CARREGADA -> Mostra o <select>
+    <select 
+      className="form-select" // Classe Bootstrap para <select>
+      id="inputCity" 
+      value={bairroSelecionado}
+      onChange={handleBairroSelectChange} // Nosso novo handler
+      required // Boa prática
+    >
+      <option value="" id='bairro-option'>Selecione o bairro...</option>
+      {listaBairros.map((b) => (
+        <option key={b.Id} value={b.Bairro}  id='bairro-option'>
+          {/* Ex: "Brotas - R$ 12,00" */}
+          {b.Bairro} - R$ {parseFloat(b.Valor).toFixed(2).replace('.', ',')}
+        </option>
+      ))}
+    </select>
+
+  ) : (
+    // MODO 2: Comportamento PADRÃO -> Mostra o <input>
+    <>
+      <input 
+        type="text" 
+        className="form-control" 
+        id="inputCity" 
+        name='bairro' // 'name' é o atributo correto, não 'nome'
+        value={bairro} // Usa o estado 'bairro' (preenchido pelo CEP no modo normal)
+        onChange={(e) => setBairro(e.target.value)}
+        list="historico-bairros"
+        // Se o modo bloqueador estiver ativo mas a lista falhou, desabilita o input
+        disabled={bloqueadorFreteKm && listaBairros.length === 0} 
+      />
+      
+      {/* O datalist original */}
+      <datalist id="historico-bairros">
+        {historico.map((cliente, index) => (
+          <option key={index} value={cliente.bairro} />
+        ))}
+      </datalist>
+
+      {/* Mensagem de erro se o <select> era esperado mas a lista falhou */}
+      {bloqueadorFreteKm && listaBairros.length === 0 && (
+         <small className="text-danger" style={{fontSize: '0.8rem', marginTop: '4px'}}>
+           Não foi possível carregar os bairros. Verifique sua conexão.
+         </small>
+      )}
+    </>
+  )}
+</div>
             
           </Tab.Pane>
         )}

@@ -4,6 +4,10 @@
     width: 100%;
     text-align:left;
   }
+#bairro-option{
+font-family: "Roboto", sans-serif;    
+font-weight: bold;
+}
 }
 
 @media (min-width: 1024px) {
@@ -339,6 +343,9 @@ label{
     height: auto; /* Mantém a proporção do ícone */
     fill: green; /* Cor do ícone, ajuste conforme necessário */
 }
+#bairro-option{
+font-family: "Roboto", sans-serif;    
+}
 
 @media only screen and (max-width: 768px) {
     #inputNome4{
@@ -347,8 +354,11 @@ label{
     #inputTelefone4{ 
         width: 100%;  
     }
-
-    .form-label-credit{
+    #bairro-option{
+    font-family: "Roboto", sans-serif;    
+    font-weight: bold;
+    }
+        .form-label-credit{
         margin-right: 70%;
         font-family: "Roboto", sans-serif;
         font-size: 12px;

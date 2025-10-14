@@ -133,6 +133,26 @@ export const fetchFretePorCep = async (storeId, cep) => {
   }
 };
 
+// <------- Função para buscar dados da lista de bairro com frete com query params ------->  
+
+ export const fetchFretPorBairro = async (storeId) => {
+  try {
+    const url = `https://hotmenu.com.br/webhook/BuscarDadosComFrete/${storeId}`;
+
+    const response = await fetch(url);
+    if(!response.ok){
+      const errorText = await response.text();
+      console.error('Erro ao buscar frete por bairro. Detalhes do erro:', errorText);
+      throw new Error ('Error ao buscar frete por')
+    }
+    const data = await response.json();
+    return data;
+  }
+  catch(error){
+    console.error('Error ao buscar dados de frete por bairro', error)
+    return {status : 'Erro ao buscar frete.'}
+  }
+ }
 
 
  // https://hotmenu.com.br/webhook/Cliente/hotmenu
