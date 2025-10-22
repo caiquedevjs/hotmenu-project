@@ -591,7 +591,7 @@ const handleFinalizarPedido = async () => {
     sound.play();
     return;
   }
-
+ 
   // Validação de endereço (somente se a entrega for 'home')
 if (activeTab === 'home') {
 
@@ -637,7 +637,15 @@ if (activeTab === 'home' && isModoCep && cep.length === 8 && fretePorCep === nul
     if (!selectedOption) {
       toast.error("Escolha uma opção de pagamento", { theme: 'dark' });
       return;
-    } else if (selectedOption === 'Dinheiro' && !valorTroco) {
+
+    }
+     if(selectedPaymentId === null){
+     toast.error("Escolha uma bandeira de cartão.", { theme: 'dark' });
+    sound.play();
+    return;
+  }
+    
+    else if (selectedOption === 'Dinheiro' && !valorTroco) {
       toast.error("Por favor, preencha um valor para troco", { theme: 'dark' });
       return;
     }
@@ -1030,7 +1038,7 @@ const salvarDadosNoHistorico = () => {
 
 const [historico, setHistorico] = useState([]);
 useEffect(() => {
-  // Carrega o histórico do localStorage quando o componente monta
+
   if (storeName) {
     const storageKey = `historicoFormularios_${storeName}`;
     const historicoRaw = localStorage.getItem(storageKey);
