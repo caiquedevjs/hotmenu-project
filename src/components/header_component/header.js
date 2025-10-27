@@ -101,6 +101,7 @@ const [activeTabCard, setActiveTabCard] = useState('pagamentoNaRetirada');
 const [selectedPaymentId, setSelectedPaymentId] = useState(null);
 const [selectedPaymentNome, setSelectedPaymentNome] = useState(null)
 const [selectedOptionKey, setSelectedOptionKey] = useState('');
+const [isSubmitting, setIsSubmitting] = useState(false);
 
 
 
@@ -566,6 +567,15 @@ const handleAddPedido =() =>{
 
 // <------ função para finalizar a lista de pedido ------->
 const handleFinalizarPedido = async () => {
+
+
+
+  if (isSubmitting) {
+    toast.warn("Seu pedido já está sendo processado...", { theme: 'dark' });
+    return; // Impede o envio duplicado
+  }
+
+  console.log(isSubmitting)
   // =========================================================================
   // 1. VALIDAÇÕES INICIAIS
   // =========================================================================
@@ -737,7 +747,8 @@ else {
   };
 
   console.log("Pedido a enviar:", pedido);
-
+  // <--- 2. TRAVA A FUNÇÃO AQUI (NOVO) --->
+   setIsSubmitting(true);
   // =========================================================================
   // 4. ENVIO DO PEDIDO PARA A API E WHATSAPP
   // =========================================================================
@@ -747,7 +758,7 @@ else {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pedido)
     });
-
+    setIsSubmitting(false);
     const contentType = resp.headers.get('content-type') || '';
     const payload = contentType.includes('application/json') ? await resp.json() : await resp.text();
 
@@ -757,6 +768,7 @@ else {
     } else {
         console.log(`✅ Pedido enviado com sucesso! [${resp.status} ${resp.statusText}]`);
         console.log("📬 Resposta do servidor:", payload);
+       
     }
     
     // =========================================================================
@@ -1846,7 +1858,8 @@ const alturaDoBannerSkeleton = larguraTela >= 768 ? 400 : 125;
              style={{backgroundColor : finalizarButtonHover.isHovered ? '#332D2D' : color}}
              onMouseEnter={finalizarButtonHover.handleMouseEnter}
              onMouseLeave={finalizarButtonHover.handleMouseLeave}
-            >Finalizar pedido</button>
+             disabled={isSubmitting}
+            >{isSubmitting ? 'Enviando Pedido...' : 'Finalizar Pedido'}</button>
             <ToastContainer />
             <button type="button" id='excluir-pedido-btn' onClick={hendlerRemovePedido}
              style={{backgroundColor : cancelarButtonHover.isHovered ? '#332D2D' : color}}
