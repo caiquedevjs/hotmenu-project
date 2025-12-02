@@ -58,6 +58,7 @@ const { cartItems, totalCartPrice, removeFromCart, isOpen, toggleOffcanvas, clea
 const { storeName } = useParams();
 
 // <------ estados ------->
+const[cardapioRemovido, setCardapioRemovido] = useState(null);
 const [formasPorTipo, setFormasPorTipo] = useState({});
 const [formasSemTipo, setFormasSemTipo] = useState({});
 const [estabelecimento, setEstabelecimento] = useState(null);
@@ -437,11 +438,17 @@ useEffect(() => {
   const fetchDataEstabelecimento = async () => {
     try {
       const response = await fetchEstabelecimentoData(storeName);
-     // console.log('Resposta da API:', response); // Verifique se os dados estão completos
+
+      // --- BLOCO DE REDIRECIONAMENTO ---
+      // Verifica se existe resposta e se CardapioRemovido é true
+      if (response && response.CardapioRemovido === true) {
+        // Redireciona para o site externo
+        window.location.replace('https://site.hotmenu.com.br/');
+        return; // O 'return' para a execução da função aqui para não rodar os setStates abaixo
+      }
+      // ---------------------------------
+
       if (response) {
-        // Confirme se os campos realmente existem
-        //console.log('Logomarca:', response.Logomarca);
-        //console.log('Nome:', response.Nome);
         setEstabelecimento(response);
         setColor(response.CorPadrao);
         setLogoMarca(response.Logomarca);
@@ -453,18 +460,18 @@ useEffect(() => {
         setEstabelecimentoId(response.Id);
         setCelular(response.TelContato);
         setFreteFixo(response.ValorFreteFixo);
-        setFreteFuncao(response.FreteFixo); 
+        setFreteFuncao(response.FreteFixo);
         setBloqueadorFreteKm(response.AtivarBloqueioDeEntregaForaDaKm)
         setImprimirPedido(response.ImprimirPedido);
         setTipoImpressao(response.ImpressoraPadrao);
         setPagamentoOptions({
           pagamentoOnline: response.PgtoOnLine,
-          pagamentoNaRetirada : response.PgtoRetiradaLocal
+          pagamentoNaRetirada: response.PgtoRetiradaLocal
         });
         setDeliveryOptions({
           pickup: response.RetiradaNaLoja,
           home: response.Delivery,
-          mesa : response.Mesa
+          mesa: response.Mesa
         });
         setPixKey(response.ChavePix);
         setValorVendaMinima(response.LimiteVendaMinima);
@@ -475,6 +482,8 @@ useEffect(() => {
       setError('Erro ao buscar dados do estabelecimento');
       console.error('Erro na busca:', error);
     } finally {
+      // Se houve redirecionamento, a página vai mudar, então o setLoading(false)
+      // pode nem chegar a ser visualizado, mas é boa prática mantê-lo para casos de erro.
       setLoading(false);
     }
   };
@@ -483,7 +492,6 @@ useEffect(() => {
     fetchDataEstabelecimento();
   }
 }, [storeName]);
-
 
   // <---------- Função para formatar o preço ---------->
   const formatPrice = (price) => {
